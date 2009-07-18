@@ -11,6 +11,7 @@
 
     <modules>
         <module>jdbc-proc-daofactory</module>
+        <module>jdbc-proc-integration-test</module>
     </modules>
 
     <scm>
@@ -38,6 +39,14 @@
 
     <dependencyManagement>
         <dependencies>
+
+
+            <!-- JDBC PROC -->
+            <dependency>
+                <groupId>com.googlecode.jdbc-proc</groupId>
+                <artifactId>jdbc-proc-daofactory</artifactId>
+                <version>1.0-1-SNAPSHOT</version>
+            </dependency>
 
             <!-- SPRING -->
             <dependency>
@@ -98,6 +107,22 @@
                 <groupId>javax.persistence</groupId>
                 <artifactId>persistence-api</artifactId>
                 <version>1.0</version>
+            </dependency>
+
+            <!-- DBCP -->
+            <dependency>
+                <groupId>commons-dbcp</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>1.2.2</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- mysql driver -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>5.1.6</version>
+                <scope>test</scope>
             </dependency>
             
         </dependencies>
