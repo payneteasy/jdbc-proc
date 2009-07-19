@@ -27,12 +27,12 @@
         <repository>
             <id>jdbc-proc-release</id>
             <name>Local Maven repository of releases</name>
-            <url>https://jdbc-proc.googlecode.com/svn/mavenrepo/release</url>
+            <url>dav:https://jdbc-proc.googlecode.com/svn/maven2/release</url>
         </repository>
         <snapshotRepository>
             <id>jdbc-proc-snapshot</id>
             <name>Local Maven repository of snapshots</name>
-            <url>https://jdbc-proc.googlecode.com/svn/mavenrepo/snapshot</url>
+            <url>dav:https://jdbc-proc.googlecode.com/svn/maven2/snapshot</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>

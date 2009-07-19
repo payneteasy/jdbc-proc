@@ -84,6 +84,7 @@ public class StoredProcedureInfoManager {
         map.put("int", Types.INTEGER);
         map.put("smallint", Types.INTEGER);
         map.put("datetime", Types.TIMESTAMP);
+        map.put("date", Types.DATE);
         map.put("decimal", Types.DECIMAL);
         return map;
     }
