@@ -17,11 +17,15 @@ public class ParameterConverterManager {
         putSetters(settersMap, new ParameterConverter_INTEGER_int());
         putSetters(settersMap, new ParameterConverter_INTEGER_long());
         putSetters(settersMap, new ParameterConverter_INTEGER_boolean());
+
         // boolean
         putSetters(settersMap, new ParameterConverter_CHAR_boolean());
         putSetters(settersMap, new ParameterConverter_CHAR_langBoolean());
         putSetters(settersMap, new ParameterConverter_VARCHAR_boolean());
         putSetters(settersMap, new ParameterConverter_VARCHAR_langBoolean());
+
+        putSetters(settersMap, new ParameterConverter_DECIMAL_double());
+        putSetters(settersMap, new ParameterConverter_DECIMAL_langDouble());
 
         theParameterSettersMap = Collections.unmodifiableMap(settersMap);
     }
