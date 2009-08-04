@@ -1,17 +1,17 @@
-package com.googlecode.jdbcproc.daofactory.it.testdao;
+package com.googlecode.jdbcproc.daofactory.it.testdao.service.impl;
 
-import com.googlecode.jdbcproc.daofactory.it.DatabaseAwareTest;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeeDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Company;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Employee;
+import com.googlecode.jdbcproc.daofactory.it.testdao.service.IEmployeeService;
 
 /**
- *
+ * Implementation of IEmployeeService
  */
-public class EmployeeDaoTest extends DatabaseAwareTest {
+public class EmployeeServiceImpl implements IEmployeeService {
 
-    public void test() {
+    public void createEmployeeWithCompany(String aCompanyName, String aEmployeeFirstname, String aEmployeeLastname) {
         Company company = new Company();
         company.setName("first");
         theCompanyDao.createCompany(company);
@@ -19,12 +19,8 @@ public class EmployeeDaoTest extends DatabaseAwareTest {
         Employee employee = new Employee();
         employee.setFirstname("Ivan");
         employee.setLastname("Petrov");
-//        employee.setCompany(company);
+        employee.setCompany(company);
         theEmployeeDao.createEmployee(employee);
-
-        Employee employeeFromBase = theEmployeeDao.getEmployeeById(employee.getId());
-        assertNotNull(employeeFromBase);
-        assertEquals(employee, employeeFromBase);
     }
 
     /**
@@ -37,7 +33,7 @@ public class EmployeeDaoTest extends DatabaseAwareTest {
     /**
      * Employee dao
      */
-    public void setEmployeDao(IEmployeeDao aEmployeeDao) {
+    public void setEmployeeDao(IEmployeeDao aEmployeeDao) {
         theEmployeeDao = aEmployeeDao;
     }
 
