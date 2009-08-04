@@ -1,6 +1,8 @@
 package com.googlecode.jdbcproc.daofactory.it.testdao;
 
 import com.googlecode.jdbcproc.daofactory.it.DatabaseAwareTest;
+import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Company;
+import com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyDao;
 
 /**
  *

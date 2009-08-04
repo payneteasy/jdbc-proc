@@ -2,6 +2,6 @@ delimiter $$
 
 create procedure get_procedures_resultset ()
 begin
-    select * from company limit 0;
+    select specific_name, routine_resultset from resultset_info;
 end
 $$
