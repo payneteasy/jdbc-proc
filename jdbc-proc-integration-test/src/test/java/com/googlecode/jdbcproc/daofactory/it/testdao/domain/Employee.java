@@ -9,26 +9,54 @@ import java.io.Serializable;
  * Employe
  */
 public class Employee implements Serializable {
-    /** Id */
+    /**
+     * Id
+     */
     @Id
-    @Column(name="employee_id")
-    public long getId() { return theId ; }
-    public void setId(long aId) { theId = aId ; }
+    @Column(name = "employee_id")
+    public long getId() {
+        return theId;
+    }
 
-    /** Firstname */
-    @Column(name="firstname")
-    public String getFirstname() { return theFirstname ; }
-    public void setFirstname(String aFirstname) { theFirstname = aFirstname ; }
+    public void setId(long aId) {
+        theId = aId;
+    }
 
-    /** Lastname */
-    @Column(name="lastname")
-    public String getLastname() { return theLastname ; }
-    public void setLastname(String aLastname) { theLastname = aLastname ; }
+    /**
+     * Firstname
+     */
+    @Column(name = "firstname")
+    public String getFirstname() {
+        return theFirstname;
+    }
 
-    /** Company */
+    public void setFirstname(String aFirstname) {
+        theFirstname = aFirstname;
+    }
+
+    /**
+     * Lastname
+     */
+    @Column(name = "lastname")
+    public String getLastname() {
+        return theLastname;
+    }
+
+    public void setLastname(String aLastname) {
+        theLastname = aLastname;
+    }
+
+    /**
+     * Company
+     */
     @ManyToOne
-    public Company getCompany() { return theCompany ; }
-    public void setCompany(Company aCompany) { theCompany = aCompany ; }
+    public Company getCompany() {
+        return theCompany;
+    }
+
+    public void setCompany(Company aCompany) {
+        theCompany = aCompany;
+    }
 
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -54,13 +82,21 @@ public class Employee implements Serializable {
                 '}';
     }
 
-    /** Company */
-    private Company theCompany ;
-    /** Lastname */
-    private String theLastname ;
-    /** Firstname */
-    private String theFirstname ;
-    /** Id */
-    private long theId ;
+    /**
+     * Company
+     */
+    private Company theCompany;
+    /**
+     * Lastname
+     */
+    private String theLastname;
+    /**
+     * Firstname
+     */
+    private String theFirstname;
+    /**
+     * Id
+     */
+    private long theId;
 
 }

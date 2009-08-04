@@ -1,8 +1,8 @@
 package com.googlecode.jdbcproc.daofactory.it.testdao;
 
 import com.googlecode.jdbcproc.daofactory.it.DatabaseAwareTest;
-import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Company;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyDao;
+import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Company;
 
 /**
  *
@@ -19,6 +19,7 @@ public class CompanyDaoTest extends DatabaseAwareTest {
 //    /** Company dao */
 
     //    public ICompanyDao getCompanyDao() { return theCompanyDao ; }
+
     public void setCompanyDao(ICompanyDao aCompanyDao) {
         theCompanyDao = aCompanyDao;
     }

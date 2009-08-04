@@ -1,15 +1,16 @@
 package com.googlecode.jdbcproc.daofactory.it.testdao.dao;
 
-import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Employee;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
+import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Employee;
 
 /**
- * Data access for employe
+ * Data access for employee
  */
-public interface IEmployeDao {
+public interface IEmployeeDao {
 
     /**
-     * Creates employe
+     * Creates employee
+     *
      * @param aEmployee new employe
      */
     @AStoredProcedure(name = "create_employee")
@@ -17,6 +18,7 @@ public interface IEmployeDao {
 
     /**
      * Gets employee by id
+     *
      * @param id employee id
      * @return employee
      */
