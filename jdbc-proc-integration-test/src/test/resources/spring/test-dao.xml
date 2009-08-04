@@ -12,10 +12,20 @@
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
 
-    <bean id="companyDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean">
-        <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.ICompanyDao"/>
+    <!-- Abstract dao -->
+    <bean id="abstractDao" abstract="true"  class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="daoMethodInfoFactory" ref="daoMethodInfoFactory"/>
+    </bean>
+
+    <!-- Company data access -->
+    <bean id="companyDao" parent="abstractDao">
+        <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyDao"/>
+    </bean>
+
+    <!-- Employee data access -->
+    <bean id="employeDao" parent="abstractDao">
+        <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeDao"/>
     </bean>
 
 </beans>
