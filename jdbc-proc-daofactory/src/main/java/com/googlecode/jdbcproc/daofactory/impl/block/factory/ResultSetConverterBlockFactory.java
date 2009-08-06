@@ -1,23 +1,27 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.factory;
 
-import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockEntity;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.EntityPropertySetter;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockListEntity;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockSimpleType;
-import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
-import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.ResultSetColumnInfo;
-import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
-import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterManager;
-
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.lang.reflect.ParameterizedType;
-import java.util.List;
-import java.util.LinkedList;
+import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import org.springframework.util.Assert;
+
+import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.EntityPropertySetter;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.OneToOneLink;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockEntity;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockListEntity;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockSimpleType;
+import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
+import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterManager;
+import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.ResultSetColumnInfo;
+import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
 
 /**
  * Creates IResultSetConverter
@@ -76,6 +80,18 @@ public class ResultSetConverterBlockFactory {
             list.add(new EntityPropertySetter(setterMethod, paramConverter
                     , resultSetColumnInfo.getColumnName(), resultSetColumnInfo.getDataType()));
         }
-        return new ResultSetConverterBlockEntity(aType, list);
+        
+        // finds OneToOne and ManyToOne links
+        List<OneToOneLink> oneToOneLinks = new LinkedList<OneToOneLink>();
+        for(Method method : aType.getMethods()) {
+        	if(method.isAnnotationPresent(OneToOne.class) || method.isAnnotationPresent(ManyToOne.class)) {
+        		Class entityClass = method.getReturnType();
+                Method setterMethod = BlockFactoryUtils.findSetterMethod(aType, method);
+                // TODO add creation of ResultSetConverterBlockEntity for OneToOne link
+//                ResultSetConverterBlockEntity block = new ResultSetConverterBlockEntity(entityClass, aEntityPropertySetters, aOneToOneLinks);
+//        		oneToOneLinks.add(new OneToOneLink(aBlock, setterMethod));
+        	}
+        }
+        return new ResultSetConverterBlockEntity(aType, list, oneToOneLinks);
     }
 }
