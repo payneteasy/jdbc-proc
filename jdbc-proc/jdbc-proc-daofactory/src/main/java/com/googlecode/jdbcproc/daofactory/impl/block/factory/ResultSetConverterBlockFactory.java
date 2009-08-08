@@ -108,6 +108,9 @@ public class ResultSetConverterBlockFactory {
             if(columnAnnotation!=null) {
                 Method setterMethod = BlockFactoryUtils.findSetterMethod(aType, getterMethod);
                 ResultSetColumnInfo resultSetColumnInfo = aProcedureInfo.getResultSetColumn(columnAnnotation.name());
+                if(resultSetColumnInfo==null) {
+                    throw new IllegalStateException("Information for column "+columnAnnotation.name()+" was not found in procedure "+aProcedureInfo.getProcedureName());
+                }
                 IParameterConverter paramConverter = aConverterManager.findConverter(resultSetColumnInfo.getDataType(), getterMethod.getReturnType());
                 list.add(new EntityPropertySetter(setterMethod, paramConverter
                         , resultSetColumnInfo.getColumnName(), resultSetColumnInfo.getDataType()));

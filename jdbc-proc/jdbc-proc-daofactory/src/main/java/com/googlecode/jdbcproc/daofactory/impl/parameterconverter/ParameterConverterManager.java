@@ -15,7 +15,9 @@ public class ParameterConverterManager {
         HashMap<ParameterSetterKey, IParameterConverter> settersMap = new HashMap<ParameterSetterKey, IParameterConverter>();
         putSetters(settersMap, new ParameterConverter_TIMESTAMP_utilDate());
         putSetters(settersMap, new ParameterConverter_INTEGER_int());
+        putSetters(settersMap, new ParameterConverter_INTEGER_langInteger());
         putSetters(settersMap, new ParameterConverter_INTEGER_long());
+        putSetters(settersMap, new ParameterConverter_INTEGER_langLong());
         putSetters(settersMap, new ParameterConverter_INTEGER_boolean());
 
         // boolean

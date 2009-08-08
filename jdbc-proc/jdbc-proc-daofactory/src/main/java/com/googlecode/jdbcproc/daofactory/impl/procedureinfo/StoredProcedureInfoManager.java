@@ -121,6 +121,9 @@ public class StoredProcedureInfoManager {
     }
 
     private void addResultSetColumns(StoredProcedureInfo aProcedure, String aLine) {
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("Creating column info for {}()", aProcedure.getProcedureName());
+        }
         StringTokenizer st = new StringTokenizer(aLine, ",;.");
         while(st.hasMoreTokens()) {
             StringTokenizer pairSt = new StringTokenizer(st.nextToken(), " \t");
@@ -129,6 +132,9 @@ public class StoredProcedureInfoManager {
                 if(pairSt.hasMoreTokens()) {
                     String typeName = pairSt.nextToken();
                     ResultSetColumnInfo columnInfo = new ResultSetColumnInfo(columnName, findDataType(typeName));
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("    {} - {}", columnName, typeName);
+                    }
                     aProcedure.addResultSetColumn(columnInfo);
                 }
             }
