@@ -2,6 +2,8 @@ package com.googlecode.jdbcproc.daofactory.it;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -11,6 +13,8 @@ import java.io.InputStream;
  *
  */
 public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSpringContextTests {
+
+    private final Logger LOG = LoggerFactory.getLogger(getClass());
 
     public void runBare() throws Throwable {
         // drops and creates database
@@ -32,6 +36,7 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
     }
 
     private void executeMysql(String aDatabase, String aSqlFile) throws IOException, InterruptedException {
+        LOG.debug("Loading {}...", aSqlFile);
         final Process process = Runtime.getRuntime().exec(
                 new String[]{
                         "mysql"

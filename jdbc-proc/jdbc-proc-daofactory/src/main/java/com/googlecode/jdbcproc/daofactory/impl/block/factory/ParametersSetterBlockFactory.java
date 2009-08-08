@@ -13,8 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.StatementCallback;
 import org.springframework.util.Assert;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -45,15 +44,7 @@ public class ParametersSetterBlockFactory {
             Assert.isTrue(aMethod.getParameterTypes().length==1, "Method "+aMethod.getName()+" parameters count must be equals to 1");
             Class entityClass = aMethod.getParameterTypes()[0];
 
-            List<EntityArgumentGetter> getters = new LinkedList<EntityArgumentGetter>();
-            for (StoredProcedureArgumentInfo argumentInfo : aProcedureInfo.getArguments()) {
-                if(argumentInfo.getColumnType() == 1) {
-                    Method          getterMethod = BlockFactoryUtils.findGetterMethod(entityClass, argumentInfo);
-                    IParameterConverter paramConverter = aConverterManager.findConverter(argumentInfo.getDataType(), getterMethod.getReturnType());
-                    getters.add(new EntityArgumentGetter(getterMethod, paramConverter, argumentInfo.getColumnName())) ;
-                }
-            }
-            return new ParametersSetterBlockEntity(getters);
+            return createEntityBlock(aConverterManager, aProcedureInfo, entityClass);
 
         // if no parameters
         } else if(aMethod.getParameterTypes().length==0 && aProcedureInfo.getArgumentsCounts()==0) {
@@ -92,6 +83,52 @@ public class ParametersSetterBlockFactory {
         } else {
             throw new IllegalStateException(aMethod+" is Unsupported");
         }
+    }
+
+    /**
+     * Creates entity block
+     * @param aConverterManager converter manager
+     * @param aProcedureInfo procedure into
+     * @param aEntityClass entity class
+     * @return block
+     */
+    private IParametersSetterBlock createEntityBlock(ParameterConverterManager aConverterManager
+            , StoredProcedureInfo aProcedureInfo, Class aEntityClass) {
+
+        List<EntityArgumentGetter> getters = new LinkedList<EntityArgumentGetter>();
+        for (Method getterMethod : aEntityClass.getMethods()) {
+            if(getterMethod.isAnnotationPresent(Column.class)) {
+                Column columnAnnotation = getterMethod.getAnnotation(Column.class);
+                StoredProcedureArgumentInfo argumentInfo = aProcedureInfo.getArgumentInfo(columnAnnotation.name());
+                if(argumentInfo==null) {
+                    throw new IllegalStateException("Column "+columnAnnotation.name()+" was not found in "+aProcedureInfo.getProcedureName());
+                }
+                if(argumentInfo.getColumnType() == 1) {
+                    IParameterConverter paramConverter = aConverterManager.findConverter(argumentInfo.getDataType(), getterMethod.getReturnType());
+                    getters.add(new EntityArgumentGetter(getterMethod, paramConverter, argumentInfo.getColumnName())) ;
+                }
+            } else if(getterMethod.isAnnotationPresent(OneToOne.class) || getterMethod.isAnnotationPresent(ManyToOne.class)) {
+                if(getterMethod.isAnnotationPresent(JoinColumn.class)) {
+                    JoinColumn joinColumn = getterMethod.getAnnotation(JoinColumn.class);
+                    StoredProcedureArgumentInfo argumentInfo = aProcedureInfo.getArgumentInfo(joinColumn.name());
+                    if(argumentInfo==null) {
+                        throw new IllegalStateException("Column "+joinColumn.name()+" was not found in "+aProcedureInfo.getProcedureName());
+                    }
+                    getters.add(new EntityArgumentGetterOneToOne(getterMethod, argumentInfo.getColumnName()));
+                } else {
+                    throw new IllegalStateException("No @JoinColumn annotation was found in "+aEntityClass.getSimpleName()+"."+getterMethod.getName()+"()");
+                }
+            }
+        }
+
+//        for (StoredProcedureArgumentInfo argumentInfo : aProcedureInfo.getArguments()) {
+//            if(argumentInfo.getColumnType() == 1) {
+//                Method getterMethod = BlockFactoryUtils.findGetterMethod(aEntityClass, argumentInfo);
+//                IParameterConverter paramConverter = aConverterManager.findConverter(argumentInfo.getDataType(), getterMethod.getReturnType());
+//                getters.add(new EntityArgumentGetter(getterMethod, paramConverter, argumentInfo.getColumnName())) ;
+//            }
+//        }
+        return new ParametersSetterBlockEntity(getters);
     }
 
     private ParametersSetterBlockList createParametersSetterBlockList(JdbcTemplate aJdbcTemplate

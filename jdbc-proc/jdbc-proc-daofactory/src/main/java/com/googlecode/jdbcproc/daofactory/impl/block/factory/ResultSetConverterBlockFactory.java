@@ -9,8 +9,11 @@ import java.util.List;
 
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Column;
 
 import org.springframework.util.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.EntityPropertySetter;
@@ -28,7 +31,8 @@ import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo
  */
 public class ResultSetConverterBlockFactory {
 
-    
+    private static final Logger LOG = LoggerFactory.getLogger(ResultSetConverterBlockFactory.class);
+
     public IResultSetConverterBlock create(Method aDaoMethod, StoredProcedureInfo aProcedureInfo, ParameterConverterManager aConverterManager) {
         Class returnType = aDaoMethod.getReturnType();
         if(returnType.equals(void.class))  {
@@ -72,26 +76,44 @@ public class ResultSetConverterBlockFactory {
     }
 
     private ResultSetConverterBlockEntity createEntityBlock(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
-        List<EntityPropertySetter> list = new LinkedList<EntityPropertySetter>();
-        for (ResultSetColumnInfo resultSetColumnInfo : aProcedureInfo.getResultSetColumns()) {
-            Method getterMethod = BlockFactoryUtils.findGetterMethod(aType, resultSetColumnInfo.getColumnName());
-            Method setterMethod = BlockFactoryUtils.findSetterMethod(aType, getterMethod);
-            IParameterConverter paramConverter = aConverterManager.findConverter(resultSetColumnInfo.getDataType(), getterMethod.getReturnType());
-            list.add(new EntityPropertySetter(setterMethod, paramConverter
-                    , resultSetColumnInfo.getColumnName(), resultSetColumnInfo.getDataType()));
-        }
-        
+        // finds simple setters
+        List<EntityPropertySetter> propertySetters = createEntityPropertySetters(aConverterManager, aType, aProcedureInfo);
         // finds OneToOne and ManyToOne links
+        List<OneToOneLink> oneToOneLinks = createOneToOneLinks(aConverterManager, aType, aProcedureInfo);
+        return new ResultSetConverterBlockEntity(aType, propertySetters, oneToOneLinks);
+    }
+
+    private List<OneToOneLink> createOneToOneLinks(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
         List<OneToOneLink> oneToOneLinks = new LinkedList<OneToOneLink>();
         for(Method method : aType.getMethods()) {
         	if(method.isAnnotationPresent(OneToOne.class) || method.isAnnotationPresent(ManyToOne.class)) {
-        		Class entityClass = method.getReturnType();
-                Method setterMethod = BlockFactoryUtils.findSetterMethod(aType, method);
-                // TODO add creation of ResultSetConverterBlockEntity for OneToOne link
-//                ResultSetConverterBlockEntity block = new ResultSetConverterBlockEntity(entityClass, aEntityPropertySetters, aOneToOneLinks);
-//        		oneToOneLinks.add(new OneToOneLink(aBlock, setterMethod));
+                Class oneToOneClass = method.getReturnType();
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("        Finded {}.{}",aType.getSimpleName(), oneToOneClass.getSimpleName());
+                }
+                Method oneToOneSetterMethod = BlockFactoryUtils.findSetterMethod(aType, method);
+                List<EntityPropertySetter> oneToOnePropertySetters = createEntityPropertySetters(aConverterManager, oneToOneClass, aProcedureInfo);
+                ResultSetConverterBlockEntity oneToOneBlock = new ResultSetConverterBlockEntity(
+                        oneToOneClass, oneToOnePropertySetters, createOneToOneLinks(aConverterManager, oneToOneClass, aProcedureInfo));
+        		oneToOneLinks.add(new OneToOneLink(oneToOneBlock, oneToOneSetterMethod));
         	}
         }
-        return new ResultSetConverterBlockEntity(aType, list, oneToOneLinks);
+        return oneToOneLinks;
+    }
+
+    private List<EntityPropertySetter> createEntityPropertySetters(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
+        List<EntityPropertySetter> list = new LinkedList<EntityPropertySetter>();
+        for (Method getterMethod : aType.getMethods()) {
+            Column columnAnnotation = getterMethod.getAnnotation(Column.class);
+            if(columnAnnotation!=null) {
+                Method setterMethod = BlockFactoryUtils.findSetterMethod(aType, getterMethod);
+                ResultSetColumnInfo resultSetColumnInfo = aProcedureInfo.getResultSetColumn(columnAnnotation.name());
+                IParameterConverter paramConverter = aConverterManager.findConverter(resultSetColumnInfo.getDataType(), getterMethod.getReturnType());
+                list.add(new EntityPropertySetter(setterMethod, paramConverter
+                        , resultSetColumnInfo.getColumnName(), resultSetColumnInfo.getDataType()));
+            }
+
+        }
+        return list;
     }
 }
