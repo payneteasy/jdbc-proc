@@ -8,11 +8,19 @@ import java.sql.*;
 public class ParameterConverter_INTEGER_long implements IParameterConverter<Long> {
 
     public void setValue(Long aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        aStmt.setLong(aIndex, aValue);
+        if(aValue!=null) {
+            aStmt.setLong(aIndex, aValue);
+        } else {
+            aStmt.setNull(aIndex, Types.INTEGER);
+        }
     }
 
     public void setValue(Long aValue, CallableStatement aStmt, String aParameterName) throws SQLException {
-        aStmt.setLong(aParameterName, aValue);
+        if(aValue!=null) {
+            aStmt.setLong(aParameterName, aValue);
+        } else {
+            aStmt.setNull(aParameterName, Types.INTEGER);
+        }
     }
 
     public Long getOutputParameter(CallableStatement aStmt, String aParameterName) throws SQLException {

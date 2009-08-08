@@ -27,7 +27,7 @@ public class ParametersSetterBlockEntity implements IParametersSetterBlock {
             try {
                 getter.setParameter(entity, aStmt);
             } catch (Exception e) {
-                throw new IllegalStateException("Can not set parameter "+e.getMessage(), e);
+                throw new IllegalStateException("Can not set parameter: "+e.getMessage(), e);
             }
         }
 

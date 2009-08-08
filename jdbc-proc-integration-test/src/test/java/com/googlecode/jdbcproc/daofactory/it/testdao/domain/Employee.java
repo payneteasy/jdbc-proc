@@ -3,6 +3,7 @@ package com.googlecode.jdbcproc.daofactory.it.testdao.domain;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
 import java.io.Serializable;
 
 /**
@@ -50,6 +51,7 @@ public class Employee implements Serializable {
      * Company
      */
     @ManyToOne
+    @JoinColumn ( name = "company_company_id")
     public Company getCompany() {
         return theCompany;
     }

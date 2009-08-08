@@ -28,12 +28,13 @@ public class EntityArgumentGetter {
         return theParameterName;
     }
     
-    private final Method theMethod;
-    private final IParameterConverter theParameterConverter;
-    private final String theParameterName ;
-
     public void setParameterByIndex(Object aEntity, PreparedStatement aStmt, int aIndex) throws InvocationTargetException, IllegalAccessException, SQLException {
         Object value = theMethod.invoke(aEntity);
         theParameterConverter.setValue(value, aStmt, aIndex);
     }
+
+    protected final Method theMethod;
+    protected final IParameterConverter theParameterConverter;
+    protected final String theParameterName ;
+
 }

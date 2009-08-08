@@ -4,11 +4,13 @@ create procedure get_employee_by_id (
      in i_id int(10)
 )
 begin
-    select employee_id, firstname, lastname
-      from employee
-     where employee_id = i_id;
+    select em.employee_id as employee_id, em.firstname as firstname, em.lastname as lastname
+           , comp.company_id as company_id, comp.name as name
+      from employee em
+      left join company comp on em.company_company_id = comp.company_id
+     where em.employee_id = i_id;
 end
 $$
 
 insert into resultset_info (specific_name, routine_resultset)
-values ('get_employee_by_id', 'employee_id int, firstname varchar, lastname varchar');
+values ('get_employee_by_id', 'employee_id int, firstname varchar, lastname varchar, company_id int, name varchar');

@@ -19,7 +19,7 @@ public class EmployeeDaoTest extends DatabaseAwareTest {
         Employee employee = new Employee();
         employee.setFirstname("Ivan");
         employee.setLastname("Petrov");
-//        employee.setCompany(company);
+        employee.setCompany(company);
         theEmployeeDao.createEmployee(employee);
 
         Employee employeeFromBase = theEmployeeDao.getEmployeeById(employee.getId());
