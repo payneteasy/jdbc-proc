@@ -130,15 +130,15 @@ public class ResultSetConverterBlockFactory {
             if(columnAnnotation!=null) {
                 Method setterMethod = BlockFactoryUtils.findSetterMethod(aType, getterMethod);
                 String columnName = aTablePrefix + columnAnnotation.name();
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("         Mapping result set for {}.{}() to {} ...", new String[]{aType.getSimpleName(), getterMethod.getName(), columnName});
+                }
                 ResultSetColumnInfo resultSetColumnInfo = aProcedureInfo.getResultSetColumn(columnName);
                 if(resultSetColumnInfo==null) {
                     throw new IllegalStateException(
                             String.format("For method %s.%s() column '%s' was not found in result set for procedure %s() "
                                     , aType.getSimpleName(), getterMethod.getName(), columnName, aProcedureInfo.getProcedureName()
                               ));
-                }
-                if(LOG.isDebugEnabled()) {
-                    LOG.debug("         Mapped result set for {}.{}() to {}", new String[]{aType.getSimpleName(), getterMethod.getName(), columnName});
                 }
                 IParameterConverter paramConverter = aConverterManager.findConverter(resultSetColumnInfo.getDataType(), getterMethod.getReturnType());
                 list.add(new EntityPropertySetter(setterMethod, paramConverter
