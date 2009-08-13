@@ -51,7 +51,7 @@ public class Employee implements Serializable {
      * Company
      */
     @ManyToOne
-    @JoinColumn ( name = "company_company_id")
+    @JoinColumn ( name = "company_company_id", table ="company")
     public Company getCompany() {
         return theCompany;
     }

@@ -10,8 +10,10 @@ import java.util.List;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Column;
+import javax.persistence.JoinColumn;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,39 +79,66 @@ public class ResultSetConverterBlockFactory {
 
     private ResultSetConverterBlockEntity createEntityBlock(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
         // finds simple setters
-        List<EntityPropertySetter> propertySetters = createEntityPropertySetters(aConverterManager, aType, aProcedureInfo);
+        List<EntityPropertySetter> propertySetters = createEntityPropertySetters(aConverterManager, aType, aProcedureInfo, "");
         // finds OneToOne and ManyToOne links
-        List<OneToOneLink> oneToOneLinks = createOneToOneLinks(aConverterManager, aType, aProcedureInfo);
+        List<OneToOneLink> oneToOneLinks = createOneToOneLinks("", aConverterManager, aType, aProcedureInfo);
         return new ResultSetConverterBlockEntity(aType, propertySetters, oneToOneLinks);
     }
 
-    private List<OneToOneLink> createOneToOneLinks(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
+    private List<OneToOneLink> createOneToOneLinks(String aParentTablePrefix, ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
         List<OneToOneLink> oneToOneLinks = new LinkedList<OneToOneLink>();
         for(Method method : aType.getMethods()) {
         	if(method.isAnnotationPresent(OneToOne.class) || method.isAnnotationPresent(ManyToOne.class)) {
+                String tablePrefix = aParentTablePrefix + getTablePrefixForOneToOneLink(method);
                 Class oneToOneClass = method.getReturnType();
                 if(LOG.isDebugEnabled()) {
                     LOG.debug("        Finded {}.{}",aType.getSimpleName(), oneToOneClass.getSimpleName());
                 }
                 Method oneToOneSetterMethod = BlockFactoryUtils.findSetterMethod(aType, method);
-                List<EntityPropertySetter> oneToOnePropertySetters = createEntityPropertySetters(aConverterManager, oneToOneClass, aProcedureInfo);
+                List<EntityPropertySetter> oneToOnePropertySetters = createEntityPropertySetters(aConverterManager, oneToOneClass, aProcedureInfo, tablePrefix);
                 ResultSetConverterBlockEntity oneToOneBlock = new ResultSetConverterBlockEntity(
-                        oneToOneClass, oneToOnePropertySetters, createOneToOneLinks(aConverterManager, oneToOneClass, aProcedureInfo));
+                          oneToOneClass
+                        , oneToOnePropertySetters
+                        , createOneToOneLinks(tablePrefix, aConverterManager, oneToOneClass, aProcedureInfo)
+                );
         		oneToOneLinks.add(new OneToOneLink(oneToOneBlock, oneToOneSetterMethod));
         	}
         }
         return oneToOneLinks;
     }
 
-    private List<EntityPropertySetter> createEntityPropertySetters(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
+    /**
+     * Gets table prefix from @JoinColumn.name()
+     * @param aMethod getter method with OneToOne annotation and possibly JoinColumn
+     * @return @JoinColumn.name() + "_" or empty string ("") 
+     */
+    private String getTablePrefixForOneToOneLink(Method aMethod) {
+        String name = "";
+        if(aMethod.isAnnotationPresent(JoinColumn.class)) {
+            JoinColumn joinColumn = aMethod.getAnnotation(JoinColumn.class);
+            if(StringUtils.hasText(joinColumn.table())) {
+                name = joinColumn.table() + "_";
+            }
+        }
+        return name;
+    }
+
+    private List<EntityPropertySetter> createEntityPropertySetters(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo, String aTablePrefix) {
         List<EntityPropertySetter> list = new LinkedList<EntityPropertySetter>();
         for (Method getterMethod : aType.getMethods()) {
             Column columnAnnotation = getterMethod.getAnnotation(Column.class);
             if(columnAnnotation!=null) {
                 Method setterMethod = BlockFactoryUtils.findSetterMethod(aType, getterMethod);
-                ResultSetColumnInfo resultSetColumnInfo = aProcedureInfo.getResultSetColumn(columnAnnotation.name());
+                String columnName = aTablePrefix + columnAnnotation.name();
+                ResultSetColumnInfo resultSetColumnInfo = aProcedureInfo.getResultSetColumn(columnName);
                 if(resultSetColumnInfo==null) {
-                    throw new IllegalStateException("Information for column "+columnAnnotation.name()+" was not found in procedure "+aProcedureInfo.getProcedureName());
+                    throw new IllegalStateException(
+                            String.format("For method %s.%s() column '%s' was not found in result set for procedure %s() "
+                                    , aType.getSimpleName(), getterMethod.getName(), columnName, aProcedureInfo.getProcedureName()
+                              ));
+                }
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("         Mapped result set for {}.{}() to {}", new String[]{aType.getSimpleName(), getterMethod.getName(), columnName});
                 }
                 IParameterConverter paramConverter = aConverterManager.findConverter(resultSetColumnInfo.getDataType(), getterMethod.getReturnType());
                 list.add(new EntityPropertySetter(setterMethod, paramConverter
