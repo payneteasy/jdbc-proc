@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.lang.reflect.Proxy;
 
 /**
  * Dao method information
@@ -49,6 +50,15 @@ public class DaoMethodInvoker {
         return new CallableStatementCallback() {
 
             public Object doInCallableStatement(CallableStatement aStmt) throws SQLException, DataAccessException {
+
+                if(LOG.isDebugEnabled()) {
+                    // debugs all methods in CallableStatement
+                    aStmt = (CallableStatement) Proxy.newProxyInstance(
+                            Thread.currentThread().getContextClassLoader()
+                            , new Class[] {CallableStatement.class}
+                            , new DebugLogInvocationHandler(aStmt, LOG)
+                    );
+                }
 
                 // register output parameters
                 // eg. aStmt.registerOutParameter(1, Types.INTEGER);

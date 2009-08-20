@@ -67,8 +67,20 @@ public class BlockFactoryUtils {
         }
     }
 
+    /**
+     * If in java no arguments in function but in sql there are 1 argument
+     *
+     * For example:
+     * ICompanyDao.getAllCompanies() and get_company(id)
+     *
+     * @param aDaoMethod     method
+     * @param aProcedureInfo procedure information
+     * @return true, if method is getAll()
+     */
     public static boolean isGetAllMethod(Method aDaoMethod, StoredProcedureInfo aProcedureInfo) {
-        return aProcedureInfo.getArgumentsCounts()==1 && aDaoMethod.getReturnType().isAssignableFrom(List.class);
+        return aProcedureInfo.getArgumentsCounts()==1
+                && (aDaoMethod.getParameterTypes()==null || aDaoMethod.getParameterTypes().length==0)
+                && aDaoMethod.getReturnType().isAssignableFrom(List.class);
     }
 
 
