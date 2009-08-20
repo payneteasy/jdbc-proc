@@ -40,8 +40,9 @@ public class EntityPropertySetter {
         } catch (IllegalArgumentException e) {
             String gettedType = aValue!=null ? aValue.getClass().getSimpleName() : "NULL";
             String argumentType = theSetterMethod.getParameterTypes()[0].getSimpleName();
-            throw new IllegalStateException(String.format("Unable to set %s of sql type %d to %s(%s)"
-                    , gettedType, theSqlType, theSetterMethod.getName(), argumentType), e);
+            throw new IllegalStateException(
+                    String.format("Unable to set %s of sql type %d to %s.%s(%s)"
+                    , gettedType, theSqlType, aEntity.getClass().getSimpleName(), theSetterMethod.getName(), argumentType), e);
         }
     }
 

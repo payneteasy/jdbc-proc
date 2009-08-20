@@ -18,6 +18,8 @@ import java.lang.reflect.Proxy;
 public class DaoMethodInvoker {
 
     private final Logger LOG = LoggerFactory.getLogger(DaoMethodInvoker.class);
+    private final Logger LOG_CALLABLE_STATEMENT = LoggerFactory.getLogger(DaoMethodInvoker.class.getName()+"_Statement");
+    private final Logger LOG_TIME = LoggerFactory.getLogger(DaoMethodInvoker.class.getName()+"_Time");
 
     public DaoMethodInvoker(String aProcedureName
             , String aCallString
@@ -51,12 +53,17 @@ public class DaoMethodInvoker {
 
             public Object doInCallableStatement(CallableStatement aStmt) throws SQLException, DataAccessException {
 
+                long startTime = 0;
+                if(LOG_TIME.isDebugEnabled()) {
+                    startTime = System.currentTimeMillis();
+                }
+
                 if(LOG.isDebugEnabled()) {
                     // debugs all methods in CallableStatement
                     aStmt = (CallableStatement) Proxy.newProxyInstance(
                             Thread.currentThread().getContextClassLoader()
                             , new Class[] {CallableStatement.class}
-                            , new DebugLogInvocationHandler(aStmt, LOG)
+                            , new DebugLogInvocationHandler(aStmt, LOG_CALLABLE_STATEMENT)
                     );
                 }
 
@@ -91,6 +98,9 @@ public class DaoMethodInvoker {
                 } finally {
                     if(resultSet!=null) {
                         resultSet.close();
+                    }
+                    if(LOG_TIME.isDebugEnabled()) {
+                        LOG_TIME.debug("Called time {}(): {}ms", theProcedureName, System.currentTimeMillis() - startTime);
                     }
                 }
             }
