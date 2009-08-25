@@ -65,7 +65,7 @@ public class ResultSetConverterBlockEntityOneToMany implements IResultSetConvert
         return entity;
     }
 
-    private void setOneToManyList(Object aBaseEntity, List<Object> aList) {
+    protected void setOneToManyList(Object aBaseEntity, List<Object> aList) {
         try {
             theOneToManyMethod.invoke(aBaseEntity, aList);
         } catch (IllegalAccessException e) {

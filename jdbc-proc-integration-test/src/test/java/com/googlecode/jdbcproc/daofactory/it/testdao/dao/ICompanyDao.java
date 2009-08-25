@@ -4,6 +4,8 @@ import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Company;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.CompanyWithEmployees;
 
+import java.util.List;
+
 /**
  * Test dao
  */
@@ -18,10 +20,19 @@ public interface ICompanyDao {
     void createCompany(Company aCompany);
 
     /**
-     * Creates company
+     * Gets company with employees by id
      *
      * @param aCompanyId new company
+     * @return company
      */
     @AStoredProcedure(name = "get_company_employees")
     CompanyWithEmployees getCompanyWithEmployeesById(long aCompanyId);
+
+    /**
+     * Creates all companies with employees
+     * 
+     * @return companies
+     */
+    @AStoredProcedure(name = "get_company_employees")
+    List<CompanyWithEmployees> getAllCompaniesWithEmployees();
 }

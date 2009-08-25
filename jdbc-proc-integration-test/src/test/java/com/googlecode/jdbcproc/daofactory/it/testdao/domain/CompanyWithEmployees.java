@@ -35,6 +35,20 @@ public class CompanyWithEmployees implements Serializable {
                 '}';
     }
 
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CompanyWithEmployees that = (CompanyWithEmployees) o;
+
+        return theId == that.theId;
+
+    }
+
+    public int hashCode() {
+        return (int) (theId ^ (theId >>> 32));
+    }
+
     /** Employees */
     private List<EmployeeOnly> theEmployees ;
     /** Company name */
