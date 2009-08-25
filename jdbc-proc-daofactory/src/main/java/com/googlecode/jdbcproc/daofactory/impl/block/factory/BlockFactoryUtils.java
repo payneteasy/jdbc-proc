@@ -4,6 +4,7 @@ import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgu
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
 
 import javax.persistence.Column;
+import javax.persistence.OneToMany;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
@@ -93,4 +94,17 @@ public class BlockFactoryUtils {
         return SIMPLE_TYPES.contains(aType);
     }
 
+    public static Method findOneToManyMethod(Class aClass) {
+        Method ret = null;
+        for (Method method : aClass.getMethods()) {
+            if(method.isAnnotationPresent(OneToMany.class)) {
+                if(ret!=null) {
+                    throw new IllegalStateException("There are more than one @OneToMany annotations in "+aClass.getSimpleName());
+                } else {
+                    ret =  method;
+                }
+            }
+        }
+        return ret;
+    }
 }
