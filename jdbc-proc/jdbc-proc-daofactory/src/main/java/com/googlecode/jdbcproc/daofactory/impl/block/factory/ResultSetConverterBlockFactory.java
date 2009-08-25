@@ -7,10 +7,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
+import javax.persistence.*;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -18,11 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.EntityPropertySetter;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.OneToOneLink;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockEntity;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockListEntity;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockSimpleType;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.*;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterManager;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.ResultSetColumnInfo;
@@ -57,8 +50,17 @@ public class ResultSetConverterBlockFactory {
 
         } else {
             // entity may be
-            return createEntityBlock(aConverterManager, returnType, aProcedureInfo);
+            if(isOneToManyPresent(returnType)) {
+                // @OneToMany annotation is finded
+                return createEntityBlockOneToMany(aConverterManager, returnType, aProcedureInfo);
+            } else {
+                return createEntityBlock(aConverterManager, returnType, aProcedureInfo);
+            }
         }
+    }
+
+    private boolean isOneToManyPresent(Class aClass) {
+        return BlockFactoryUtils.findOneToManyMethod(aClass)!=null;
     }
 
     private IResultSetConverterBlock createBlockSimpleType(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
@@ -71,6 +73,11 @@ public class ResultSetConverterBlockFactory {
         ), columnInfo.getColumnName());
     }
 
+    /**
+     * Gets List&lt;Entity&gt; class
+     * @param aDaoMethod method
+     * @return entity class
+     */
     private Class getEntityClass(Method aDaoMethod) {
         Type type = aDaoMethod.getGenericReturnType();
         ParameterizedType parameterizedType = (ParameterizedType) type;
@@ -85,11 +92,28 @@ public class ResultSetConverterBlockFactory {
         return new ResultSetConverterBlockEntity(aType, propertySetters, oneToOneLinks);
     }
 
+    private IResultSetConverterBlock createEntityBlockOneToMany(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
+        // finds simple setters
+        List<EntityPropertySetter> propertySetters = createEntityPropertySetters(aConverterManager, aType, aProcedureInfo, "");
+        // finds OneToOne and ManyToOne links
+        List<OneToOneLink> oneToOneLinks = createOneToOneLinks("", aConverterManager, aType, aProcedureInfo);
+
+        // child
+        Method otmMethodGetter = BlockFactoryUtils.findOneToManyMethod(aType);
+        Method otmMethodSetter = BlockFactoryUtils.findSetterMethod(aType, otmMethodGetter);
+        String childPrefix = getTablePrefixFromJoinColumnAnnotation(otmMethodGetter);
+        Class  childClass  = getEntityClass(otmMethodGetter);
+        List<EntityPropertySetter> childPropertySetters = createEntityPropertySetters(aConverterManager, childClass, aProcedureInfo, childPrefix);
+        List<OneToOneLink> childOneToOneLinks = createOneToOneLinks(childPrefix, aConverterManager, childClass, aProcedureInfo);
+
+        return new ResultSetConverterBlockEntityOneToMany(aType, propertySetters, oneToOneLinks, childClass, childPropertySetters, childOneToOneLinks, otmMethodSetter);
+    }
+
     private List<OneToOneLink> createOneToOneLinks(String aParentTablePrefix, ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
         List<OneToOneLink> oneToOneLinks = new LinkedList<OneToOneLink>();
         for(Method method : aType.getMethods()) {
         	if(method.isAnnotationPresent(OneToOne.class) || method.isAnnotationPresent(ManyToOne.class)) {
-                String tablePrefix = aParentTablePrefix + getTablePrefixForOneToOneLink(method);
+                String tablePrefix = aParentTablePrefix + getTablePrefixFromJoinColumnAnnotation(method);
                 Class oneToOneClass = method.getReturnType();
                 if(LOG.isDebugEnabled()) {
                     LOG.debug("        Finded {}.{}",aType.getSimpleName(), oneToOneClass.getSimpleName());
@@ -112,7 +136,7 @@ public class ResultSetConverterBlockFactory {
      * @param aMethod getter method with OneToOne annotation and possibly JoinColumn
      * @return @JoinColumn.name() + "_" or empty string ("") 
      */
-    private String getTablePrefixForOneToOneLink(Method aMethod) {
+    private String getTablePrefixFromJoinColumnAnnotation(Method aMethod) {
         String name = "";
         if(aMethod.isAnnotationPresent(JoinColumn.class)) {
             JoinColumn joinColumn = aMethod.getAnnotation(JoinColumn.class);

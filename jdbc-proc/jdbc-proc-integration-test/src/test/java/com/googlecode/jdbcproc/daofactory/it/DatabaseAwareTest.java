@@ -22,12 +22,15 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
 
         // creates database schema
         executeMysql("jdbcprocdb", "src/test/resources/sql/resultset_info.sql");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/get_procedures_resultset.sql");
+        
         executeMysql("jdbcprocdb", "src/test/resources/sql/company.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/employee.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/create_company.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/create_employee.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/get_employee_by_id.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/get_procedures_resultset.sql");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/get_company_employees.sql");
+
 
         super.runBare();
     }
