@@ -41,8 +41,15 @@ public class ResultSetConverterBlockFactory {
         } else if(returnType.isAssignableFrom(List.class)) {
             // list 
             Class entityClass = getEntityClass(aDaoMethod);
-            ResultSetConverterBlockEntity blockEntity = createEntityBlock(aConverterManager, entityClass, aProcedureInfo);
-            return new ResultSetConverterBlockListEntity(blockEntity);
+            if(isOneToManyPresent(entityClass)) {
+                // @OneToMany Annotation support
+                ResultSetConverterBlockEntityOneToMany blockEntity = createEntityBlockOneToMany(aConverterManager, entityClass, aProcedureInfo);
+                return new ResultSetConverterBlockEntityOneToManyList(blockEntity);
+            } else {
+                // Without @OneToMany Annotation
+                ResultSetConverterBlockEntity blockEntity = createEntityBlock(aConverterManager, entityClass, aProcedureInfo);
+                return new ResultSetConverterBlockEntityList(blockEntity);
+            }
 
         } else if(returnType.isAssignableFrom(Collection.class)) {
             // collection
@@ -92,7 +99,7 @@ public class ResultSetConverterBlockFactory {
         return new ResultSetConverterBlockEntity(aType, propertySetters, oneToOneLinks);
     }
 
-    private IResultSetConverterBlock createEntityBlockOneToMany(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
+    private ResultSetConverterBlockEntityOneToMany createEntityBlockOneToMany(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
         // finds simple setters
         List<EntityPropertySetter> propertySetters = createEntityPropertySetters(aConverterManager, aType, aProcedureInfo, "");
         // finds OneToOne and ManyToOne links
