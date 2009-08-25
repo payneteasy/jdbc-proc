@@ -12,9 +12,9 @@ import org.springframework.util.Assert;
 /**
  * Creates list of entity
  */
-public class ResultSetConverterBlockListEntity implements IResultSetConverterBlock {
+public class ResultSetConverterBlockEntityList implements IResultSetConverterBlock {
 
-    public ResultSetConverterBlockListEntity(ResultSetConverterBlockEntity aBlockEntity) {
+    public ResultSetConverterBlockEntityList(ResultSetConverterBlockEntity aBlockEntity) {
         theBlockEntity = aBlockEntity;
     }
 
