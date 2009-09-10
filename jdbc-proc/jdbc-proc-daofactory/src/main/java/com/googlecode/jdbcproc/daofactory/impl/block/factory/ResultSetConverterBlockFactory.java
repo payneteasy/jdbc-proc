@@ -171,9 +171,16 @@ public class ResultSetConverterBlockFactory {
                                     , aType.getSimpleName(), getterMethod.getName(), columnName, aProcedureInfo.getProcedureName()
                               ));
                 }
-                IParameterConverter paramConverter = aConverterManager.findConverter(resultSetColumnInfo.getDataType(), getterMethod.getReturnType());
-                list.add(new EntityPropertySetter(setterMethod, paramConverter
-                        , resultSetColumnInfo.getColumnName(), resultSetColumnInfo.getDataType()));
+                try {
+                    IParameterConverter paramConverter = aConverterManager.findConverter(resultSetColumnInfo.getDataType(), getterMethod.getReturnType());
+                    list.add(new EntityPropertySetter(setterMethod, paramConverter
+                            , resultSetColumnInfo.getColumnName(), resultSetColumnInfo.getDataType()));
+                } catch (IllegalStateException e) {
+                    throw new IllegalStateException(
+                            String.format("Converter was not found for method %s.%s() [ column '%s' in procedure %s()]"
+                                    , aType.getSimpleName(), getterMethod.getName(), columnName, aProcedureInfo.getProcedureName()
+                              ), e);
+                }
             }
 
         }
