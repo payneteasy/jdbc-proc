@@ -5,6 +5,7 @@ import org.springframework.util.Assert;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.CallableStatement;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public class ResultSetConverterBlockEntity implements IResultSetConverterBlock {
         theOneToOneLinks = aOneToOneLinks;
     }
 
-    public Object convertResultSet(ResultSet aResultSet) throws SQLException {
+    public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
         Assert.notNull(aResultSet, "ResultSet is null");
         if(aResultSet.next()) {
             Object entity = createEntity(aResultSet);

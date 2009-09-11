@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.LinkedList;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.CallableStatement;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
@@ -46,7 +47,7 @@ public class ResultSetConverterBlockEntityOneToMany implements IResultSetConvert
     }
 
 
-    public Object convertResultSet(ResultSet aResultSet) throws SQLException {
+    public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
         Assert.notNull(aResultSet, "ResultSet is null");
 
         Object entity = null;

@@ -34,18 +34,21 @@ public class DaoMethodInfoFactory implements InitializingBean {
         Assert.hasText(procedureName, "Method " + aDaoMethod.toString() + " has empty name() parameter in @AStoredProcedure annotation");
 
         StoredProcedureInfo procedureInfo = theStoredProcedureInfoManager.getProcedureInfo(procedureName);
-        Assert.notNull(procedureInfo, "Threre are no procedure '" + procedureName + "' in database");
+        Assert.notNull(procedureInfo, "There are no procedure '" + procedureName + "' in database");
 
         String callString = createCallString(procedureInfo);
 
+        boolean isReturnIterator = BlockFactoryUtils.isReturnIterator(aDaoMethod);
+        
         return new DaoMethodInvoker(
-                procedureInfo.getProcedureName() 
+                  procedureInfo.getProcedureName()
                 , callString
                 , theRegisterOutParametersBlockFactory    .create(procedureInfo)
                 , theParametersSetterBlockFactory         .create(theJdbcTemplate, theParameterConverterManager, aDaoMethod, procedureInfo)
                 , theCallableStatementExecutorBlockFactory.create(aDaoMethod, procedureInfo)
                 , theOutputParametersGetterBlockFactory   .create(theParameterConverterManager, aDaoMethod, procedureInfo)
                 , theResultSetConverterBlockFactory       .create(aDaoMethod, procedureInfo, theParameterConverterManager)
+                , isReturnIterator
         );
     }
 

@@ -45,5 +45,10 @@
         <property name="companyDao" ref="companyDao"/>
         <property name="employeeDao" ref="employeeDao"/>
     </bean>
+
+    <!-- Company service -->
+    <bean id="companyService" class="com.googlecode.jdbcproc.daofactory.it.testdao.service.impl.CompanyServiceImpl">
+        <property name="companyDao" ref="companyDao" />
+    </bean>
 </beans>
 

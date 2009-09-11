@@ -48,7 +48,7 @@ public class ResultSetConverterBlockUtil {
         try {
             return aEntityType.newInstance();
         } catch (Exception e) {
-            throw new IllegalStateException(e);
+            throw new IllegalStateException("Could not create entity "+aEntityType.getSimpleName(), e);
         }
     }
 

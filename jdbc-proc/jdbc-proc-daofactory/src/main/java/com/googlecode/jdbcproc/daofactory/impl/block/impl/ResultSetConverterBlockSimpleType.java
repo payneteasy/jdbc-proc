@@ -5,6 +5,7 @@ import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConv
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.CallableStatement;
 
 /**
  * Converts first column from result set to java type
@@ -16,7 +17,7 @@ public class ResultSetConverterBlockSimpleType implements IResultSetConverterBlo
         theColumnName = aColumnName;
     }
 
-    public Object convertResultSet(ResultSet aResultSet) throws SQLException {
+    public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
         if(aResultSet.next()) {
             Object value = theConverter.getFromResultSet(aResultSet, theColumnName);
             if(aResultSet.next()) {
