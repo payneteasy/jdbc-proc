@@ -28,6 +28,7 @@ public class DaoMethodInvoker {
             , ICallableStatementExecutorBlock aCallableStatementExecutorBlock
             , IOutputParametersGetterBlock aOutputParametersGetterBlock
             , IResultSetConverterBlock aResultSetConverterBlock
+            , boolean aIsReturnIterator
     ) {
         Assert.notNull(aCallableStatementExecutorBlock, "aCallableStatementExecutorBlock must not be null");
 
@@ -36,12 +37,22 @@ public class DaoMethodInvoker {
         theRegisterOutParametersBlock   = aRegisterOutParametersBlock;
         theParametersSetterBlock        = aParametersSetterBlock;
         theCallableStatementExecutor    = aCallableStatementExecutorBlock;
-        theOutputParametersGetterBlock = aOutputParametersGetterBlock;
+        theOutputParametersGetterBlock  = aOutputParametersGetterBlock;
         theResultSetConverterBlock      = aResultSetConverterBlock;
+        theIsReturnIterator             = aIsReturnIterator;
     }
 
     public String getCallString() {
         return theCallString;
+    }
+
+    /**
+     * Does method return iterator
+     * 
+     * @return true, if return type is iterator
+     */
+    public boolean isReturnIterator() {
+        return theIsReturnIterator;
     }
 
     public CallableStatementCallback createCallableStatementCallback(final Object[] aArgs) {
@@ -89,15 +100,19 @@ public class DaoMethodInvoker {
                         theOutputParametersGetterBlock.fillOutputParameters(aStmt, aArgs);
                     }
 
-                    // converts result se`t to return value
+                    // converts result set to return value
                     if(theResultSetConverterBlock!=null) {
-                        return theResultSetConverterBlock.convertResultSet(resultSet);
+                        return theResultSetConverterBlock.convertResultSet(resultSet, aStmt);
                     } else {
                         return null;
                     }
                 } finally {
-                    if(resultSet!=null) {
-                        resultSet.close();
+                    if (theIsReturnIterator) {
+                        // result set will be closed in future
+                    } else {
+                        if (resultSet != null) {
+                            resultSet.close();
+                        }
                     }
                     if(LOG_TIME.isDebugEnabled()) {
                         LOG_TIME.debug("Called time {}(): {}ms", theProcedureName, System.currentTimeMillis() - startTime);
@@ -114,4 +129,5 @@ public class DaoMethodInvoker {
     private final ICallableStatementExecutorBlock theCallableStatementExecutor;
     private final IOutputParametersGetterBlock theOutputParametersGetterBlock;
     private final IResultSetConverterBlock theResultSetConverterBlock;
+    private final boolean theIsReturnIterator;
 }

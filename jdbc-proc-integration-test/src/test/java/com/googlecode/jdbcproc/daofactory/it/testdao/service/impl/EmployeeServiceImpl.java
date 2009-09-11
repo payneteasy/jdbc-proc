@@ -5,10 +5,12 @@ import com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeeDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Company;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Employee;
 import com.googlecode.jdbcproc.daofactory.it.testdao.service.IEmployeeService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of IEmployeeService
  */
+@Transactional
 public class EmployeeServiceImpl implements IEmployeeService {
 
     public void createEmployeeWithCompany(String aCompanyName, String aEmployeeFirstname, String aEmployeeLastname) {

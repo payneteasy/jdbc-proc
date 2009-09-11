@@ -6,6 +6,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Iterator;
 
 import javax.persistence.*;
 
@@ -49,6 +50,18 @@ public class ResultSetConverterBlockFactory {
                 // Without @OneToMany Annotation
                 ResultSetConverterBlockEntity blockEntity = createEntityBlock(aConverterManager, entityClass, aProcedureInfo);
                 return new ResultSetConverterBlockEntityList(blockEntity);
+            }
+
+        } else if(BlockFactoryUtils.isReturnIterator(aDaoMethod)) {
+            // Iterator
+            Class entityClass = getEntityClass(aDaoMethod);
+            if(isOneToManyPresent(entityClass)) {
+                // @OneToMany Annotation not supported
+                throw new IllegalStateException("Iterator with OneToMany is unsupported");
+            } else {
+                // Without @OneToMany Annotation
+                ResultSetConverterBlockEntity blockEntity = createEntityBlock(aConverterManager, entityClass, aProcedureInfo);
+                return new ResultSetConverterBlockEntityIterator(blockEntity);
             }
 
         } else if(returnType.isAssignableFrom(Collection.class)) {

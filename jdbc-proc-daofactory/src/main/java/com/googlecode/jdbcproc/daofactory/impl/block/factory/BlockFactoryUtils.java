@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.math.BigDecimal;
 
 /**
@@ -84,6 +85,15 @@ public class BlockFactoryUtils {
                 && aDaoMethod.getReturnType().isAssignableFrom(List.class);
     }
 
+    /**
+     * Is method return Iterator
+     * @param aDaoMethod dao method
+     * @return true if method is return Iterator
+     */
+    public static boolean isReturnIterator(Method aDaoMethod) {
+        Class returnType = aDaoMethod.getReturnType();
+        return Iterator.class.isAssignableFrom(returnType);
+    }
 
     /**
      * Is simple type not entity class
