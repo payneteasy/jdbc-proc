@@ -10,4 +10,8 @@ public class ParameterConverter_VARCHAR_langBoolean extends ParameterConverter_C
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.VARCHAR, Boolean.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_VARCHAR_langBoolean{}";
+    }
 }

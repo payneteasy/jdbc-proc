@@ -69,7 +69,13 @@ public class ParameterConverterManager {
         }
         return paramConverter;
     }
-    
+
+    public String toString() {
+        return "ParameterConverterManager{" +
+                "theParameterSettersMap=" + theParameterSettersMap +
+                '}';
+    }
+
     private final Map<ParameterSetterKey, IParameterConverter> theParameterSettersMap;
 
 }

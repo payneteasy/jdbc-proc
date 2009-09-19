@@ -37,4 +37,8 @@ public class ParameterConverter_REAL_double implements IParameterConverter<Doubl
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.REAL, double.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_REAL_double{}";
+    }
 }

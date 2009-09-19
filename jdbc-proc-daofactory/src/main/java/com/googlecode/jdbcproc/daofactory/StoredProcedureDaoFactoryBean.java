@@ -49,6 +49,14 @@ public class StoredProcedureDaoFactoryBean implements FactoryBean {
     /** DaoMethodInfoFactory */
     public void setDaoMethodInfoFactory(DaoMethodInfoFactory aDaoMethodInfoFactory) { theDaoMethodInfoFactory = aDaoMethodInfoFactory ; }
 
+    public String toString() {
+        return "StoredProcedureDaoFactoryBean{" +
+                "theDaoMethodInfoFactory=" + theDaoMethodInfoFactory +
+                ", theJdbcTemplate=" + theJdbcTemplate +
+                ", theInterface=" + theInterface +
+                '}';
+    }
+
     /** DaoMethodInfoFactory */
     private DaoMethodInfoFactory theDaoMethodInfoFactory ;
     /** JdbcTemplate */

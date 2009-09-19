@@ -52,4 +52,8 @@ public class ResultSetConverterBlockUtil {
         }
     }
 
+
+    public String toString() {
+        return "ResultSetConverterBlockUtil{}";
+    }
 }

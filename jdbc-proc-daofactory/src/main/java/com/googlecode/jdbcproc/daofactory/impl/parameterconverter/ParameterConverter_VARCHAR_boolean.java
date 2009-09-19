@@ -10,4 +10,8 @@ public class ParameterConverter_VARCHAR_boolean extends ParameterConverter_CHAR_
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.VARCHAR, boolean.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_VARCHAR_boolean{}";
+    }
 }

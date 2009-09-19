@@ -37,4 +37,8 @@ public class ParameterConverter_TIMESTAMP_utilDate implements IParameterConverte
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.TIMESTAMP, java.util.Date.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_TIMESTAMP_utilDate{}";
+    }
 }

@@ -46,6 +46,14 @@ public class EntityPropertySetter {
         }
     }
 
+    public String toString() {
+        return "EntityPropertySetter{" +
+                "theConverter=" + theConverter +
+                ", theSetterMethod=" + theSetterMethod +
+                ", theParameterName='" + theParameterName + '\'' +
+                ", theSqlType=" + theSqlType +
+                '}';
+    }
 
     private final IParameterConverter theConverter;
     private final Method theSetterMethod;

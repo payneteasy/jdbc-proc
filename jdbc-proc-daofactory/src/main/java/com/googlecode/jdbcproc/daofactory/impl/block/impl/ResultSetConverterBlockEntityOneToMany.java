@@ -88,6 +88,19 @@ public class ResultSetConverterBlockEntityOneToMany implements IResultSetConvert
                 , theChildOneToOneLinks);
     }
 
+
+    public String toString() {
+        return "ResultSetConverterBlockEntityOneToMany{" +
+                "theEntityPropertySetters=" + theEntityPropertySetters +
+                ", theChildPropertySetters=" + theChildPropertySetters +
+                ", theEntityType=" + theEntityType +
+                ", theOneToOneLinks=" + theOneToOneLinks +
+                ", theChildOneToOneLinks=" + theChildOneToOneLinks +
+                ", theChildClass=" + theChildClass +
+                ", theOneToManyMethod=" + theOneToManyMethod +
+                '}';
+    }
+
     private final List<EntityPropertySetter> theEntityPropertySetters;
     private final List<EntityPropertySetter> theChildPropertySetters;
     private final Class theEntityType;

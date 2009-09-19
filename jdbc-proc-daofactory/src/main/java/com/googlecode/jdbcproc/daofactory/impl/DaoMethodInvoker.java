@@ -122,6 +122,20 @@ public class DaoMethodInvoker {
         };
     }
 
+
+    public String toString() {
+        return "DaoMethodInvoker{" +
+                "procedureName='" + theProcedureName + '\'' +
+                ", callString='" + theCallString + '\'' +
+                ", registerOutParametersBlock=" + theRegisterOutParametersBlock +
+                ", parametersSetterBlock=" + theParametersSetterBlock +
+                ", callableStatementExecutor=" + theCallableStatementExecutor +
+                ", outputParametersGetterBlock=" + theOutputParametersGetterBlock +
+                ", resultSetConverterBlock=" + theResultSetConverterBlock +
+                ", isReturnIterator=" + theIsReturnIterator +
+                '}';
+    }
+
     private final String theProcedureName;
     private final String theCallString;
     private final IRegisterOutParametersBlock theRegisterOutParametersBlock;

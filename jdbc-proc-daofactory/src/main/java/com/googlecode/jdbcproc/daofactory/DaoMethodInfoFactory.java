@@ -34,12 +34,15 @@ public class DaoMethodInfoFactory implements InitializingBean {
         Assert.hasText(procedureName, "Method " + aDaoMethod.toString() + " has empty name() parameter in @AStoredProcedure annotation");
 
         StoredProcedureInfo procedureInfo = theStoredProcedureInfoManager.getProcedureInfo(procedureName);
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("      Finded procedure info: "+procedureInfo);
+        }
         Assert.notNull(procedureInfo, "There are no procedure '" + procedureName + "' in database");
 
         String callString = createCallString(procedureInfo);
 
         boolean isReturnIterator = BlockFactoryUtils.isReturnIterator(aDaoMethod);
-        
+
         return new DaoMethodInvoker(
                   procedureInfo.getProcedureName()
                 , callString
@@ -95,6 +98,19 @@ public class DaoMethodInfoFactory implements InitializingBean {
      */
     public void setJdbcTemplate(JdbcTemplate aJdbcTemplate) {
         theJdbcTemplate = aJdbcTemplate;
+    }
+
+    public String toString() {
+        return "DaoMethodInfoFactory{" +
+                "theJdbcTemplate=" + theJdbcTemplate +
+                ", theParameterConverterManager=" + theParameterConverterManager +
+                ", theStoredProcedureInfoManager=" + theStoredProcedureInfoManager +
+                ", theCallableStatementExecutorBlockFactory=" + theCallableStatementExecutorBlockFactory +
+                ", theOutputParametersGetterBlockFactory=" + theOutputParametersGetterBlockFactory +
+                ", theParametersSetterBlockFactory=" + theParametersSetterBlockFactory +
+                ", theRegisterOutParametersBlockFactory=" + theRegisterOutParametersBlockFactory +
+                ", theResultSetConverterBlockFactory=" + theResultSetConverterBlockFactory +
+                '}';
     }
 
     /**

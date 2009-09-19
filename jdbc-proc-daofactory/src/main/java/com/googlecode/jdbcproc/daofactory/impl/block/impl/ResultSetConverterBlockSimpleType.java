@@ -29,6 +29,12 @@ public class ResultSetConverterBlockSimpleType implements IResultSetConverterBlo
         }
     }
 
+    public String toString() {
+        return "ResultSetConverterBlockSimpleType{" +
+                "theConverter=" + theConverter +
+                ", theColumnName='" + theColumnName + '\'' +
+                '}';
+    }
 
     private final IParameterConverter theConverter;
     private String theColumnName;

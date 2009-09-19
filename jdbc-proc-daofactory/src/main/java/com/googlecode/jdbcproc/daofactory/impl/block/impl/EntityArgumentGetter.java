@@ -33,6 +33,14 @@ public class EntityArgumentGetter {
         theParameterConverter.setValue(value, aStmt, aIndex);
     }
 
+    public String toString() {
+        return "EntityArgumentGetter{" +
+                "theMethod=" + theMethod +
+                ", theParameterConverter=" + theParameterConverter +
+                ", theParameterName='" + theParameterName + '\'' +
+                '}';
+    }
+
     protected final Method theMethod;
     protected final IParameterConverter theParameterConverter;
     protected final String theParameterName ;

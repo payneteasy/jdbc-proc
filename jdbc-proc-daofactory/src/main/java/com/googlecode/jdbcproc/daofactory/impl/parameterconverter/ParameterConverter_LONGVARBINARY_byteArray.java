@@ -26,4 +26,8 @@ public class ParameterConverter_LONGVARBINARY_byteArray implements IParameterCon
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.LONGVARBINARY, byte[].class);
     }
+
+    public String toString() {
+        return "ParameterConverter_LONGVARBINARY_byteArray{}";
+    }
 }

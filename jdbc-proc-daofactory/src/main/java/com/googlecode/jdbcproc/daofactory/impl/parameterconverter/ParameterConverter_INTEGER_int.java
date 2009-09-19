@@ -26,4 +26,8 @@ public class ParameterConverter_INTEGER_int implements IParameterConverter<Integ
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.INTEGER, int.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_INTEGER_int{}";
+    }
 }

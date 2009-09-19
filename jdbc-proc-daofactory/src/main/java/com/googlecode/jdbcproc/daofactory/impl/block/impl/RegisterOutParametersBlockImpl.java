@@ -22,5 +22,12 @@ public class RegisterOutParametersBlockImpl implements IRegisterOutParametersBlo
         }
     }
 
+
+    public String toString() {
+        return "RegisterOutParametersBlockImpl{" +
+                "theList=" + theList +
+                '}';
+    }
+
     private List<IndexDataTypePair> theList ;
 }

@@ -38,7 +38,15 @@ public class ResultSetConverterBlockEntity implements IResultSetConverterBlock {
     protected Object createEntity(ResultSet aResultSet) {
         return ResultSetConverterBlockUtil.createEntity(aResultSet, theEntityType, theEntityPropertySetters, theOneToOneLinks);
     }
-    
+
+    public String toString() {
+        return "ResultSetConverterBlockEntity{" +
+                "theEntityPropertySetters=" + theEntityPropertySetters +
+                ", theEntityType=" + theEntityType +
+                ", theOneToOneLinks=" + theOneToOneLinks +
+                '}';
+    }
+
     private final List<EntityPropertySetter> theEntityPropertySetters;
     private final Class theEntityType;
     private final List<OneToOneLink> theOneToOneLinks;
