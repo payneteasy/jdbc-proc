@@ -36,4 +36,8 @@ public class ParameterConverter_BIGINT_langLong implements IParameterConverter<L
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.BIGINT, Long.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_BIGINT_langLong{}";
+    }
 }

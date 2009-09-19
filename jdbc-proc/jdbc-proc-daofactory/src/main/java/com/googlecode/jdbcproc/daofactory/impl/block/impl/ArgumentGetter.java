@@ -19,6 +19,14 @@ public class ArgumentGetter {
         theParameterConverter.setValue(aValue, aStmt, theParameterName);
     }
 
+
+    public String toString() {
+        return "ArgumentGetter{" +
+                "theParameterConverter=" + theParameterConverter +
+                ", theParameterName='" + theParameterName + '\'' +
+                '}';
+    }
+
     private final IParameterConverter theParameterConverter;
     private final String theParameterName ;
 }

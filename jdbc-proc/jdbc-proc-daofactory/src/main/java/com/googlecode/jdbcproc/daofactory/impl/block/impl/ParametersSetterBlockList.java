@@ -60,6 +60,14 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
         }
     }
 
+    public String toString() {
+        return "ParametersSetterBlockList{" +
+                "LOG=" + LOG +
+                ", theInsertQuery='" + theInsertQuery + '\'' +
+                ", theArgumentsGetters=" + theArgumentsGetters +
+                '}';
+    }
+
     private final String theInsertQuery;
     private final List<EntityArgumentGetter> theArgumentsGetters ;
 }

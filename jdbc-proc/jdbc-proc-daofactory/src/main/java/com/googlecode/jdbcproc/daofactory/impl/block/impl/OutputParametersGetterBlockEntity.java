@@ -30,5 +30,12 @@ public class OutputParametersGetterBlockEntity implements IOutputParametersGette
             }
         }
     }
+
+    public String toString() {
+        return "OutputParametersGetterBlockEntity{" +
+                "theEntityPropertySetters=" + theEntityPropertySetters +
+                '}';
+    }
+
     private final List<EntityPropertySetter> theEntityPropertySetters;
 }

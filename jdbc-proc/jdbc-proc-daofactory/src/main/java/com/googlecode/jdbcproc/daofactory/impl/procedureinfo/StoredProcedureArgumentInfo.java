@@ -39,10 +39,6 @@ public class StoredProcedureArgumentInfo {
         return theDataType;
     }
 
-    private final String theColumnName;
-    private final short theColumnType ;
-    private final short theDataType;
-
     public boolean isOutputParameter() {
         return theColumnType==OUT;
     }
@@ -50,4 +46,17 @@ public class StoredProcedureArgumentInfo {
     public boolean isInputParameter() {
         return theColumnType == IN;
     }
+
+
+    public String toString() {
+        return "StoredProcedureArgumentInfo{" +
+                "theColumnName='" + theColumnName + '\'' +
+                ", theColumnType=" + theColumnType +
+                ", theDataType=" + theDataType +
+                '}';
+    }
+
+    private final String theColumnName;
+    private final short theColumnType ;
+    private final short theDataType;
 }

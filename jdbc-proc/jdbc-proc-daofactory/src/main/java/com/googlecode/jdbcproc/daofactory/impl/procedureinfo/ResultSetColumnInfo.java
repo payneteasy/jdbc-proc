@@ -34,6 +34,14 @@ public class ResultSetColumnInfo {
         return theDataType;
     }
 
+
+    public String toString() {
+        return "ResultSetColumnInfo{" +
+                "theDataType=" + theDataType +
+                ", theColumnName='" + theColumnName + '\'' +
+                '}';
+    }
+
     /**
      * Data type
      */

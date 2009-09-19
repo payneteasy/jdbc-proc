@@ -37,4 +37,8 @@ public class ParameterConverter_DECIMAL_langDouble implements IParameterConverte
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.DECIMAL, Double.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_DECIMAL_langDouble{}";
+    }
 }

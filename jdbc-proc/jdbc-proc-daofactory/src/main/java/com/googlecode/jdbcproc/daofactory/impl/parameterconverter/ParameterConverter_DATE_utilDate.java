@@ -37,4 +37,8 @@ public class ParameterConverter_DATE_utilDate implements IParameterConverter<jav
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.DATE, java.util.Date.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_DATE_utilDate{}";
+    }
 }

@@ -30,4 +30,8 @@ public class ParameterConverter_INTEGER_boolean implements IParameterConverter<B
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.INTEGER, boolean.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_INTEGER_boolean{}";
+    }
 }

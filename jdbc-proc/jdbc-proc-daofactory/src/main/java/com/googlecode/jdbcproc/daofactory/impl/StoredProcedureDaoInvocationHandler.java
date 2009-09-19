@@ -40,9 +40,14 @@ public class StoredProcedureDaoInvocationHandler implements InvocationHandler {
         for (Method method : aInterface.getMethods()) {
             if(method.isAnnotationPresent(AStoredProcedure.class)) {
                 if(LOG.isDebugEnabled()) {
-                    LOG.debug("    Creating {} ...", method.getName());
+                    LOG.debug("    Creating {} [ procedure='{}' ] ...", method.getName(), method.getAnnotation(AStoredProcedure.class).name());
                 }
-                theDaoMethodInvokersMap.put(method, aDaoMethodInfoFactory.createDaoMethodInvoker(method));
+
+                DaoMethodInvoker daoMethodInvoker = aDaoMethodInfoFactory.createDaoMethodInvoker(method);
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("      Created {}", daoMethodInvoker);
+                }
+                theDaoMethodInvokersMap.put(method, daoMethodInvoker);
             } else {
                 throw new IllegalStateException(
                         String.format("Method %s.%s(...) must have @AStoredProcedure annotation"

@@ -70,11 +70,42 @@ public class StoredProcedureInfoManager {
             // gets result set info
             putResultSetColumnsInfo(map, con);
 
+            // prints stored procedures info
+            if(LOG.isDebugEnabled()) {
+                printToLogStoredProceduresInfos(map);
+            }
             theProceduresMap = Collections.unmodifiableMap(map);
         } finally {
             con.close();
         }
 
+    }
+
+    private void printToLogStoredProceduresInfos(Map<String, StoredProcedureInfo> aMap) {
+        LOG.debug("Stored procedures list:");
+        for (Map.Entry<String, StoredProcedureInfo> entry : aMap.entrySet()) {
+            StoredProcedureInfo proc = entry.getValue();
+            LOG.debug("Procedure {} [ name={}, arguments={}, results={} ]"
+                    , new Object[] {entry.getKey(), proc.getProcedureName(), proc.getArgumentsCounts(), proc.getResultSetColumns().size()});
+
+            // SHOW ARGUMENTS
+            if(proc.getArguments().size()>0) {
+                LOG.debug("  Arguments:");
+                for (StoredProcedureArgumentInfo argumentInfo : proc.getArguments()) {
+                    LOG.debug("    {} [ columnType={}, dataType={} ]"
+                            , new Object[] {argumentInfo.getColumnName(), argumentInfo.getColumnType(), argumentInfo.getDataType()});
+                }
+            }
+
+            // SHOW RESULT SET
+            if(proc.getResultSetColumns().size()>0) {
+                LOG.debug("  Results:");
+                for (ResultSetColumnInfo columnInfo : proc.getResultSetColumns()) {
+                    LOG.debug("    {} [ dataType={} ]", columnInfo.getColumnName(), columnInfo.getDataType());
+
+                }
+            }
+        }
     }
 
     private Map<String, Integer> createNameTypeMap() {

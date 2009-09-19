@@ -28,4 +28,8 @@ public class ParameterConverter_VARCHAR_String implements IParameterConverter<St
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.VARCHAR, String.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_VARCHAR_String{}";
+    }
 }

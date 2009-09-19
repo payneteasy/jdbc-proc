@@ -34,4 +34,8 @@ public class ParameterConverter_DATE_sqlDate implements IParameterConverter<Date
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.DATE, Date.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_DATE_sqlDate{}";
+    }
 }

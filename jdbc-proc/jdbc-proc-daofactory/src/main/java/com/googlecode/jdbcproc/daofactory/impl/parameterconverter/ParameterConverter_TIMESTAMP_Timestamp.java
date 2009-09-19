@@ -34,4 +34,8 @@ public class ParameterConverter_TIMESTAMP_Timestamp implements IParameterConvert
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.TIMESTAMP, Timestamp.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_TIMESTAMP_Timestamp{}";
+    }
 }

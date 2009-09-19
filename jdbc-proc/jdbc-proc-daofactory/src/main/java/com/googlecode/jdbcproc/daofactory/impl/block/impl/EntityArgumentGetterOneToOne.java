@@ -36,5 +36,11 @@ public class EntityArgumentGetterOneToOne extends EntityArgumentGetter {
         theParameterConverter.setValue(id, aStmt, aIndex);
     }
 
+    public String toString() {
+        return "EntityArgumentGetterOneToOne{" +
+                "theIdMethod=" + theIdMethod +
+                '}';
+    }
+
     private final Method theIdMethod ;
 }

@@ -16,6 +16,13 @@ public class IndexDataTypePair {
         theIndex = aIndex;
     }
 
+    public String toString() {
+        return "IndexDataTypePair{" +
+                "theDataType=" + theDataType +
+                ", theIndex=" + theIndex +
+                '}';
+    }
+
     /** Index */
     public int getIndex() { return theIndex ; }
 

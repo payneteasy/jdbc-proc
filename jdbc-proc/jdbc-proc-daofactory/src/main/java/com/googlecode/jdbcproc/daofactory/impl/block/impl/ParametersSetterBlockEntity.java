@@ -33,5 +33,11 @@ public class ParametersSetterBlockEntity implements IParametersSetterBlock {
 
     }
 
+    public String toString() {
+        return "ParametersSetterBlockEntity{" +
+                "theArgumentsGetters=" + theArgumentsGetters +
+                '}';
+    }
+
     private final List<EntityArgumentGetter> theArgumentsGetters ;
 }

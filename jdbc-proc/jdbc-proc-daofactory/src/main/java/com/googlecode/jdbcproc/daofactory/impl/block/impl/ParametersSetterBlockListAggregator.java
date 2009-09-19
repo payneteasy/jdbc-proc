@@ -25,5 +25,11 @@ public class ParametersSetterBlockListAggregator implements IParametersSetterBlo
         }
     }
 
+    public String toString() {
+        return "ParametersSetterBlockListAggregator{" +
+                "theList=" + theList +
+                '}';
+    }
+
     private final List<ParametersSetterBlockList> theList ;
 }
