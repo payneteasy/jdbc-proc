@@ -31,5 +31,11 @@ public class ParametersSetterBlockArguments implements IParametersSetterBlock {
 
     }
 
+    public String toString() {
+        return "ParametersSetterBlockArguments{" +
+                "theArgumentsGetters=" + theArgumentsGetters +
+                '}';
+    }
+
     private final List<ArgumentGetter> theArgumentsGetters ;
 }

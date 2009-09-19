@@ -27,4 +27,8 @@ public class ParameterConverter_DECIMAL_BigDecimal implements IParameterConverte
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.DECIMAL, BigDecimal.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_DECIMAL_BigDecimal{}";
+    }
 }

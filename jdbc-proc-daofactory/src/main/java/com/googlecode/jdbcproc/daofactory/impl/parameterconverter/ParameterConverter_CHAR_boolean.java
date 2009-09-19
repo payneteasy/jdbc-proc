@@ -30,4 +30,8 @@ public class ParameterConverter_CHAR_boolean implements IParameterConverter<Bool
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.CHAR, boolean.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_CHAR_boolean{}";
+    }
 }

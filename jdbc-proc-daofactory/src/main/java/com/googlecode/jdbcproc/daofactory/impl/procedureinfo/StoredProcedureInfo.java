@@ -49,6 +49,17 @@ public class StoredProcedureInfo {
         return theRsColumnByNameMap.get(aColumnName);
     }
 
+
+    public String toString() {
+        return "StoredProcedureInfo{" +
+                "theName='" + theName + '\'' +
+                ", theArguments=" + theArguments +
+                ", theResultSetColumnInfos=" + theResultSetColumnInfos +
+                ", theArgumentsByNameMap=" + theArgumentsByNameMap +
+                ", theRsColumnByNameMap=" + theRsColumnByNameMap +
+                '}';
+    }
+
     private final String theName;
     private final List<StoredProcedureArgumentInfo> theArguments = new LinkedList<StoredProcedureArgumentInfo>();
     private final List<ResultSetColumnInfo> theResultSetColumnInfos = new LinkedList<ResultSetColumnInfo>();

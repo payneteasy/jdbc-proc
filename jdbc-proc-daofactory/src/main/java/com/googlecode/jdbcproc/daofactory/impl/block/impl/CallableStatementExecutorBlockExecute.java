@@ -14,4 +14,9 @@ public class CallableStatementExecutorBlockExecute implements ICallableStatement
     public ResultSet execute(CallableStatement aStmt) throws SQLException {
         return aStmt.executeQuery();
     }
+
+
+    public String toString() {
+        return "CallableStatementExecutorBlockExecute{}";
+    }
 }

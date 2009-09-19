@@ -29,5 +29,11 @@ public class ResultSetConverterBlockEntityList implements IResultSetConverterBlo
         return Collections.unmodifiableList(list);
     }
 
+    public String toString() {
+        return "ResultSetConverterBlockEntityList{" +
+                "theBlockEntity=" + theBlockEntity +
+                '}';
+    }
+
     private final ResultSetConverterBlockEntity theBlockEntity;
 }

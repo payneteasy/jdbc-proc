@@ -36,4 +36,8 @@ public class ParameterConverter_INTEGER_langLong implements IParameterConverter<
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.INTEGER, Long.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_INTEGER_langLong{}";
+    }
 }

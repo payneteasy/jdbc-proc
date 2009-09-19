@@ -22,5 +22,12 @@ public class ParametersSetterBlockNull1 implements IParametersSetterBlock {
         aStmt.setNull(1, theDataType);
     }
 
+
+    public String toString() {
+        return "ParametersSetterBlockNull1{" +
+                "theDataType=" + theDataType +
+                '}';
+    }
+
     private final int theDataType;
 }

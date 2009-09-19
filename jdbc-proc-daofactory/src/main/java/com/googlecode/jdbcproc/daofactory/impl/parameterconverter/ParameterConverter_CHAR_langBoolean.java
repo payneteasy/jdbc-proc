@@ -10,4 +10,8 @@ public class ParameterConverter_CHAR_langBoolean extends ParameterConverter_CHAR
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.CHAR, Boolean.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_CHAR_langBoolean{}";
+    }
 }

@@ -17,6 +17,14 @@ public class OneToOneLink {
 	public void fillProperty(Object aParentEntity, Object aArgumentEntity) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		theSetterMethod.invoke(aParentEntity, aArgumentEntity);
 	}
-	private final ResultSetConverterBlockEntity theBlock;
+
+    public String toString() {
+        return "OneToOneLink{" +
+                "theBlock=" + theBlock +
+                ", theSetterMethod=" + theSetterMethod +
+                '}';
+    }
+
+    private final ResultSetConverterBlockEntity theBlock;
 	private final Method theSetterMethod;
 }

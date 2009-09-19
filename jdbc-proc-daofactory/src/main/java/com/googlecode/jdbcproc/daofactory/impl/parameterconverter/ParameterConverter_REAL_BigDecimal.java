@@ -35,4 +35,8 @@ public class ParameterConverter_REAL_BigDecimal implements IParameterConverter<B
     public ParameterSetterKey getKey() {
         return new ParameterSetterKey(Types.REAL, BigDecimal.class);
     }
+
+    public String toString() {
+        return "ParameterConverter_REAL_BigDecimal{}";
+    }
 }

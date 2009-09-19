@@ -40,5 +40,11 @@ public class ResultSetConverterBlockEntityOneToManyList implements IResultSetCon
         return Collections.unmodifiableList(list);
     }
 
+    public String toString() {
+        return "ResultSetConverterBlockEntityOneToManyList{" +
+                "theBlock=" + theBlock +
+                '}';
+    }
+
     private final ResultSetConverterBlockEntityOneToMany theBlock;
 }
