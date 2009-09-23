@@ -28,7 +28,7 @@ public class ResultSetColumnInfo {
     /**
      * Data type
      *
-     * @return data type of java.sql.Type.*
+     * @return data type of java.sql.Typea.*
      */
     public int getDataType() {
         return theDataType;

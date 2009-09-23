@@ -42,8 +42,9 @@ public class ParameterConverterManager {
         putSetters(settersMap, new ParameterConverter_DECIMAL_langDouble());
         putSetters(settersMap, new ParameterConverter_DECIMAL_BigDecimal());
 
-        // VARCHAR
+        // VARCHAR and LONGVARCHAR
         putSetters(settersMap, new ParameterConverter_VARCHAR_String());
+        putSetters(settersMap, new ParameterConverter_LONGVARCHAR_String());
 
         // byte[]
         putSetters(settersMap, new ParameterConverter_LONGVARBINARY_byteArray());
@@ -65,7 +66,7 @@ public class ParameterConverterManager {
     public IParameterConverter findConverter(int aColumnType, Class aType) {
         IParameterConverter paramConverter = theParameterSettersMap.get( new ParameterSetterKey(aColumnType, aType));
         if(paramConverter ==null) {
-            throw new IllegalStateException("No convert for java.sql.Type."+aColumnType+ " and "+aType);
+            throw new IllegalStateException("No convert for java.sql.Types."+aColumnType+ " and "+aType);
         }
         return paramConverter;
     }
