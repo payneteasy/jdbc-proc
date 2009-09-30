@@ -1,6 +1,23 @@
 <archetype>
-  <id>quickstart</id>
-  <sources>
-    <source>src/main/java/App.java</source>
-  </sources>
+    <id>quickstart</id>
+    <sources>
+        <source>src/main/java/Company.java</source>
+        <source>src/main/java/ICompanyDao.java</source>
+    </sources>
+    <resources>
+        <resource>src/main/resources/spring/spring-dao.xml</resource>
+    </resources>
+    <testSources>
+        <source>src/test/java/CompanyDaoTest.java</source>
+    </testSources>
+    <testResources>
+        <resource>src/test/resources/sql/01_create_database.sql</resource>
+        <resource>src/test/resources/sql/02_resultset_info.sql</resource>
+        <resource>src/test/resources/sql/03_company.sql</resource>
+        <resource>src/test/resources/sql/04_get_procedures_resultset.sql</resource>
+        <resource>src/test/resources/sql/05_create_company.sql</resource>
+        <resource>src/test/resources/sql/06_get_companies.sql</resource>
+        <resource>src/test/resources/log4j.properties</resource>
+        <resource>src/test/resources/spring/spring-datasource.xml</resource>
+    </testResources>
 </archetype>

@@ -5,5 +5,32 @@
     <artifactId>jdbc-proc-archetype</artifactId>
     <groupId>com.googlecode</groupId>
     <version>1.0-SNAPSHOT</version>
-    
+
+    <scm>
+        <connection>scm:svn:https://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc-archetype</connection>
+        <developerConnection>scm:svn:https://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc-archetype
+        </developerConnection>
+        <url>http://jdbc-proc.googlecode.com</url>
+    </scm>
+
+    <!--
+    -      Distributions
+    -->
+    <distributionManagement>
+        <repository>
+            <id>jdbc-proc-release</id>
+            <name>Local Maven repository of releases</name>
+            <!--
+               Use https://jdbc-proc.googlecode.com/svn/maven2/release to include jdbc-proc repository
+           -->
+            <url>file:///${HOME}/svn/jdbc-proxy-maven2-release</url>
+        </repository>
+        <snapshotRepository>
+            <id>jdbc-proc-snapshot</id>
+            <name>Local Maven repository of snapshots</name>
+            <url>file:///${HOME}/svn/jdbc-proxy-maven2-snapshot</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>
