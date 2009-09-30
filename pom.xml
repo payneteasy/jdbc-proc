@@ -4,7 +4,7 @@
 
     <artifactId>jdbc-proc-archetype</artifactId>
     <groupId>com.googlecode</groupId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0-1-SNAPSHOT</version>
 
     <scm>
         <connection>scm:svn:https://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc-archetype</connection>
