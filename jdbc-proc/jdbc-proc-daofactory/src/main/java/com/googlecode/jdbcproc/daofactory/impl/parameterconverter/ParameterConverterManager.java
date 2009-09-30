@@ -42,7 +42,8 @@ public class ParameterConverterManager {
         putSetters(settersMap, new ParameterConverter_DECIMAL_langDouble());
         putSetters(settersMap, new ParameterConverter_DECIMAL_BigDecimal());
 
-        // VARCHAR and LONGVARCHAR
+        // VARCHAR, CHAR and LONGVARCHAR
+        putSetters(settersMap, new ParameterConverter_CHAR_String());
         putSetters(settersMap, new ParameterConverter_VARCHAR_String());
         putSetters(settersMap, new ParameterConverter_LONGVARCHAR_String());
 

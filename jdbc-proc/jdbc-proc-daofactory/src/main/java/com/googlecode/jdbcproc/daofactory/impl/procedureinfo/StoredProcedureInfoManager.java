@@ -110,13 +110,14 @@ public class StoredProcedureInfoManager {
 
     private Map<String, Integer> createNameTypeMap() {
         HashMap<String, Integer> map = new HashMap<String, Integer>();
-        map.put("varchar", Types.VARCHAR);
-        map.put("char", Types.VARCHAR);
-        map.put("int", Types.INTEGER);
-        map.put("smallint", Types.INTEGER);
-        map.put("datetime", Types.TIMESTAMP);
-        map.put("date", Types.DATE);
-        map.put("decimal", Types.DECIMAL);
+        map.put("varchar"   , Types.VARCHAR);
+        map.put("char"      , Types.VARCHAR);
+        map.put("int"       , Types.INTEGER);
+        map.put("smallint"  , Types.INTEGER);
+        map.put("datetime"  , Types.TIMESTAMP);
+        map.put("date"      , Types.DATE);
+        map.put("decimal"   , Types.DECIMAL);
+        map.put("blob"      , Types.LONGVARBINARY);
         return map;
     }
 
@@ -131,6 +132,7 @@ public class StoredProcedureInfoManager {
     }
 
     private void putResultSetColumnsInfo(Map<String, StoredProcedureInfo> aMap, Connection aCon) throws SQLException {
+        LOG.info("Calling get_procedures_resultset()...");
         CallableStatement stmt = aCon.prepareCall("{call get_procedures_resultset()}");
         try {
             ResultSet rs = stmt.executeQuery();
