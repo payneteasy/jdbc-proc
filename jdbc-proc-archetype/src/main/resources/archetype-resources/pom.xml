@@ -27,13 +27,121 @@
             <version>[1.0-12,2.0)</version>
         </dependency>
 
+        <!-- DBCP -->
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>1.2.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- mysql driver -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.0.8</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- SLF4J -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
+        </dependency>
+
         <!-- junit -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>4.4</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- spring test -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+            <version>2.5.6</version>
+        </dependency>
+
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sql-maven-plugin</artifactId>
+
+                <dependencies>
+                    <!-- mysql driver -->
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>5.0.8</version>
+                    </dependency>
+                </dependencies>
+
+                <!-- jdbcprocdb database-->
+                <configuration>
+                    <username>jdbcproc</username>
+                    <password>jdbcproc</password>
+                    <driver>com.mysql.jdbc.Driver</driver>
+                    <url>jdbc:mysql://localhost/jdbcprocdb?autoReconnect=false&amp;characterEncoding=utf8</url>
+                    <delimiter>/</delimiter>
+                    <delimiterType>row</delimiterType>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>execute-masterinstall</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <srcFiles>
+                                <srcFile>src/test/resources/sql/01_create_database.sql</srcFile>
+                                <srcFile>src/test/resources/sql/02_resultset_info.sql</srcFile>
+                                <srcFile>src/test/resources/sql/03_company.sql</srcFile>
+                                <srcFile>src/test/resources/sql/04_get_procedures_resultset.sql</srcFile>
+                                <srcFile>src/test/resources/sql/05_create_company.sql</srcFile>
+                                <srcFile>src/test/resources/sql/06_get_companies.sql</srcFile>
+                            </srcFiles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                    <optimize>false</optimize>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
 </project>
 

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx ="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+       ">
+
+    <!-- TRANSACTION -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <tx:annotation-driven/>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="daoMethodInfoFactory" class="com.googlecode.jdbcproc.daofactory.DaoMethodInfoFactory">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
+
+    <!-- Abstract dao -->
+    <bean id="abstractDao" abstract="true" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="daoMethodInfoFactory" ref="daoMethodInfoFactory"/>
+    </bean>
+
+    <!-- Company data access -->
+    <bean id="companyDao" parent="abstractDao">
+        <property name="interface" value="${packageName}.ICompanyDao"/>
+    </bean>
+</beans>
+
