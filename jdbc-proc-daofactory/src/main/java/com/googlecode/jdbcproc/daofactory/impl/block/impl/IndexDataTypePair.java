@@ -1,5 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
+import com.googlecode.jdbcproc.daofactory.impl.TypeNameUtil;
+
 /**
  * Parameter index and data type pair
  */
@@ -18,7 +20,7 @@ public class IndexDataTypePair {
 
     public String toString() {
         return "IndexDataTypePair{" +
-                "theDataType=" + theDataType +
+                "theDataType=" + TypeNameUtil.getName(theDataType) +
                 ", theIndex=" + theIndex +
                 '}';
     }

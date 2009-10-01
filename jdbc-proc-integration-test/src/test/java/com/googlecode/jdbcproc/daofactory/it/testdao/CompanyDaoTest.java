@@ -7,6 +7,7 @@ import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Company;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Employee;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.CompanyWithEmployees;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.EmployeeOnly;
+import com.googlecode.jdbcproc.daofactory.CloseableIterator;
 
 import java.util.List;
 
@@ -20,6 +21,43 @@ public class CompanyDaoTest extends DatabaseAwareTest {
         company.setName("first");
         theCompanyDao.createCompany(company);
         assertNotNull(company.getId());
+    }
+
+    public void testGetCompaniesNames() {
+        // creates companies
+        for(int i=0; i<10; i++) {
+            Company company = new Company();
+            company.setName("company-"+i);
+            theCompanyDao.createCompany(company);
+        }
+
+        List<String> names = theCompanyDao.getCompaniesNames();
+        assertEquals(10, names.size());
+        for(int i=0; i<10; i++) {
+            assertEquals("company-"+i, names.get(i));
+        }
+    }
+
+    public void testGetCompaniesNamesIterator() {
+        // creates companies
+        for(int i=0; i<10; i++) {
+            Company company = new Company();
+            company.setName("company-"+i);
+            theCompanyDao.createCompany(company);
+        }
+
+        CloseableIterator<String> names = theCompanyDao.getCompaniesNamesIterator();
+        try {
+            int i = 0;
+            while (names.hasNext()) {
+                String name = names.next();
+                assertEquals("company-"+i, name);
+                i++;
+
+            }
+        } finally {
+            names.close();
+        }
     }
 
     /**

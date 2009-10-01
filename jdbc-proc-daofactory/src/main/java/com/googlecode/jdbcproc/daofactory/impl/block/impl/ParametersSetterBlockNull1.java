@@ -1,6 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
+import com.googlecode.jdbcproc.daofactory.impl.TypeNameUtil;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
@@ -25,7 +26,7 @@ public class ParametersSetterBlockNull1 implements IParametersSetterBlock {
 
     public String toString() {
         return "ParametersSetterBlockNull1{" +
-                "theDataType=" + theDataType +
+                "theDataType=" + TypeNameUtil.getName(theDataType) +
                 '}';
     }
 

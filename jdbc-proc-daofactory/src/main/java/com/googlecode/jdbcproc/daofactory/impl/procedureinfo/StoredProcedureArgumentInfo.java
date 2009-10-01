@@ -1,17 +1,27 @@
 package com.googlecode.jdbcproc.daofactory.impl.procedureinfo;
 
+import com.googlecode.jdbcproc.daofactory.impl.TypeNameUtil;
+
 /**
  * Stored procedure column info
  */
 public class StoredProcedureArgumentInfo {
 
-    public static final int OUT = 4;
-    public static final int IN = 1;
+    private static final int OUT = 4;
+    private static final int IN  = 1;
 
-    public StoredProcedureArgumentInfo(String aColumnName, short aColumnType, short aDataType) {
+    public StoredProcedureArgumentInfo(String aColumnName, short aColumnType, short aDataType) throws IllegalStateException {
         theColumnName = aColumnName;
         theColumnType = aColumnType;
         theDataType = aDataType;
+
+        theDataTypeName = TypeNameUtil.getName(theDataType);
+        switch(aColumnType) {
+            case IN: theColumnTypeName = "IN"; break;
+            case OUT: theColumnTypeName = "OUT"; break;
+            default:
+                throw new IllegalStateException("Column type "+aColumnType+" is not supported");
+        }
     }
 
     /**
@@ -32,11 +42,29 @@ public class StoredProcedureArgumentInfo {
     }
 
     /**
+     * Column type name (IN or OUT)
+     * 
+     * @return type name of column
+     */
+    public String getColumnTypeName() {
+        return theColumnTypeName;
+    }
+
+    /**
      * Data type
      * @return Types.*
      */
     public short getDataType() {
         return theDataType;
+    }
+
+    /**
+     * Data type name
+     *
+     * @return Types.* name
+     */
+    public String getDataTypeName() {
+        return theDataTypeName;
     }
 
     public boolean isOutputParameter() {
@@ -50,13 +78,16 @@ public class StoredProcedureArgumentInfo {
 
     public String toString() {
         return "StoredProcedureArgumentInfo{" +
-                "theColumnName='" + theColumnName + '\'' +
-                ", theColumnType=" + theColumnType +
-                ", theDataType=" + theDataType +
+                "columnName='" + theColumnName + '\'' +
+                ", columnType=" + theColumnTypeName  +
+                ", dataType=" + theDataTypeName +
                 '}';
     }
 
     private final String theColumnName;
-    private final short theColumnType ;
-    private final short theDataType;
+    private final short  theColumnType ;
+    private final short  theDataType;
+    
+    private final String theDataTypeName;
+    private final String theColumnTypeName;
 }

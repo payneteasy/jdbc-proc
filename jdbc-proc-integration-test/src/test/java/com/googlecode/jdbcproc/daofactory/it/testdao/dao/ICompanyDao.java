@@ -45,4 +45,20 @@ public interface ICompanyDao {
      */
     @AStoredProcedure(name = "get_companies")
     CloseableIterator<Company> getAllCompanies();
+
+    /**
+     * Gets companies' names
+     *
+     * @return companies's names
+     */
+    @AStoredProcedure(name = "get_companies_names")
+    List<String> getCompaniesNames();
+
+    /**
+     * Gets companies' names
+     *
+     * @return companies's names
+     */
+    @AStoredProcedure(name = "get_companies_names")
+    CloseableIterator<String> getCompaniesNamesIterator();
 }

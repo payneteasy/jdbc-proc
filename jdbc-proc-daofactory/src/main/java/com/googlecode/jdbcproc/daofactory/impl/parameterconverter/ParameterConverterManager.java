@@ -1,5 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
+import com.googlecode.jdbcproc.daofactory.impl.TypeNameUtil;
+
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.Map;
@@ -67,7 +69,7 @@ public class ParameterConverterManager {
     public IParameterConverter findConverter(int aColumnType, Class aType) {
         IParameterConverter paramConverter = theParameterSettersMap.get( new ParameterSetterKey(aColumnType, aType));
         if(paramConverter ==null) {
-            throw new IllegalStateException("No convert for java.sql.Types."+aColumnType+ " and "+aType);
+            throw new IllegalStateException("No convert for java.sql.Types."+ TypeNameUtil.getName(aColumnType)+ " and "+aType);
         }
         return paramConverter;
     }

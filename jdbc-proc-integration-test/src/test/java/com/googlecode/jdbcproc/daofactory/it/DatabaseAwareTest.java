@@ -31,6 +31,7 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         executeMysql("jdbcprocdb", "src/test/resources/sql/get_employee_by_id.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/get_company_employees.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies.sql");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies_names.sql");
 
 
         super.runBare();
