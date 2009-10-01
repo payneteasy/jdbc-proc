@@ -93,7 +93,7 @@ public class StoredProcedureInfoManager {
                 LOG.debug("  Arguments:");
                 for (StoredProcedureArgumentInfo argumentInfo : proc.getArguments()) {
                     LOG.debug("    {} [ columnType={}, dataType={} ]"
-                            , new Object[] {argumentInfo.getColumnName(), argumentInfo.getColumnType(), argumentInfo.getDataType()});
+                            , new Object[] {argumentInfo.getColumnName(), argumentInfo.getColumnTypeName(), argumentInfo.getDataTypeName()});
                 }
             }
 
@@ -101,7 +101,7 @@ public class StoredProcedureInfoManager {
             if(proc.getResultSetColumns().size()>0) {
                 LOG.debug("  Results:");
                 for (ResultSetColumnInfo columnInfo : proc.getResultSetColumns()) {
-                    LOG.debug("    {} [ dataType={} ]", columnInfo.getColumnName(), columnInfo.getDataType());
+                    LOG.debug("    {} [ dataType={} ]", columnInfo.getColumnName(), columnInfo.getDataTypeName());
 
                 }
             }

@@ -1,26 +1,26 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.factory;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Iterator;
-
-import javax.persistence.*;
-
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.*;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterManager;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.ResultSetColumnInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Creates IResultSetConverter
@@ -42,10 +42,15 @@ public class ResultSetConverterBlockFactory {
         } else if(returnType.isAssignableFrom(List.class)) {
             // list 
             Class entityClass = getEntityClass(aDaoMethod);
-            if(isOneToManyPresent(entityClass)) {
+            if(BlockFactoryUtils.isSimpleType(entityClass)) {
+                // simple type for list
+                return createBlockSimpleTypeList(aConverterManager, entityClass, aProcedureInfo);
+
+            } else if(isOneToManyPresent(entityClass)) {
                 // @OneToMany Annotation support
                 ResultSetConverterBlockEntityOneToMany blockEntity = createEntityBlockOneToMany(aConverterManager, entityClass, aProcedureInfo);
                 return new ResultSetConverterBlockEntityOneToManyList(blockEntity);
+
             } else {
                 // Without @OneToMany Annotation
                 ResultSetConverterBlockEntity blockEntity = createEntityBlock(aConverterManager, entityClass, aProcedureInfo);
@@ -55,7 +60,11 @@ public class ResultSetConverterBlockFactory {
         } else if(BlockFactoryUtils.isReturnIterator(aDaoMethod)) {
             // Iterator
             Class entityClass = getEntityClass(aDaoMethod);
-            if(isOneToManyPresent(entityClass)) {
+            if(BlockFactoryUtils.isSimpleType(entityClass)) {
+                // simple type for iterator
+                return createBlockSimpleTypeIterator(aConverterManager, entityClass, aProcedureInfo);
+
+            } else if(isOneToManyPresent(entityClass)) {
                 // @OneToMany Annotation not supported
                 throw new IllegalStateException("Iterator with OneToMany is unsupported");
             } else {
@@ -83,11 +92,55 @@ public class ResultSetConverterBlockFactory {
         return BlockFactoryUtils.findOneToManyMethod(aClass)!=null;
     }
 
-    private IResultSetConverterBlock createBlockSimpleType(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
+    /**
+     * Creates ResultSetConverterBlockSimpleType
+     *
+     * @param aConverterManager converter manager
+     * @param aType             type
+     * @param aProcedureInfo    procedure info
+     * @return ResultSetConverterBlockSimpleType
+     */
+    private ResultSetConverterBlockSimpleType createBlockSimpleType(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
         Assert.isTrue(1==aProcedureInfo.getResultSetColumns().size(), "Count of columns in result set must equals 1");
 
         ResultSetColumnInfo columnInfo = aProcedureInfo.getResultSetColumns().get(0);
         return new ResultSetConverterBlockSimpleType(aConverterManager.findConverter(
+                columnInfo.getDataType()
+               , aType
+        ), columnInfo.getColumnName());
+    }
+
+    /**
+     * Creates ResultSetConverterBlockSimpleTypeList
+     *
+     * @param aConverterManager converter manager
+     * @param aType             type
+     * @param aProcedureInfo    procedure info
+     * @return ResultSetConverterBlockSimpleTypeList
+     */
+    private ResultSetConverterBlockSimpleTypeList createBlockSimpleTypeList(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
+        Assert.isTrue(1==aProcedureInfo.getResultSetColumns().size(), "Count of columns in result set must equals 1");
+
+        ResultSetColumnInfo columnInfo = aProcedureInfo.getResultSetColumns().get(0);
+        return new ResultSetConverterBlockSimpleTypeList(aConverterManager.findConverter(
+                columnInfo.getDataType()
+               , aType
+        ), columnInfo.getColumnName());
+    }
+
+    /**
+     * Creates ResultSetConverterBlockSimpleTypeIterator
+     *
+     * @param aConverterManager converter manager
+     * @param aType             type
+     * @param aProcedureInfo    procedure info
+     * @return ResultSetConverterBlockSimpleTypeIterator
+     */
+    private ResultSetConverterBlockSimpleTypeIterator createBlockSimpleTypeIterator(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
+        Assert.isTrue(1==aProcedureInfo.getResultSetColumns().size(), "Count of columns in result set must equals 1");
+
+        ResultSetColumnInfo columnInfo = aProcedureInfo.getResultSetColumns().get(0);
+        return new ResultSetConverterBlockSimpleTypeIterator(aConverterManager.findConverter(
                 columnInfo.getDataType()
                , aType
         ), columnInfo.getColumnName());
