@@ -46,7 +46,11 @@ public class StoredProcedureInfoManager {
                     StoredProcedureInfo procedureInfo = findOrCreateStoredProcedure(map, procedureName);
 
                     // adds column info
-                    procedureInfo.addColumn(new StoredProcedureArgumentInfo(columnName, columnType, dataType));
+                    try {
+                        procedureInfo.addColumn(new StoredProcedureArgumentInfo(columnName, columnType, dataType));
+                    } catch (Exception e) {
+                        throw new IllegalStateException("Cannot create column info for procedure "+procedureName+": "+e.getMessage(), e);
+                    }
                 }
             } finally {
                 rs.close();
