@@ -114,14 +114,16 @@ public class StoredProcedureInfoManager {
 
     private Map<String, Integer> createNameTypeMap() {
         HashMap<String, Integer> map = new HashMap<String, Integer>();
-        map.put("varchar"   , Types.VARCHAR);
-        map.put("char"      , Types.VARCHAR);
-        map.put("int"       , Types.INTEGER);
-        map.put("smallint"  , Types.INTEGER);
-        map.put("datetime"  , Types.TIMESTAMP);
-        map.put("date"      , Types.DATE);
-        map.put("decimal"   , Types.DECIMAL);
-        map.put("blob"      , Types.LONGVARBINARY);
+        map.put("varchar"     , Types.VARCHAR);
+        map.put("char"        , Types.VARCHAR);
+        map.put("int"         , Types.INTEGER);
+        map.put("smallint"    , Types.INTEGER);
+        map.put("datetime"    , Types.TIMESTAMP);
+        map.put("date"        , Types.DATE);
+        map.put("decimal"     , Types.DECIMAL);
+        map.put("blob"        , Types.LONGVARBINARY);
+        map.put("mediumblob"  , Types.LONGVARBINARY);
+        map.put("longblob"    , Types.LONGVARBINARY);
         return map;
     }
 
