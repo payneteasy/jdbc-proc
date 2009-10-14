@@ -15,6 +15,7 @@
         <property name="maxActive" value="-1"/>
         <property name="maxIdle" value="2"/>
         <property name="maxWait" value="5000"/>
+        <property name="validationQuery" value="call create_collections()"/>
     </bean>
 
 </beans>

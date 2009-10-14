@@ -1,6 +1,5 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
-import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 import org.slf4j.Logger;
@@ -12,12 +11,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * Inserts parameters to table
  */
-public class ParametersSetterBlockList implements IParametersSetterBlock {
+public class ParametersSetterBlockList extends AbstractParametersSetterBlock {
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
@@ -31,11 +29,12 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
             LOG.debug("Executing insert: {}", theInsertQuery);
         }
         Assert.notNull(aArgs         , "Argument aArgs must not be null"   );
-        Assert.isTrue(aArgs.length==1, "Count of argument must be equals 1");
+        final Object[] arguments = skipNonCollectionArguments(aArgs);
+        Assert.isTrue(arguments.length==1, "Count of argument must be equals 1");
 
         try {
             Connection con = aStmt.getConnection();
-            List list = (List) aArgs[0];
+            List list = (List) arguments[0];
             for (Object entity : list) {
                 PreparedStatement stmt = con.prepareStatement(theInsertQuery);
                 try {

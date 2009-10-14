@@ -40,6 +40,10 @@
         <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeeDao"/>
     </bean>
 
+    <bean id="verticalityDAO" parent="abstractDao">
+        <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.VerticalityDAO"/>
+    </bean>
+    
     <!-- Employee service -->
     <bean id="employeeService" class="com.googlecode.jdbcproc.daofactory.it.testdao.service.impl.EmployeeServiceImpl">
         <property name="companyDao" ref="companyDao"/>

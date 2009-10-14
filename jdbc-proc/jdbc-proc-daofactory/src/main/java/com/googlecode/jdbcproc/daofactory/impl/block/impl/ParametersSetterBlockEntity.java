@@ -1,6 +1,5 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
-import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
@@ -11,7 +10,7 @@ import java.util.List;
 /**
  * Sets parameters to procedure from JPA Entity
  */
-public class ParametersSetterBlockEntity implements IParametersSetterBlock {
+public class ParametersSetterBlockEntity extends AbstractParametersSetterBlock {
 
     public ParametersSetterBlockEntity(List<EntityArgumentGetter> aArgumentsGetters) {
         theArgumentsGetters = Collections.unmodifiableList(aArgumentsGetters);
@@ -19,9 +18,10 @@ public class ParametersSetterBlockEntity implements IParametersSetterBlock {
 
     public void setParameters(CallableStatement aStmt, Object[] aArgs) throws DataAccessException {
         Assert.notNull(aArgs         , "Argument aArgs must not be null"   );
-        Assert.isTrue(aArgs.length==1, "Count of argument must be equals 1");
+        final Object[] arguments = skipCollectionArguments(aArgs);
+        Assert.isTrue(arguments.length==1, "Count of argument must be equals 1");
 
-        Object entity = aArgs[0];
+        Object entity = arguments[0];
 
         for(EntityArgumentGetter getter : theArgumentsGetters) {
             try {
@@ -30,7 +30,6 @@ public class ParametersSetterBlockEntity implements IParametersSetterBlock {
                 throw new IllegalStateException("Can not set parameter: "+e.getMessage(), e);
             }
         }
-
     }
 
     public String toString() {
