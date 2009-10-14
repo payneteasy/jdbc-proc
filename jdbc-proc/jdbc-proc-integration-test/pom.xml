@@ -4,14 +4,14 @@
 
     <groupId>com.googlecode.jdbc-proc</groupId>
     <artifactId>jdbc-proc-integration-test</artifactId>
-    <version>1.0-17</version>
+    <version>1.0-18-SNAPSHOT</version>
 
     <name>.jdbc-proc-integration-test            ${version}</name>
 
     <parent>
         <groupId>com.googlecode</groupId>
         <artifactId>jdbc-proc</artifactId>
-        <version>1.0-17</version>
+        <version>1.0-18-SNAPSHOT</version>
     </parent>
 
     <profiles>
