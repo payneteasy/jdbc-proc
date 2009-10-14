@@ -26,6 +26,8 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         
         executeMysql("jdbcprocdb", "src/test/resources/sql/company.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/employee.sql");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/carabiner.sql");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/dynamic_rope.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/create_company.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/create_employee.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/get_employee_by_id.sql");
@@ -33,6 +35,10 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies_names.sql");
 
+        executeMysql("jdbcprocdb", "src/test/resources/sql/create_collections.prc");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/upload_carabiners.prc");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/upload_dynamic_ropes.prc");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/upload_verticality.prc");
 
         super.runBare();
     }

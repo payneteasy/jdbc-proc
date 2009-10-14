@@ -1,6 +1,8 @@
 package com.googlecode.jdbcproc.daofactory.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.*;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockOrder;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.CallableStatementCallback;
 import org.springframework.util.Assert;
@@ -11,6 +13,9 @@ import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.lang.reflect.Proxy;
+import java.util.List;
+import java.util.Comparator;
+import java.util.Collections;
 
 /**
  * Dao method information
@@ -24,7 +29,7 @@ public class DaoMethodInvoker {
     public DaoMethodInvoker(String aProcedureName
             , String aCallString
             , IRegisterOutParametersBlock aRegisterOutParametersBlock
-            , IParametersSetterBlock aParametersSetterBlock
+            , List<IParametersSetterBlock> aParametersSetterBlocks
             , ICallableStatementExecutorBlock aCallableStatementExecutorBlock
             , IOutputParametersGetterBlock aOutputParametersGetterBlock
             , IResultSetConverterBlock aResultSetConverterBlock
@@ -35,11 +40,25 @@ public class DaoMethodInvoker {
         theProcedureName                = aProcedureName;
         theCallString                   = aCallString;
         theRegisterOutParametersBlock   = aRegisterOutParametersBlock;
-        theParametersSetterBlock        = aParametersSetterBlock;
+        theParametersSetterBlocks       = aParametersSetterBlocks;
         theCallableStatementExecutor    = aCallableStatementExecutorBlock;
         theOutputParametersGetterBlock  = aOutputParametersGetterBlock;
         theResultSetConverterBlock      = aResultSetConverterBlock;
         theIsReturnIterator             = aIsReturnIterator;
+        
+        // We should sort parameters setter blocks for executing setters in proper order.
+        // At first, 'List<?>' setters should be executed, second, other setters should be executed.
+        if (theParametersSetterBlocks.size() > 1) {
+            Collections.sort(theParametersSetterBlocks, new Comparator<IParametersSetterBlock>() {
+                public int compare(IParametersSetterBlock o1, IParametersSetterBlock o2) {
+                    ParametersSetterBlockOrder order1 = ParametersSetterBlockOrder.find(o1.getClass());
+                    ParametersSetterBlockOrder order2 = ParametersSetterBlockOrder.find(o2.getClass());
+                    int index1 = order1.index();
+                    int index2 = order2.index();
+                    return (index1 < index2 ? -1 : (index1 == index2 ? 0 : 1));
+                }
+            });
+        }
     }
 
     public String getCallString() {
@@ -86,8 +105,9 @@ public class DaoMethodInvoker {
 
                 // set parameters value
                 // eg. aStmt.setString(1, "hello");
-                if(theParametersSetterBlock!=null) {
-                    theParametersSetterBlock.setParameters(aStmt, aArgs);
+                if(theParametersSetterBlocks !=null) {
+                  for (IParametersSetterBlock block : theParametersSetterBlocks)
+                    block.setParameters(aStmt, aArgs);
                 }
 
                 // callable statement executor
@@ -128,7 +148,7 @@ public class DaoMethodInvoker {
                 "procedureName='" + theProcedureName + '\'' +
                 ", callString='" + theCallString + '\'' +
                 ", registerOutParametersBlock=" + theRegisterOutParametersBlock +
-                ", parametersSetterBlock=" + theParametersSetterBlock +
+                ", parametersSetterBlocks=" + theParametersSetterBlocks +
                 ", callableStatementExecutor=" + theCallableStatementExecutor +
                 ", outputParametersGetterBlock=" + theOutputParametersGetterBlock +
                 ", resultSetConverterBlock=" + theResultSetConverterBlock +
@@ -139,7 +159,7 @@ public class DaoMethodInvoker {
     private final String theProcedureName;
     private final String theCallString;
     private final IRegisterOutParametersBlock theRegisterOutParametersBlock;
-    private final IParametersSetterBlock theParametersSetterBlock;
+    private final List<IParametersSetterBlock> theParametersSetterBlocks;
     private final ICallableStatementExecutorBlock theCallableStatementExecutor;
     private final IOutputParametersGetterBlock theOutputParametersGetterBlock;
     private final IResultSetConverterBlock theResultSetConverterBlock;
