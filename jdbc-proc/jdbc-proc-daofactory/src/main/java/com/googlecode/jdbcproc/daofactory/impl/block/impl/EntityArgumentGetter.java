@@ -11,7 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Gets parameter from Entity and set to Callable Statement
  */
-public class EntityArgumentGetter {
+public class EntityArgumentGetter implements IEntityArgumentGetter {
 
     public EntityArgumentGetter(Method aGetterMethod, IParameterConverter aParameterConverter, String aParameterName) {
         theMethod = aGetterMethod;
@@ -34,7 +34,7 @@ public class EntityArgumentGetter {
     }
 
     public String toString() {
-        return "EntityArgumentGetter{" +
+        return "IEntityArgumentGetter{" +
                 "theMethod=" + theMethod +
                 ", theParameterConverter=" + theParameterConverter +
                 ", theParameterName='" + theParameterName + '\'' +

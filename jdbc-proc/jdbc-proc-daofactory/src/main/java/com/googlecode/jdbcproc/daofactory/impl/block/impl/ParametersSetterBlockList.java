@@ -19,7 +19,7 @@ public class ParametersSetterBlockList extends AbstractParametersSetterBlock {
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
-    public ParametersSetterBlockList(String aInsertQuery, List<EntityArgumentGetter> aArgumentsGetters) {
+    public ParametersSetterBlockList(String aInsertQuery, List<IEntityArgumentGetter> aArgumentsGetters) {
         theInsertQuery = aInsertQuery;
         theArgumentsGetters = Collections.unmodifiableList(aArgumentsGetters);
     }
@@ -39,7 +39,7 @@ public class ParametersSetterBlockList extends AbstractParametersSetterBlock {
                 PreparedStatement stmt = con.prepareStatement(theInsertQuery);
                 try {
                     int index = 0;
-                    for (EntityArgumentGetter getter : theArgumentsGetters) {
+                    for (IEntityArgumentGetter getter : theArgumentsGetters) {
                         try {
                             index++;
                             getter.setParameterByIndex(entity, stmt, index);
@@ -68,5 +68,5 @@ public class ParametersSetterBlockList extends AbstractParametersSetterBlock {
     }
 
     private final String theInsertQuery;
-    private final List<EntityArgumentGetter> theArgumentsGetters ;
+    private final List<IEntityArgumentGetter> theArgumentsGetters ;
 }

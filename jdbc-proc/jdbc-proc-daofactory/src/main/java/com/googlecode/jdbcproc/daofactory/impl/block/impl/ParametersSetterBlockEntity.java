@@ -23,7 +23,7 @@ public class ParametersSetterBlockEntity extends AbstractParametersSetterBlock {
 
         Object entity = arguments[0];
 
-        for(EntityArgumentGetter getter : theArgumentsGetters) {
+        for(IEntityArgumentGetter getter : theArgumentsGetters) {
             try {
                 getter.setParameter(entity, aStmt);
             } catch (Exception e) {
