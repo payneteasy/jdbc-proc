@@ -2,6 +2,7 @@ package com.googlecode.jdbcproc.daofactory.it.testdao.dao;
 
 import com.googlecode.jdbcproc.daofactory.it.testdao.model.Carabiner;
 import com.googlecode.jdbcproc.daofactory.it.testdao.model.DynamicRope;
+import com.googlecode.jdbcproc.daofactory.it.testdao.model.Harness;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 
 import java.util.Date;
@@ -17,4 +18,7 @@ public interface VerticalityDAO {
     
     @AStoredProcedure(name = "upload_verticality")
     void uploadVerticality(Date uploadDate, List<Carabiner> carabiners, List<DynamicRope> dynamicRopes);
+  
+    @AStoredProcedure(name = "upload_harnesses")
+    void uploadHarnesses(List<Harness> harnesses);
 }
