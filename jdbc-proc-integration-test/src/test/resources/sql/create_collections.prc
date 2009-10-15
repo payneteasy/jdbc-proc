@@ -23,6 +23,15 @@ create procedure create_collections()
       )
       engine = memory;
 
+      -- Harnesses
+    create temporary table if not exists harnesses(
+      name      varchar(64),
+      weight    decimal(5, 2), 
+      color     varchar(32),
+      size      varchar(32)
+      )
+      engine = memory;
+
     select 1;
   end
 $$

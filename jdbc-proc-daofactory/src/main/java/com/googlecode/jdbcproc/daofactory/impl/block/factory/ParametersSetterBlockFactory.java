@@ -271,7 +271,7 @@ public class ParametersSetterBlockFactory {
     private boolean areAllParametersListAndNoArguments(Method aMethod, StoredProcedureInfo aProcedureInfo) {
         if(aProcedureInfo.getArgumentsCounts()==0 && aMethod.getParameterTypes().length>0) {
             for (Class<?> parameterClass : aMethod.getParameterTypes()) {
-                if(parameterClass.getClass().equals(List.class)) {
+                if(!parameterClass.equals(List.class)) {
                     return false;
                 }
             }
