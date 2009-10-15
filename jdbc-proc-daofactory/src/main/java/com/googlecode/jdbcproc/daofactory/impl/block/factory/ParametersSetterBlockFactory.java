@@ -156,7 +156,7 @@ public class ParametersSetterBlockFactory {
                     if(argumentInfo==null) {
                         throw new IllegalStateException("Column "+joinColumn.name()+" was not found in "+aProcedureInfo.getProcedureName());
                     }
-                    getters.add(new EntityArgumentGetterOneToOne(getterMethod, argumentInfo.getColumnName()));
+                    getters.add(new EntityArgumentGetterOneToOneJoinColumn(getterMethod, argumentInfo.getColumnName()));
                 } else {
                     throw new IllegalStateException("No @JoinColumn annotation was found in "+aEntityClass.getSimpleName()+"."+getterMethod.getName()+"()");
                 }
@@ -167,7 +167,7 @@ public class ParametersSetterBlockFactory {
 //            if(argumentInfo.getColumnType() == 1) {
 //                Method getterMethod = BlockFactoryUtils.findGetterMethod(aEntityClass, argumentInfo);
 //                IParameterConverter paramConverter = aConverterManager.findConverter(argumentInfo.getDataType(), getterMethod.getReturnType());
-//                getters.add(new EntityArgumentGetter(getterMethod, paramConverter, argumentInfo.getColumnName())) ;
+//                getters.add(new IEntityArgumentGetter(getterMethod, paramConverter, argumentInfo.getColumnName())) ;
 //            }
 //        }
         return new ParametersSetterBlockEntity(getters);
@@ -184,7 +184,7 @@ public class ParametersSetterBlockFactory {
             LOG.debug("Getting metadata for table {}...", tableName);
         }
         Map<String, Integer> types = createTypes(aJdbcTemplate, tableName);
-        List<EntityArgumentGetter> getters = createListGetters(entityClass, types, aConverterManager);
+        List<IEntityArgumentGetter> getters = createListGetters("", entityClass, types, aConverterManager);
         String insertQuery = createListInsertQuery(getters, tableName);
         if(LOG.isDebugEnabled()) {
             LOG.debug("insert query: {}", insertQuery);
@@ -212,17 +212,35 @@ public class ParametersSetterBlockFactory {
             }
         });
     }
-    private List<EntityArgumentGetter> createListGetters(Class aEntityClass, Map<String, Integer> aTypes, ParameterConverterManager aConverterManager) {
-        List<EntityArgumentGetter> getters = new LinkedList<EntityArgumentGetter>();
+    
+    private List<IEntityArgumentGetter> createListGetters(String aColumnPrefix, Class aEntityClass, Map<String, Integer> aTypes, ParameterConverterManager aConverterManager) {
+        List<IEntityArgumentGetter> getters = new LinkedList<IEntityArgumentGetter>();
         for (Method method : aEntityClass.getMethods()) {
             if(method.isAnnotationPresent(Column.class)) {
                 Column column = method.getAnnotation(Column.class);
                 Assert.notNull(column, "Method "+method+" has no Column annotation");
                 Assert.hasText(column.name(), "Column annotation has no name parameter in method "+method);
-                Integer dataType = aTypes.get(column.name());
-                Assert.notNull(dataType, "NO information abount column "+column.name()+" in method "+method);
+                String columnName = aColumnPrefix + column.name();
+                Integer dataType = aTypes.get(columnName);
+                Assert.notNull(dataType, "NO information abount column "+columnName+" in method "+method);
                 IParameterConverter paramConverter = aConverterManager.findConverter(dataType, method.getReturnType());
-                getters.add(new EntityArgumentGetter(method, paramConverter, column.name())) ;
+                getters.add(new EntityArgumentGetter(method, paramConverter, columnName)) ;
+            } else if(method.isAnnotationPresent(OneToOne.class) || method.isAnnotationPresent(ManyToOne.class)) {
+                Class oneToOneClass = method.getReturnType();
+                if(method.isAnnotationPresent(JoinColumn.class)) {
+                    // table name
+                    JoinColumn joinColumn = method.getAnnotation(JoinColumn.class);
+                    Assert.hasText(joinColumn.table(), "JoinColumn annotation has no table parameter in method "+method);
+                    String tableName = joinColumn.table();
+
+                    //
+                    List<IEntityArgumentGetter> oneToOneClassGetters = createListGetters(tableName+"_",oneToOneClass, aTypes, aConverterManager);
+                    for (IEntityArgumentGetter oneToOneClassGetter : oneToOneClassGetters) {
+                        EntityArgumentGetterOneToOne oneToOneConverter = new EntityArgumentGetterOneToOne(method, oneToOneClassGetter);
+                        getters.add(oneToOneConverter);
+                    }
+                }
+
             }
         }
         return getters;
@@ -240,11 +258,11 @@ public class ParametersSetterBlockFactory {
         return (Class) parameterizedType.getActualTypeArguments()[0];
     }
 
-    private String createListInsertQuery(List<EntityArgumentGetter> aGetters, String aTableName) {
+    private String createListInsertQuery(List<IEntityArgumentGetter> aGetters, String aTableName) {
         StringBuilder sb = new StringBuilder();
         sb.append("insert into ").append(aTableName).append(" ( ");
         boolean firstPassed = false;
-        for (EntityArgumentGetter getter : aGetters) {
+        for (IEntityArgumentGetter getter : aGetters) {
             if(firstPassed) {
                 sb.append(", ");
             } else {
@@ -255,7 +273,7 @@ public class ParametersSetterBlockFactory {
         sb.append(" ) values ( ");
 
         firstPassed = false;
-        for (EntityArgumentGetter getter : aGetters) {
+        for (IEntityArgumentGetter getter : aGetters) {
             if(firstPassed) {
                 sb.append(", ");
             } else {
