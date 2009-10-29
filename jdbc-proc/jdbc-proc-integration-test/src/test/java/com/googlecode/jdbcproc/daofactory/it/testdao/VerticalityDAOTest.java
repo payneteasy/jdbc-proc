@@ -4,6 +4,7 @@ import com.googlecode.jdbcproc.daofactory.it.DatabaseAwareTest;
 import com.googlecode.jdbcproc.daofactory.it.testdao.model.Carabiner;
 import com.googlecode.jdbcproc.daofactory.it.testdao.model.DynamicRope;
 import com.googlecode.jdbcproc.daofactory.it.testdao.model.Harness;
+import com.googlecode.jdbcproc.daofactory.it.testdao.model.ChalkBag;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.VerticalityDAO;
 
 import java.util.List;
@@ -91,5 +92,22 @@ public class VerticalityDAOTest  extends DatabaseAwareTest {
         verticalityDAO.uploadCarabinders(uploadDate, carabiners);
         verticalityDAO.uploadDynamicRopes(dynamicRopes, uploadDate);
         verticalityDAO.uploadVerticality(uploadDate, carabiners,  dynamicRopes);
+    }
+    
+    public void testReturnEntityWithBigintTypeField() {
+        ChalkBag chalkBag1 = new ChalkBag();
+        chalkBag1.setName("BANDI");
+        chalkBag1.setColor("TOPO print Charlet orange");
+        chalkBag1.setMaterials("polyester and nylon");
+        ChalkBag chalkBag2 = new ChalkBag();
+        chalkBag2.setName("KODA");
+        chalkBag2.setColor("TOPO print sandstone");
+        chalkBag2.setMaterials("polyester and nylon");
+        
+        verticalityDAO.createChalkBag(chalkBag1);
+        verticalityDAO.createChalkBag(chalkBag2);
+        
+        List<ChalkBag> chalkBags = verticalityDAO.getChalkBags();
+        assertEquals(2, chalkBags.size());
     }
 }
