@@ -5,10 +5,7 @@ import org.springframework.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,9 +16,10 @@ public class ParametersSetterBlockList extends AbstractParametersSetterBlock {
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
-    public ParametersSetterBlockList(String aInsertQuery, List<IEntityArgumentGetter> aArgumentsGetters) {
+    public ParametersSetterBlockList(String aInsertQuery, List<IEntityArgumentGetter> aArgumentsGetters, String aTrancateTableQuery) {
         theInsertQuery = aInsertQuery;
         theArgumentsGetters = Collections.unmodifiableList(aArgumentsGetters);
+        theTruncateTableQuery = aTrancateTableQuery;
     }
 
     public void setParameters(CallableStatement aStmt, Object[] aArgs) throws DataAccessException {
@@ -34,6 +32,11 @@ public class ParametersSetterBlockList extends AbstractParametersSetterBlock {
 
         try {
             Connection con = aStmt.getConnection();
+
+            // delete previous data from table
+            truncateTable(con);
+
+            // inserts current data to table
             List list = (List) arguments[0];
             for (Object entity : list) {
                 PreparedStatement stmt = con.prepareStatement(theInsertQuery);
@@ -59,6 +62,18 @@ public class ParametersSetterBlockList extends AbstractParametersSetterBlock {
         }
     }
 
+    private void truncateTable(Connection aConnection) throws SQLException {
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("Executing truncate: {}", theTruncateTableQuery);
+        }
+        Statement stmt = aConnection.createStatement();
+        try {
+            stmt.executeUpdate(theTruncateTableQuery);
+        } finally {
+            stmt.close();
+        }
+    }
+
     public String toString() {
         return "ParametersSetterBlockList{" +
                 "LOG=" + LOG +
@@ -68,5 +83,6 @@ public class ParametersSetterBlockList extends AbstractParametersSetterBlock {
     }
 
     private final String theInsertQuery;
+    private final String theTruncateTableQuery;
     private final List<IEntityArgumentGetter> theArgumentsGetters ;
 }

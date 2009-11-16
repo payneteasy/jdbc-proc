@@ -189,7 +189,8 @@ public class ParametersSetterBlockFactory {
         if(LOG.isDebugEnabled()) {
             LOG.debug("insert query: {}", insertQuery);
         }
-        return new ParametersSetterBlockList(insertQuery, getters);
+        String truncateTableQuery = "truncate table "+tableName;
+        return new ParametersSetterBlockList(insertQuery, getters, truncateTableQuery);
     }
 
     private Map<String, Integer> createTypes(JdbcTemplate aJdbcTemplate, final String aTableName) {
