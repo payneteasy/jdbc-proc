@@ -26,6 +26,7 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         
         executeMysql("jdbcprocdb", "src/test/resources/sql/company.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/employee.sql");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/certificate.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/carabiner.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/dynamic_rope.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/harness.sql");
@@ -36,6 +37,8 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         executeMysql("jdbcprocdb", "src/test/resources/sql/get_company_employees.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies_names.sql");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/get_company_2x.sql");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/create_certificate.sql");
 
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/create_collections.prc");
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_carabiners.prc");
