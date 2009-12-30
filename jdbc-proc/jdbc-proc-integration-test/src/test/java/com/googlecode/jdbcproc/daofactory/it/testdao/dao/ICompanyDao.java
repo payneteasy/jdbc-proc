@@ -3,6 +3,8 @@ package com.googlecode.jdbcproc.daofactory.it.testdao.dao;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Company;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.CompanyWithEmployees;
+import com.googlecode.jdbcproc.daofactory.it.testdao.domain.onetomany2x.Company2x;
+import com.googlecode.jdbcproc.daofactory.it.testdao.domain.onetomany2x.Certificate2x;
 import com.googlecode.jdbcproc.daofactory.CloseableIterator;
 
 import java.util.List;
@@ -61,4 +63,18 @@ public interface ICompanyDao {
      */
     @AStoredProcedure(name = "get_companies_names")
     CloseableIterator<String> getCompaniesNamesIterator();
+
+    /**
+     * Gets companies, employees and certificates with OneToMany Links
+     * @return companies
+     */
+    @AStoredProcedure(name = "get_company_2x")
+    List<Company2x> getCompanies2x();
+
+    /**
+     * Creates certificate for employee
+     * @param aCertificate certificate
+     */
+    @AStoredProcedure(name = "create_certificate")
+    void createCertificate(Certificate2x aCertificate);
 }
