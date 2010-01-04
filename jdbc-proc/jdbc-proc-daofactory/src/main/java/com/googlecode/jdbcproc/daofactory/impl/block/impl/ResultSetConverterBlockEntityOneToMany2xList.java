@@ -110,14 +110,6 @@ public class ResultSetConverterBlockEntityOneToMany2xList implements IResultSetC
 
         public void clearChildren() {
             theList = new LinkedList<Object>();
-//            if(thePreviousEntity!=null) {
-//                List<Object> list = Collections.unmodifiableList(theList);
-//                theLink.setChildren(thePreviousEntity, list);
-//            } else {
-//                if(theList.size()>0) {
-//                    throw new IllegalStateException("List with children has no parent");
-//                }
-//            }
         }
 
         private Object thePreviousEntity = null ;
