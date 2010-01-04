@@ -23,12 +23,12 @@
             <!--
                Use https://jdbc-proc.googlecode.com/svn/maven2/release to include jdbc-proc repository
            -->
-            <url>file:///${HOME}/svn/jdbc-proxy-maven2-release</url>
+            <url>file:///${HOME}/svn/jdbc-proc-maven2-release</url>
         </repository>
         <snapshotRepository>
             <id>jdbc-proc-snapshot</id>
             <name>Local Maven repository of snapshots</name>
-            <url>file:///${HOME}/svn/jdbc-proxy-maven2-snapshot</url>
+            <url>file:///${HOME}/svn/jdbc-proc-maven2-snapshot</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
