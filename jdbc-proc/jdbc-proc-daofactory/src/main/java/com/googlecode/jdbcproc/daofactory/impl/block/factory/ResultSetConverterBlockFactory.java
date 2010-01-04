@@ -40,7 +40,7 @@ public class ResultSetConverterBlockFactory {
             return createBlockSimpleType(aConverterManager, returnType, aProcedureInfo);
 
         } else if(returnType.isAssignableFrom(List.class)) {
-            // list 
+            // LIST
             Class entityClass = getEntityClass(aDaoMethod);
             if(BlockFactoryUtils.isSimpleType(entityClass)) {
                 // simple type for list
@@ -48,8 +48,9 @@ public class ResultSetConverterBlockFactory {
 
             } else if(isOneToManyPresent(entityClass)) {
                 // @OneToMany Annotation support
-                ResultSetConverterBlockEntityOneToMany blockEntity = createEntityBlockOneToMany(aConverterManager, entityClass, aProcedureInfo);
-                return new ResultSetConverterBlockEntityOneToManyList(blockEntity);
+//                ResultSetConverterBlockEntityOneToMany blockEntity = createEntityBlockOneToMany(aConverterManager, entityClass, aProcedureInfo);
+//                return new ResultSetConverterBlockEntityOneToManyList(blockEntity);
+                return createEntityBlockOneToMany2xList(aConverterManager, entityClass, aProcedureInfo);
 
             } else {
                 // Without @OneToMany Annotation
@@ -165,7 +166,16 @@ public class ResultSetConverterBlockFactory {
         return new ResultSetConverterBlockEntity(aType, propertySetters, oneToOneLinks);
     }
 
-    private ResultSetConverterBlockEntityOneToMany createEntityBlockOneToMany(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
+    /**
+     * One to Many
+     * @param aConverterManager converter manager
+     * @param aType type
+     * @param aProcedureInfo procedure info
+     * @return One to Many converter
+     */
+    private ResultSetConverterBlockEntityOneToMany createEntityBlockOneToMany(ParameterConverterManager aConverterManager
+            , Class aType
+            , StoredProcedureInfo aProcedureInfo) {
         // finds simple setters
         List<EntityPropertySetter> propertySetters = createEntityPropertySetters(aConverterManager, aType, aProcedureInfo, "");
         // finds OneToOne and ManyToOne links
@@ -180,6 +190,50 @@ public class ResultSetConverterBlockFactory {
         List<OneToOneLink> childOneToOneLinks = createOneToOneLinks(childPrefix, aConverterManager, childClass, aProcedureInfo);
 
         return new ResultSetConverterBlockEntityOneToMany(aType, propertySetters, oneToOneLinks, childClass, childPropertySetters, childOneToOneLinks, otmMethodSetter);
+    }
+
+    /**
+     * One to Many 2x
+     * @param aConverterManager converter manager
+     * @param aType type
+     * @param aProcedureInfo procedure info
+     * @return One to Many converter
+     */
+    private ResultSetConverterBlockEntityOneToMany2xList createEntityBlockOneToMany2xList(ParameterConverterManager aConverterManager
+            , Class aType
+            , StoredProcedureInfo aProcedureInfo) {
+
+
+        List<OneToManyLink> oneToManyLinks = new LinkedList<OneToManyLink>();
+        Class clazz = aType;
+        Method otmMethodGetter = BlockFactoryUtils.findOneToManyMethod(clazz);
+        String childPrefix = "" ;
+        
+        for(int i=0; i<100; i++) {
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Creating OneToManyLink for class {}, otm getter method {} and prefix '{}'"
+                        , new Object[] {clazz, otmMethodGetter, childPrefix});
+            }
+            // finds simple setters
+            List<EntityPropertySetter> propertySetters = createEntityPropertySetters(aConverterManager, clazz, aProcedureInfo, childPrefix);
+            // finds OneToOne and ManyToOne links
+            List<OneToOneLink> oneToOneLinks = createOneToOneLinks(childPrefix, aConverterManager, clazz, aProcedureInfo);
+
+            Method otmMethodSetter = otmMethodGetter!=null ? BlockFactoryUtils.findSetterMethod(clazz, otmMethodGetter) : null;
+
+            oneToManyLinks.add(new OneToManyLink(clazz, propertySetters, oneToOneLinks, otmMethodSetter));
+
+            if(otmMethodGetter==null) {
+                break;
+            } else {
+                childPrefix = childPrefix.length()==0 ? getTablePrefixFromJoinColumnAnnotation(otmMethodGetter) : childPrefix+getTablePrefixFromJoinColumnAnnotation(otmMethodGetter);
+                clazz  = getEntityClass(otmMethodGetter);
+                otmMethodGetter = BlockFactoryUtils.findOneToManyMethod(clazz);
+            }
+        }
+
+        return new ResultSetConverterBlockEntityOneToMany2xList(oneToManyLinks);
+
     }
 
     private List<OneToOneLink> createOneToOneLinks(String aParentTablePrefix, ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {

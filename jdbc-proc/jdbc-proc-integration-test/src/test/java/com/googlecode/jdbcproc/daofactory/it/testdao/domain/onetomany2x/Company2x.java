@@ -28,6 +28,30 @@ public class Company2x {
     public List<Employee2x> getEmployees() { return theEmployees; }
     public void setEmployees(List<Employee2x> aEmployees) { theEmployees = aEmployees; }
 
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Company2x company2x = (Company2x) o;
+
+        if (theId != company2x.theId) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        return (int) (theId ^ (theId >>> 32));
+    }
+
+
+    public String toString() {
+        return "Company2x{" +
+                "theEmployees=" + theEmployees +
+                ", theName='" + theName + '\'' +
+                ", theId=" + theId +
+                '}';
+    }
+
     /** list of Employees */
     private List<Employee2x> theEmployees;
     /** Name */
