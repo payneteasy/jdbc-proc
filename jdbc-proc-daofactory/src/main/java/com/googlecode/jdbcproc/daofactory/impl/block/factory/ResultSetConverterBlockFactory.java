@@ -48,9 +48,7 @@ public class ResultSetConverterBlockFactory {
 
             } else if(isOneToManyPresent(entityClass)) {
                 // @OneToMany Annotation support
-//                ResultSetConverterBlockEntityOneToMany blockEntity = createEntityBlockOneToMany(aConverterManager, entityClass, aProcedureInfo);
-//                return new ResultSetConverterBlockEntityOneToManyList(blockEntity);
-                return createEntityBlockOneToMany2xList(aConverterManager, entityClass, aProcedureInfo);
+                return new ResultSetConverterBlockEntityOneToMany2xList(createEntityBlockOneToMany2xList(aConverterManager, entityClass, aProcedureInfo));
 
             } else {
                 // Without @OneToMany Annotation
@@ -82,7 +80,7 @@ public class ResultSetConverterBlockFactory {
             // entity may be
             if(isOneToManyPresent(returnType)) {
                 // @OneToMany annotation is finded
-                return createEntityBlockOneToMany(aConverterManager, returnType, aProcedureInfo);
+                return new ResultSetConverterBlockEntityOneToMany2x(createEntityBlockOneToMany2xList(aConverterManager, returnType, aProcedureInfo));
             } else {
                 return createEntityBlock(aConverterManager, returnType, aProcedureInfo);
             }
@@ -199,7 +197,7 @@ public class ResultSetConverterBlockFactory {
      * @param aProcedureInfo procedure info
      * @return One to Many converter
      */
-    private ResultSetConverterBlockEntityOneToMany2xList createEntityBlockOneToMany2xList(ParameterConverterManager aConverterManager
+    private List<OneToManyLink> createEntityBlockOneToMany2xList(ParameterConverterManager aConverterManager
             , Class aType
             , StoredProcedureInfo aProcedureInfo) {
 
@@ -232,7 +230,7 @@ public class ResultSetConverterBlockFactory {
             }
         }
 
-        return new ResultSetConverterBlockEntityOneToMany2xList(oneToManyLinks);
+        return oneToManyLinks;
 
     }
 
