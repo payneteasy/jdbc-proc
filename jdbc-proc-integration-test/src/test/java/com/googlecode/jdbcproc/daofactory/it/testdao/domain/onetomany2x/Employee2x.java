@@ -33,6 +33,31 @@ public class Employee2x {
     public List<Certificate2x> getCertificates() { return theCertificates; }
     public void setCertificates(List<Certificate2x> aCertificates) { theCertificates = aCertificates; }
 
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Employee2x that = (Employee2x) o;
+
+        if (theId != that.theId) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        return (int) (theId ^ (theId >>> 32));
+    }
+
+
+    public String toString() {
+        return "Employee2x{" +
+                "theCertificates=" + theCertificates +
+                ", theLastname='" + theLastname + '\'' +
+                ", theFirstname='" + theFirstname + '\'' +
+                ", theId=" + theId +
+                '}';
+    }
+
     /** List of certificates */
     private List<Certificate2x> theCertificates;
 

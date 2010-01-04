@@ -20,14 +20,37 @@ public class Certificate2x {
     public String getName() { return theName; }
     public void setName(String aName) { theName = aName; }
 
-    /** Employee */
-    @ManyToOne
-    @JoinColumn( name = "employee_id" )
-    public Employee2x getEmployee() { return theEmployee; }
-    public void setEmployee(Employee2x aEmployee) { theEmployee = aEmployee; }
+    /** Employee id */
+    @Column(name = "employee_id")
+    public Long getEmployeeId() { return theEmployeeId; }
+    public void setEmployeeId(Long aEmployeeId) { theEmployeeId = aEmployeeId; }
 
-    /** Employee */
-    private Employee2x theEmployee;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Certificate2x that = (Certificate2x) o;
+
+        if (theId != that.theId) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        return (int) (theId ^ (theId >>> 32));
+    }
+
+
+    public String toString() {
+        return "Certificate2x{" +
+                "theEmployeeId=" + theEmployeeId +
+                ", theName='" + theName + '\'' +
+                ", theId=" + theId +
+                '}';
+    }
+
+    /** Employee id */
+    private Long theEmployeeId;
     /** Name */
     private String theName;
     /** Identificator */

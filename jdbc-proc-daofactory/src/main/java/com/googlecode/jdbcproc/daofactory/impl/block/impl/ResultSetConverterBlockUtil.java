@@ -44,7 +44,7 @@ public class ResultSetConverterBlockUtil {
         return entity;
     }
 
-    private static Object createEntityObject(Class aEntityType) {
+    public static Object createEntityObject(Class aEntityType) {
         try {
             return aEntityType.newInstance();
         } catch (Exception e) {
