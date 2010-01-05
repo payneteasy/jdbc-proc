@@ -18,10 +18,10 @@ public class ResultSetConverterBlockEntityOneToMany2x extends ResultSetConverter
     @Override
     public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
         List<Object> list = (List<Object>) super.convertResultSet(aResultSet, aStmt);
-        if(list==null && list.isEmpty()) {
+        if(list==null || list.isEmpty()) {
             return null;
         } else {
-            Assert.isTrue(list.size()==1, "List size must be equals 1");
+            Assert.isTrue(list.size()==1, "List size must be equals 1 not "+list.size());
             return list.get(0);
         }
     }
