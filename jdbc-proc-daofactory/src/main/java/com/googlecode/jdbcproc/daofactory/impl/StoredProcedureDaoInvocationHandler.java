@@ -1,6 +1,6 @@
 package com.googlecode.jdbcproc.daofactory.impl;
 
-import com.googlecode.jdbcproc.daofactory.DaoMethodInfoFactory;
+import com.googlecode.jdbcproc.daofactory.DAOMethodInfo;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ public class StoredProcedureDaoInvocationHandler implements InvocationHandler {
     public StoredProcedureDaoInvocationHandler(
             Class aInterface
             , JdbcTemplate aJdbcTemplate
-            , DaoMethodInfoFactory aDaoMethodInfoFactory
+            , DAOMethodInfo aDaoMethodInfoFactory
     ) throws SQLException {
         theInterface = aInterface;
         theJdbcTemplate = aJdbcTemplate;
