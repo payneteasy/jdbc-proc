@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
 /**
  * Creates DaoMethodInfo
  */
-public class DaoMethodInfoFactory implements InitializingBean {
+public class DaoMethodInfoFactory implements InitializingBean, DAOMethodInfo {
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
@@ -35,7 +35,7 @@ public class DaoMethodInfoFactory implements InitializingBean {
 
         StoredProcedureInfo procedureInfo = theStoredProcedureInfoManager.getProcedureInfo(procedureName);
         if(LOG.isDebugEnabled()) {
-            LOG.debug("      Finded procedure info: "+procedureInfo);
+            LOG.debug("      Found procedure info: "+procedureInfo);
         }
         Assert.notNull(procedureInfo, "There are no procedure '" + procedureName + "' in database");
 

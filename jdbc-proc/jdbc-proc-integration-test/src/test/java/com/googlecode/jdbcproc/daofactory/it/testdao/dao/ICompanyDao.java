@@ -8,7 +8,6 @@ import com.googlecode.jdbcproc.daofactory.it.testdao.domain.onetomany2x.Certific
 import com.googlecode.jdbcproc.daofactory.CloseableIterator;
 
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * Test dao
