@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
- public class TestModule extends AbstractModule {
+ public class SimpleModule extends AbstractModule {
   
   @Override
   protected void configure() {

@@ -30,7 +30,7 @@ public class EmployeeDAOTest extends AbstractDatabaseTest {
 
   @Test
   public void test() {
-    Injector injector = Guice.createInjector(new TestModule());
+    Injector injector = Guice.createInjector(new SimpleModule());
 
     final ICompanyDao companyDao = injector.getInstance(ICompanyDao.class);
     final IEmployeeDao employeeDao = injector.getInstance(IEmployeeDao.class);
