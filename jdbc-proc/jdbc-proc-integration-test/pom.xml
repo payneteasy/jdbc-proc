@@ -50,6 +50,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Guice -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- velocity -->
         <dependency>
             <groupId>velocity</groupId>

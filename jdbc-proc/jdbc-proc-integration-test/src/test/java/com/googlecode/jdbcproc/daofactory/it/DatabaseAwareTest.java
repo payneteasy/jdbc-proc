@@ -1,6 +1,5 @@
 package com.googlecode.jdbcproc.daofactory.it;
 
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,5 +126,4 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
     }
 
     protected DataSource theDataSource;
-    protected HibernateTemplate theHibernateTemplate;
 }
