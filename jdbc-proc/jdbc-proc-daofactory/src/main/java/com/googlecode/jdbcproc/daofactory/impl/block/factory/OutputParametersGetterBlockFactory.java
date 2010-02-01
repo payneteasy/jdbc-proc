@@ -21,14 +21,14 @@ public class OutputParametersGetterBlockFactory {
 
     public IOutputParametersGetterBlock create(ParameterConverterManager aConverterManager
             ,  Method aDaoMethod, StoredProcedureInfo aProcedureInfo) {
+
+        // List.getAll();
         if(BlockFactoryUtils.isGetAllMethod(aDaoMethod, aProcedureInfo)) {
-            // List getAll();
             return null;
-            
-        } else if(aProcedureInfo.getArgumentsCounts() > aDaoMethod.getParameterTypes().length) {
-            // entity
+
+        // CREATE ENTITY
+        } else if( isCreateEntityMethod(aDaoMethod, aProcedureInfo) ) {
             List<EntityPropertySetter> setters = new LinkedList<EntityPropertySetter>();
-            Assert.isTrue(aDaoMethod.getParameterTypes().length==1, "Method "+aDaoMethod.getName()+" parameters count must be equals to 1");
             Class entityClass = aDaoMethod.getParameterTypes()[0];
             for (StoredProcedureArgumentInfo argumentInfo : aProcedureInfo.getArguments()) {
                 if(argumentInfo.isOutputParameter()) {
@@ -40,9 +40,23 @@ public class OutputParametersGetterBlockFactory {
                 }
             }
             return setters.size() > 0 ? new OutputParametersGetterBlockEntity(setters) : null;
+
+        // return one output parameter
+        } else if( BlockFactoryUtils.isOneOutputHasReturn(aDaoMethod, aProcedureInfo) ) {
+            // see ResultSetConverterBlockOutputParameterHasReturn
+            return null;
+
+        // DEFAULT NO     
         } else {
             return null;
         }
+    }
+
+    private boolean isCreateEntityMethod(Method aDaoMethod, StoredProcedureInfo aProcedureInfo) {
+        return     aProcedureInfo.getArgumentsCounts() > 1
+                && aDaoMethod.getParameterTypes().length==1
+                && ! BlockFactoryUtils.isSimpleType(aDaoMethod.getParameterTypes()[0])
+        ;
     }
 
 

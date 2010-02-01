@@ -6,6 +6,7 @@ import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConv
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterManager;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.ResultSetColumnInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
+import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -34,6 +35,10 @@ public class ResultSetConverterBlockFactory {
         if(returnType.equals(void.class))  {
             // void
             return null;
+
+        // OUTPUT PARAMETER HAS RETURN
+        } else if(BlockFactoryUtils.isOneOutputHasReturn(aDaoMethod, aProcedureInfo)) {
+            return createOutputParameterHasReturn(aConverterManager, aDaoMethod, aProcedureInfo);
 
         } else if(BlockFactoryUtils.isSimpleType(returnType)) {
             // simple type from result set
@@ -87,6 +92,28 @@ public class ResultSetConverterBlockFactory {
         }
     }
 
+    private IResultSetConverterBlock createOutputParameterHasReturn(ParameterConverterManager aConverterManager, Method aDaoMethod, StoredProcedureInfo aProcedureInfo) {
+        Class methodReturnType    = aDaoMethod.getReturnType();
+        StoredProcedureArgumentInfo procedureReturn = getOutputParameter(aProcedureInfo.getArguments());
+        return new ResultSetConverterBlockOutputParameterHasReturn(
+                aConverterManager.findConverter(procedureReturn.getDataType(), methodReturnType), procedureReturn.getColumnName() 
+        );
+    }
+
+    private StoredProcedureArgumentInfo getOutputParameter(List<StoredProcedureArgumentInfo> aArguments) {
+        StoredProcedureArgumentInfo info = null;
+        for (StoredProcedureArgumentInfo argument : aArguments) {
+            if(argument.isOutputParameter()) {
+                if(info==null) {
+                    info = argument;
+                } else {
+                    throw new IllegalStateException("Procedure must have only one output parameter");
+                }
+            }
+        }
+        return info;
+    }
+
     private boolean isOneToManyPresent(Class aClass) {
         return BlockFactoryUtils.findOneToManyMethod(aClass)!=null;
     }
@@ -100,7 +127,7 @@ public class ResultSetConverterBlockFactory {
      * @return ResultSetConverterBlockSimpleType
      */
     private ResultSetConverterBlockSimpleType createBlockSimpleType(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
-        Assert.isTrue(1==aProcedureInfo.getResultSetColumns().size(), "Count of columns in result set must equals 1");
+        Assert.isTrue(1==aProcedureInfo.getResultSetColumns().size(), "Count of columns in result set must be equals 1");
 
         ResultSetColumnInfo columnInfo = aProcedureInfo.getResultSetColumns().get(0);
         return new ResultSetConverterBlockSimpleType(aConverterManager.findConverter(
@@ -118,7 +145,7 @@ public class ResultSetConverterBlockFactory {
      * @return ResultSetConverterBlockSimpleTypeList
      */
     private ResultSetConverterBlockSimpleTypeList createBlockSimpleTypeList(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
-        Assert.isTrue(1==aProcedureInfo.getResultSetColumns().size(), "Count of columns in result set must equals 1");
+        Assert.isTrue(1==aProcedureInfo.getResultSetColumns().size(), "Count of columns in result set must be equals 1");
 
         ResultSetColumnInfo columnInfo = aProcedureInfo.getResultSetColumns().get(0);
         return new ResultSetConverterBlockSimpleTypeList(aConverterManager.findConverter(
@@ -136,7 +163,7 @@ public class ResultSetConverterBlockFactory {
      * @return ResultSetConverterBlockSimpleTypeIterator
      */
     private ResultSetConverterBlockSimpleTypeIterator createBlockSimpleTypeIterator(ParameterConverterManager aConverterManager, Class aType, StoredProcedureInfo aProcedureInfo) {
-        Assert.isTrue(1==aProcedureInfo.getResultSetColumns().size(), "Count of columns in result set must equals 1");
+        Assert.isTrue(1==aProcedureInfo.getResultSetColumns().size(), "Count of columns in result set must be equals 1");
 
         ResultSetColumnInfo columnInfo = aProcedureInfo.getResultSetColumns().get(0);
         return new ResultSetConverterBlockSimpleTypeIterator(aConverterManager.findConverter(
@@ -162,32 +189,6 @@ public class ResultSetConverterBlockFactory {
         // finds OneToOne and ManyToOne links
         List<OneToOneLink> oneToOneLinks = createOneToOneLinks("", aConverterManager, aType, aProcedureInfo);
         return new ResultSetConverterBlockEntity(aType, propertySetters, oneToOneLinks);
-    }
-
-    /**
-     * One to Many
-     * @param aConverterManager converter manager
-     * @param aType type
-     * @param aProcedureInfo procedure info
-     * @return One to Many converter
-     */
-    private ResultSetConverterBlockEntityOneToMany createEntityBlockOneToMany(ParameterConverterManager aConverterManager
-            , Class aType
-            , StoredProcedureInfo aProcedureInfo) {
-        // finds simple setters
-        List<EntityPropertySetter> propertySetters = createEntityPropertySetters(aConverterManager, aType, aProcedureInfo, "");
-        // finds OneToOne and ManyToOne links
-        List<OneToOneLink> oneToOneLinks = createOneToOneLinks("", aConverterManager, aType, aProcedureInfo);
-
-        // child
-        Method otmMethodGetter = BlockFactoryUtils.findOneToManyMethod(aType);
-        Method otmMethodSetter = BlockFactoryUtils.findSetterMethod(aType, otmMethodGetter);
-        String childPrefix = getTablePrefixFromJoinColumnAnnotation(otmMethodGetter);
-        Class  childClass  = getEntityClass(otmMethodGetter);
-        List<EntityPropertySetter> childPropertySetters = createEntityPropertySetters(aConverterManager, childClass, aProcedureInfo, childPrefix);
-        List<OneToOneLink> childOneToOneLinks = createOneToOneLinks(childPrefix, aConverterManager, childClass, aProcedureInfo);
-
-        return new ResultSetConverterBlockEntityOneToMany(aType, propertySetters, oneToOneLinks, childClass, childPropertySetters, childOneToOneLinks, otmMethodSetter);
     }
 
     /**

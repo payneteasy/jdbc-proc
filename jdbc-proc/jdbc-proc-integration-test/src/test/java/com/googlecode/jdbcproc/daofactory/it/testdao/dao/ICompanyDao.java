@@ -23,6 +23,15 @@ public interface ICompanyDao {
     void createCompany(Company aCompany);
 
     /**
+     * Creates company
+     *
+     * @param aName company name
+     * @return company id
+     */
+    @AStoredProcedure(name = "create_company")
+    long createCompany(String aName);
+
+    /**
      * Gets company with employees by id
      *
      * @param aCompanyId new company
