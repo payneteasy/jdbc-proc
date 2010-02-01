@@ -80,6 +80,10 @@ public class StoredProcedureArgumentInfo {
     }
 
 
+    public boolean isFunctionReturnParameter() {
+        return theColumnType == FUNCTION_RETURN;
+    }
+
     public String toString() {
         return "StoredProcedureArgumentInfo{" +
                 "columnName='" + theColumnName + '\'' +
