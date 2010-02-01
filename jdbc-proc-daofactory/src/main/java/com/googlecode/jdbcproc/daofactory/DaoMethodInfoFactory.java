@@ -72,11 +72,15 @@ public class DaoMethodInfoFactory implements InitializingBean, DAOMethodInfo {
         sb.append("{ call ");
         sb.append(procedureInfo.getProcedureName());
         sb.append("(");
+        int j = 0;
         for (int i = 0; i < procedureInfo.getArgumentsCounts(); i++) {
-            if (i > 0) {
-                sb.append(", ? ");
-            } else {
-                sb.append(" ? ");
+            if (!procedureInfo.getArguments().get(i).isFunctionReturnParameter()) {
+                if (j > 0) {
+                    sb.append(", ? ");
+                } else {
+                    sb.append(" ? ");
+                }
+                j++;
             }
         }
         sb.append(") }");
