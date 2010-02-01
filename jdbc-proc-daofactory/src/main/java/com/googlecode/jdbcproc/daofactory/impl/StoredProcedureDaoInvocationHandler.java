@@ -43,11 +43,23 @@ public class StoredProcedureDaoInvocationHandler implements InvocationHandler {
                     LOG.debug("    Creating {} [ procedure='{}' ] ...", method.getName(), method.getAnnotation(AStoredProcedure.class).name());
                 }
 
-                DaoMethodInvoker daoMethodInvoker = aDaoMethodInfoFactory.createDaoMethodInvoker(method);
-                if(LOG.isDebugEnabled()) {
-                    LOG.debug("      Created {}", daoMethodInvoker);
+                try {
+                    DaoMethodInvoker daoMethodInvoker = aDaoMethodInfoFactory.createDaoMethodInvoker(method);
+
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("      Created {}", daoMethodInvoker);
+                    }
+                    theDaoMethodInvokersMap.put(method, daoMethodInvoker);
+
+                } catch (Exception e) {
+                    String procedureName = method.getAnnotation(AStoredProcedure.class).name();
+                    String classname = aInterface.getSimpleName();
+                    String parameters = createMethodParametersString(method.getParameterTypes());
+
+                    String message = String.format("Cannot create %s.%s(%s) method for procedure %s : %s", classname, method.getName(), parameters, procedureName, e.getMessage() );
+                    throw new RuntimeException(message, e);
                 }
-                theDaoMethodInvokersMap.put(method, daoMethodInvoker);
+
             } else {
                 throw new IllegalStateException(
                         String.format("Method %s.%s(...) must have @AStoredProcedure annotation"
@@ -55,6 +67,20 @@ public class StoredProcedureDaoInvocationHandler implements InvocationHandler {
                 );
             }
         }
+    }
+
+    private String createMethodParametersString(Class<?>[] aTypes) {
+        StringBuilder sb = new StringBuilder();
+        boolean firstPassed = false;
+        for (Class<?> type : aTypes) {
+            if(firstPassed) {
+                sb.append(", ");
+            } else {
+                firstPassed = true;
+            }
+            sb.append(type.getSimpleName());
+        }
+        return sb.toString();
     }
 
     /**
@@ -65,19 +91,35 @@ public class StoredProcedureDaoInvocationHandler implements InvocationHandler {
         // finds invoker and executes
         DaoMethodInvoker methodInvoker = theDaoMethodInvokersMap.get(aMethod);
         if(methodInvoker !=null) {
-            if(methodInvoker.isReturnIterator()) {
-                // call method with iterator
-                return callIterator(aArgs, methodInvoker);
-            } else {
-                return theJdbcTemplate.execute(
-                          methodInvoker.getCallString()
-                        , methodInvoker.createCallableStatementCallback(aArgs)
+            try {
+                if(methodInvoker.isReturnIterator()) {
+                    // call method with iterator
+                    return callIterator(aArgs, methodInvoker);
+                } else {
+                    return theJdbcTemplate.execute(
+                              methodInvoker.getCallString()
+                            , methodInvoker.createCallableStatementCallback(aArgs)
+                    );
+                }
+            } catch(Exception e) {
+                String message = String.format("Error invoking %s.%s(%s) for procedure %s"
+                        , theInterface.getSimpleName(), aMethod.getName(), createMethodParametersString(aMethod.getParameterTypes())
+                        , getProcedureName(aMethod)
                 );
+                throw new RuntimeException(message, e);
             }
         } else if(aMethod.getName().equals("toString")) {
            return theInterface.getName() + " proxy";
         } else {
             throw new IllegalStateException("Method "+aMethod.getName()+" was not proxied");
+        }
+    }
+
+    private String getProcedureName(Method aMethod) {
+        if(aMethod.isAnnotationPresent(AStoredProcedure.class)) {
+            return aMethod.getAnnotation(AStoredProcedure.class).name();
+        } else {
+            return "No_@StoredProcedure_Annotation";
         }
     }
 

@@ -80,7 +80,7 @@ public class BlockFactoryUtils {
      * @return true, if method is getAll()
      */
     public static boolean isGetAllMethod(Method aDaoMethod, StoredProcedureInfo aProcedureInfo) {
-        return aProcedureInfo.getArgumentsCounts()==1
+        return aProcedureInfo.getInputArgumentsCount()==1
                 && (aDaoMethod.getParameterTypes()==null || aDaoMethod.getParameterTypes().length==0)
                 && aDaoMethod.getReturnType().isAssignableFrom(List.class);
     }
@@ -117,4 +117,22 @@ public class BlockFactoryUtils {
         }
         return ret;
     }
+
+    
+    public static boolean isOneOutputHasReturn(Method aDaoMethod, StoredProcedureInfo aProcedureInfo) {
+        int countOutputParameters = 0;
+        for (StoredProcedureArgumentInfo argumentInfo : aProcedureInfo.getArguments()) {
+            if(argumentInfo.isOutputParameter()) {
+                countOutputParameters++;
+            }
+        }
+        
+        boolean ret =  countOutputParameters==1
+              && aDaoMethod.getParameterTypes().length == aProcedureInfo.getInputArgumentsCount()
+              && BlockFactoryUtils.isSimpleType(aDaoMethod.getReturnType())
+        ;
+
+        return ret;
+    }
+
 }

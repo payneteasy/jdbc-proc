@@ -22,7 +22,7 @@ public class RegisterOutParametersBlockFactory {
         LinkedList<IndexDataTypePair> list = new LinkedList<IndexDataTypePair>();
         int index = 1 ;
         for (StoredProcedureArgumentInfo argumentInfo : aProcedureInfo.getArguments()) {
-            if(argumentInfo.getColumnType() == 4 ) {
+            if(argumentInfo.getColumnType() == StoredProcedureArgumentInfo.OUT ) {
                 list.add(new IndexDataTypePair(index, argumentInfo.getColumnType()));
             }
             index++;

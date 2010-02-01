@@ -10,6 +10,7 @@ import com.googlecode.jdbcproc.daofactory.it.testdao.domain.EmployeeOnly;
 import com.googlecode.jdbcproc.daofactory.CloseableIterator;
 
 import java.util.List;
+import java.util.Iterator;
 
 /**
  *
@@ -21,6 +22,20 @@ public class CompanyDaoTest extends DatabaseAwareTest {
         company.setName("first");
         theCompanyDao.createCompany(company);
         assertNotNull(company.getId());
+    }
+
+    public void testCreateCompany2() {
+        long id = theCompanyDao.createCompany("second");
+        assertTrue("Company Id must not be 0", 0!=id);
+
+        Iterator<Company> companies = theCompanyDao.getAllCompanies();
+
+        while (companies.hasNext()) {
+            Company company = companies.next();
+            assertEquals(id, company.getId());
+            assertEquals("second", company.getName());
+        }
+
     }
 
     public void testGetCompaniesNames() {

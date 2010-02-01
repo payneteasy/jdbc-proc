@@ -41,7 +41,7 @@ public class ParametersSetterBlockFactory {
             return Collections.singletonList(
                 (IParametersSetterBlock)new ParametersSetterBlockNull1(aProcedureInfo.getArguments().get(0).getDataType()));
 
-        } else if(aProcedureInfo.getArgumentsCounts() > aMethod.getParameterTypes().length) {
+        } else if(aProcedureInfo.getArgumentsCounts() > aMethod.getParameterTypes().length && aMethod.getParameterTypes().length==1 && !BlockFactoryUtils.isSimpleType(aMethod.getParameterTypes()[0])) {
             // is entity, e.g. saveProcessor(TransactionProcessor)
             Assert.isTrue(aMethod.getParameterTypes().length==1, "Method "+aMethod.getName()+" parameters count must be equals to 1");
             Class entityClass = aMethod.getParameterTypes()[0];
@@ -49,14 +49,14 @@ public class ParametersSetterBlockFactory {
             return Collections.singletonList(createEntityBlock(aConverterManager, aProcedureInfo, entityClass));
 
         // if no parameters
-        } else if(aMethod.getParameterTypes().length==0 && aProcedureInfo.getArgumentsCounts()==0) {
+        } else if(aMethod.getParameterTypes().length==0 && aProcedureInfo.getInputArgumentsCount()==0) {
             return Collections.emptyList();
 
         // if parameters is simple puted to procedure
-        } else if(aMethod.getParameterTypes().length == aProcedureInfo.getArgumentsCounts()) {
+        } else if(aMethod.getParameterTypes().length == aProcedureInfo.getInputArgumentsCount()) {
             List<ArgumentGetter> getters = new LinkedList<ArgumentGetter>();
             int index = 0 ;
-            for (StoredProcedureArgumentInfo argumentInfo : aProcedureInfo.getArguments()) {
+            for (StoredProcedureArgumentInfo argumentInfo : aProcedureInfo.getInputArguments()) {
                 if(argumentInfo.isInputParameter()) {
                     IParameterConverter paramConverter = aConverterManager.findConverter(argumentInfo.getDataType(), aMethod.getParameterTypes()[index]);
                     getters.add(new ArgumentGetter(paramConverter, argumentInfo.getColumnName())) ;
@@ -100,12 +100,12 @@ public class ParametersSetterBlockFactory {
             }
             parametersSetterBlocks.add(new ParametersSetterBlockListAggregator(list));
             
-            if (aProcedureInfo.getArgumentsCounts() > argumentIndexes.size()) {
+            if (aProcedureInfo.getInputArgumentsCount() > argumentIndexes.size()) {
                 Assert.isTrue(argumentIndexes.size() == 1, 
                     "Method " + aMethod.getName() + " non List<?> parameters count must be equals to 1");
                 Class entityClass = aMethod.getParameterTypes()[argumentIndexes.get(0)];
                 parametersSetterBlocks.add(createEntityBlock(aConverterManager, aProcedureInfo, entityClass));
-            } else if (argumentIndexes.size() == aProcedureInfo.getArgumentsCounts()) {
+            } else if (argumentIndexes.size() == aProcedureInfo.getInputArgumentsCount()) {
                 List<ArgumentGetter> getters = new LinkedList<ArgumentGetter>();
                 int index = 0 ;
                 for (StoredProcedureArgumentInfo argumentInfo : aProcedureInfo.getArguments()) {
@@ -288,7 +288,7 @@ public class ParametersSetterBlockFactory {
     }
 
     private boolean areAllParametersListAndNoArguments(Method aMethod, StoredProcedureInfo aProcedureInfo) {
-        if(aProcedureInfo.getArgumentsCounts()==0 && aMethod.getParameterTypes().length>0) {
+        if(aProcedureInfo.getInputArgumentsCount()==0 && aMethod.getParameterTypes().length>0) {
             for (Class<?> parameterClass : aMethod.getParameterTypes()) {
                 if(!parameterClass.equals(List.class)) {
                     return false;
@@ -301,14 +301,14 @@ public class ParametersSetterBlockFactory {
     }
 
     private boolean areListAndNonListParametersProvides(Method method, StoredProcedureInfo procedureInfo) {
-        if (method.getParameterTypes().length >= procedureInfo.getArgumentsCounts()) {
+        if (method.getParameterTypes().length >= procedureInfo.getInputArgumentsCount()) {
             int argumentsCount = 0;
             for (Class<?> parameterClass : method.getParameterTypes()) {
                 if(!parameterClass.equals(List.class)) {
                     argumentsCount++;
                 }
             }
-            return procedureInfo.getArgumentsCounts() == argumentsCount;
+            return procedureInfo.getInputArgumentsCount() == argumentsCount;
         } else {
             return false;
         }

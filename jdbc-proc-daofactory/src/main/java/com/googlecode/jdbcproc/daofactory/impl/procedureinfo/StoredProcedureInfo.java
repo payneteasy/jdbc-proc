@@ -29,8 +29,33 @@ public class StoredProcedureInfo {
         return theArguments.size();
     }
 
+    /**
+     * Input arguments count
+     * 
+     * @return count
+     */
+    public int getInputArgumentsCount() {
+        int count = 0 ;
+        for (StoredProcedureArgumentInfo argument : theArguments) {
+            if(argument.isInputParameter()) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
     public String getProcedureName() {
         return theName;
+    }
+
+    public List<StoredProcedureArgumentInfo> getInputArguments() {
+        List<StoredProcedureArgumentInfo> arguments = new LinkedList<StoredProcedureArgumentInfo>();
+        for (StoredProcedureArgumentInfo argument : theArguments) {
+            if(argument.isInputParameter()) {
+                arguments.add(argument);
+            }
+        }
+        return Collections.unmodifiableList(arguments);
     }
 
     public List<StoredProcedureArgumentInfo> getArguments() {
@@ -65,5 +90,4 @@ public class StoredProcedureInfo {
     private final List<ResultSetColumnInfo> theResultSetColumnInfos = new LinkedList<ResultSetColumnInfo>();
     private final Map<String, StoredProcedureArgumentInfo> theArgumentsByNameMap = new HashMap<String, StoredProcedureArgumentInfo>();
     private final Map<String, ResultSetColumnInfo> theRsColumnByNameMap = new HashMap<String, ResultSetColumnInfo>();
-
 }
