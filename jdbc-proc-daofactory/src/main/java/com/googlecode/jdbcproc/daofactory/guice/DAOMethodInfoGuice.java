@@ -26,7 +26,8 @@ import com.googlecode.jdbcproc.daofactory.impl.block.factory.RegisterOutParamete
 import com.googlecode.jdbcproc.daofactory.impl.block.factory.ResultSetConverterBlockFactory;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterManager;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
-import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfoManager;
+import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfoManagerInitOnStartup;
+import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.IStoredProcedureInfoManager;
 
 import java.lang.reflect.Method;
 
@@ -49,7 +50,7 @@ public class DAOMethodInfoGuice implements DAOMethodInfo {
 
   private final ParameterConverterManager theParameterConverterManager 
       = new ParameterConverterManager();
-  private final StoredProcedureInfoManager theStoredProcedureInfoManager;
+  private final IStoredProcedureInfoManager theStoredProcedureInfoManager;
   
   // factories
   private final CallableStatementExecutorBlockFactory theCallableStatementExecutorBlockFactory
@@ -68,7 +69,7 @@ public class DAOMethodInfoGuice implements DAOMethodInfo {
     this.jdbcTemplate = jdbcTemplate;
 
     // Gets information about all procedures from database
-    theStoredProcedureInfoManager = new StoredProcedureInfoManager(jdbcTemplate);
+    theStoredProcedureInfoManager = new StoredProcedureInfoManagerInitOnStartup(jdbcTemplate);
   }
 
   /**

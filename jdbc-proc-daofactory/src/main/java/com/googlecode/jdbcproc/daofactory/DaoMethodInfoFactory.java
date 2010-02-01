@@ -3,7 +3,8 @@ package com.googlecode.jdbcproc.daofactory;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.googlecode.jdbcproc.daofactory.impl.DaoMethodInvoker;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
-import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfoManager;
+import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfoManagerInitOnStartup;
+import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.IStoredProcedureInfoManager;
 import com.googlecode.jdbcproc.daofactory.impl.block.factory.*;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterManager;
 import org.slf4j.Logger;
@@ -93,7 +94,9 @@ public class DaoMethodInfoFactory implements InitializingBean, DAOMethodInfo {
      * @throws Exception on error
      */
     public void afterPropertiesSet() throws Exception {
-        theStoredProcedureInfoManager = new StoredProcedureInfoManager(theJdbcTemplate);
+        if(theStoredProcedureInfoManager==null) {
+            theStoredProcedureInfoManager = new StoredProcedureInfoManagerInitOnStartup(theJdbcTemplate);
+        }
     }
 
     /**
@@ -102,6 +105,15 @@ public class DaoMethodInfoFactory implements InitializingBean, DAOMethodInfo {
      */
     public void setJdbcTemplate(JdbcTemplate aJdbcTemplate) {
         theJdbcTemplate = aJdbcTemplate;
+    }
+
+    /**
+     * StoredProcedureInfoManager. If none using StoredProcedureInfoManagerInitOnStartup
+     * 
+     * @param aStoredProcedureInfoManager StoredProcedureInfoManager
+     */
+    public void setStoredProcedureInfoManager(IStoredProcedureInfoManager aStoredProcedureInfoManager) {
+        theStoredProcedureInfoManager = aStoredProcedureInfoManager;
     }
 
     public String toString() {
@@ -123,7 +135,7 @@ public class DaoMethodInfoFactory implements InitializingBean, DAOMethodInfo {
     private JdbcTemplate theJdbcTemplate;
 
     private final ParameterConverterManager theParameterConverterManager = new ParameterConverterManager();
-    private StoredProcedureInfoManager theStoredProcedureInfoManager ;
+    private IStoredProcedureInfoManager theStoredProcedureInfoManager ;
     // factories
     private final CallableStatementExecutorBlockFactory theCallableStatementExecutorBlockFactory = new CallableStatementExecutorBlockFactory();
     private final OutputParametersGetterBlockFactory theOutputParametersGetterBlockFactory = new OutputParametersGetterBlockFactory();
