@@ -20,8 +20,13 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
+    <bean id="storedProcedureInfoManagerOnDemand" class="com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfoManagerOnDemand">
+        <constructor-arg ref="dataSource" />
+    </bean>
+
     <bean id="daoMethodInfoFactory" class="com.googlecode.jdbcproc.daofactory.DaoMethodInfoFactory">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="storedProcedureInfoManager" ref="storedProcedureInfoManagerOnDemand" />
     </bean>
 
     <!-- Abstract dao -->
