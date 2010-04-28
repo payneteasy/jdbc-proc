@@ -6,8 +6,11 @@ import java.math.BigDecimal;
 /**
  *  LONGVARCHAR - String
  */
-public class ParameterConverter_LONGVARCHAR_String implements IParameterConverter<String> {
+public class ParameterConverter_LONGVARCHAR_String 
+    implements IParameterConverter<ParameterConverter_LONGVARCHAR_String, String> {
 
+  public static final Type<ParameterConverter_LONGVARCHAR_String> TYPE 
+      = new Type<ParameterConverter_LONGVARCHAR_String>(Types.LONGVARCHAR, String.class);
 
     public void setValue(String aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
         aStmt.setString(aIndex, aValue);
@@ -25,9 +28,9 @@ public class ParameterConverter_LONGVARCHAR_String implements IParameterConverte
         return aResultSet.getString(aParameterName);
     }
 
-    public ParameterSetterKey getKey() {
-        return new ParameterSetterKey(Types.LONGVARCHAR, String.class);
-    }
+  public Type<ParameterConverter_LONGVARCHAR_String> getType() {
+    return TYPE;
+  }
 
     public String toString() {
         return "ParameterConverter_LONGVARCHAR_String{}";

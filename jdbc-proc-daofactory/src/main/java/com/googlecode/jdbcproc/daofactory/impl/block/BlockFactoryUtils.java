@@ -1,4 +1,4 @@
-package com.googlecode.jdbcproc.daofactory.impl.block.factory;
+package com.googlecode.jdbcproc.daofactory.impl.block;
 
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;

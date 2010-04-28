@@ -5,8 +5,12 @@ import java.sql.*;
 /**
  *  LONGVARBINARY - byte[]
  */
-public class ParameterConverter_LONGVARBINARY_byteArray implements IParameterConverter<byte[]> {
+public class ParameterConverter_LONGVARBINARY_byteArray 
+    implements IParameterConverter<ParameterConverter_LONGVARBINARY_byteArray, byte[]> {
 
+  public static final Type<ParameterConverter_LONGVARBINARY_byteArray> TYPE 
+      = new Type<ParameterConverter_LONGVARBINARY_byteArray>(Types.LONGVARBINARY, byte[].class);
+  
     public void setValue(byte[] aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
         aStmt.setBytes(aIndex, aValue);
     }
@@ -23,9 +27,9 @@ public class ParameterConverter_LONGVARBINARY_byteArray implements IParameterCon
         return aResultSet.getBytes(aParameterName);
     }
 
-    public ParameterSetterKey getKey() {
-        return new ParameterSetterKey(Types.LONGVARBINARY, byte[].class);
-    }
+  public Type<ParameterConverter_LONGVARBINARY_byteArray> getType() {
+    return TYPE;
+  }
 
     public String toString() {
         return "ParameterConverter_LONGVARBINARY_byteArray{}";

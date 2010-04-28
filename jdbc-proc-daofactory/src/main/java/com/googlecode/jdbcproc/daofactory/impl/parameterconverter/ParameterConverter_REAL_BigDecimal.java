@@ -6,8 +6,12 @@ import java.math.BigDecimal;
 /**
  *  REAL - BigDecimal
  */
-public class ParameterConverter_REAL_BigDecimal implements IParameterConverter<BigDecimal> {
+public class ParameterConverter_REAL_BigDecimal 
+    implements IParameterConverter<ParameterConverter_REAL_BigDecimal, BigDecimal> {
 
+  public static final Type<ParameterConverter_REAL_BigDecimal> TYPE 
+      = new Type<ParameterConverter_REAL_BigDecimal>(Types.REAL, BigDecimal.class);
+  
     public void setValue(BigDecimal aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
         if(aValue!=null) {
             aStmt.setBigDecimal(aIndex, aValue);
@@ -32,9 +36,9 @@ public class ParameterConverter_REAL_BigDecimal implements IParameterConverter<B
         return aResultSet.getBigDecimal(aParameterName);
     }
 
-    public ParameterSetterKey getKey() {
-        return new ParameterSetterKey(Types.REAL, BigDecimal.class);
-    }
+  public Type<ParameterConverter_REAL_BigDecimal> getType() {
+    return TYPE;
+  }
 
     public String toString() {
         return "ParameterConverter_REAL_BigDecimal{}";

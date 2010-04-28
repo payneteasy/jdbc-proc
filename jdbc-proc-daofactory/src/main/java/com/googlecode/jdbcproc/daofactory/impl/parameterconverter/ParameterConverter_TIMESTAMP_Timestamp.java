@@ -5,8 +5,12 @@ import java.sql.*;
 /**
  *  TIMESTAMP - java.sql.Timestamp
  */
-public class ParameterConverter_TIMESTAMP_Timestamp implements IParameterConverter<Timestamp> {
+public class ParameterConverter_TIMESTAMP_Timestamp 
+    implements IParameterConverter<ParameterConverter_TIMESTAMP_Timestamp, Timestamp> {
 
+  public static final Type<ParameterConverter_TIMESTAMP_Timestamp> TYPE 
+      = new Type<ParameterConverter_TIMESTAMP_Timestamp>(Types.TIMESTAMP, Timestamp.class);
+  
     public void setValue(Timestamp aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
         if(aValue!=null) {
             aStmt.setTimestamp(aIndex, aValue);
@@ -31,10 +35,10 @@ public class ParameterConverter_TIMESTAMP_Timestamp implements IParameterConvert
         return aResultSet.getTimestamp(aParameterName);
     }
 
-    public ParameterSetterKey getKey() {
-        return new ParameterSetterKey(Types.TIMESTAMP, Timestamp.class);
-    }
-
+  public Type<ParameterConverter_TIMESTAMP_Timestamp> getType() {
+    return TYPE;
+  }
+  
     public String toString() {
         return "ParameterConverter_TIMESTAMP_Timestamp{}";
     }

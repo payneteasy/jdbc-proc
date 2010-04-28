@@ -6,8 +6,12 @@ import java.sql.*;
 /**
  *  DATE - java.util.Date
  */
-public class ParameterConverter_DATE_utilDate implements IParameterConverter<java.util.Date> {
+public class ParameterConverter_DATE_utilDate 
+    implements IParameterConverter<ParameterConverter_DATE_utilDate, java.util.Date> {
 
+  public static final Type<ParameterConverter_DATE_utilDate> TYPE 
+      = new Type<ParameterConverter_DATE_utilDate>(Types.DATE, java.util.Date.class);
+  
     public void setValue(java.util.Date aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
         if(aValue!=null) {
             java.sql.Date sqlDate = new java.sql.Date(aValue.getTime());
@@ -34,9 +38,9 @@ public class ParameterConverter_DATE_utilDate implements IParameterConverter<jav
         return aResultSet.getDate(aParameterName);
     }
 
-    public ParameterSetterKey getKey() {
-        return new ParameterSetterKey(Types.DATE, java.util.Date.class);
-    }
+  public Type<ParameterConverter_DATE_utilDate> getType() {
+    return TYPE;
+  }
 
     public String toString() {
         return "ParameterConverter_DATE_utilDate{}";
