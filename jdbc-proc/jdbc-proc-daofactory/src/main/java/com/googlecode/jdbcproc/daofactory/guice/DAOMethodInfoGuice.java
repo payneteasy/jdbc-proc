@@ -1,15 +1,15 @@
 /*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package com.googlecode.jdbcproc.daofactory.guice;
@@ -18,16 +18,15 @@ import com.google.inject.Inject;
 import com.googlecode.jdbcproc.daofactory.DAOMethodInfo;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.googlecode.jdbcproc.daofactory.impl.DaoMethodInvoker;
-import com.googlecode.jdbcproc.daofactory.impl.block.factory.BlockFactoryUtils;
-import com.googlecode.jdbcproc.daofactory.impl.block.factory.CallableStatementExecutorBlockFactory;
-import com.googlecode.jdbcproc.daofactory.impl.block.factory.OutputParametersGetterBlockFactory;
-import com.googlecode.jdbcproc.daofactory.impl.block.factory.ParametersSetterBlockFactory;
-import com.googlecode.jdbcproc.daofactory.impl.block.factory.RegisterOutParametersBlockFactory;
-import com.googlecode.jdbcproc.daofactory.impl.block.factory.ResultSetConverterBlockFactory;
-import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterManager;
-import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
-import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfoManagerInitOnStartup;
+import com.googlecode.jdbcproc.daofactory.impl.block.BlockFactoryUtils;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.CallableStatementExecutorBlockService;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.OutputParametersGetterBlockService;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.ParametersSetterBlockService;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.RegisterOutParametersBlockService;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterBlockService;
+import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.IStoredProcedureInfoManager;
+import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
 
 import java.lang.reflect.Method;
 
@@ -37,81 +36,76 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.Assert;
 
 /**
- * @version 1.00 Jan 25, 2010 12:22:54 PM
+ * @version 1.00 Apr 28, 2010 1:17:09 PM
  *
- * @author esinev
- * @author dmk
+ * @author crazydmk
  */
 public class DAOMethodInfoGuice implements DAOMethodInfo {
 
   private final Logger LOG = LoggerFactory.getLogger(getClass());
 
   private final JdbcTemplate jdbcTemplate;
-
-  private final ParameterConverterManager theParameterConverterManager 
-      = new ParameterConverterManager();
-  private final IStoredProcedureInfoManager theStoredProcedureInfoManager;
-  
-  // factories
-  private final CallableStatementExecutorBlockFactory theCallableStatementExecutorBlockFactory
-      = new CallableStatementExecutorBlockFactory();
-  private final OutputParametersGetterBlockFactory theOutputParametersGetterBlockFactory
-      = new OutputParametersGetterBlockFactory();
-  private final ParametersSetterBlockFactory theParametersSetterBlockFactory
-      = new ParametersSetterBlockFactory();
-  private final RegisterOutParametersBlockFactory theRegisterOutParametersBlockFactory
-      = new RegisterOutParametersBlockFactory();
-  private final ResultSetConverterBlockFactory theResultSetConverterBlockFactory
-      = new ResultSetConverterBlockFactory();
+  private final ParameterConverterService parameterConverterService;
+  private final CallableStatementExecutorBlockService callableStatementExecutorBlockService;
+  private final OutputParametersGetterBlockService outputParametersGetterBlockService;
+  private final ParametersSetterBlockService parametersSetterBlockService;
+  private final RegisterOutParametersBlockService registerOutParametersBlockService;
+  private final ResultSetConverterBlockService resultSetConverterBlockService;
+  private final IStoredProcedureInfoManager storedProcedureInfoManager;
 
   @Inject
-  public DAOMethodInfoGuice(JdbcTemplate jdbcTemplate) throws Exception {
+  public DAOMethodInfoGuice(JdbcTemplate jdbcTemplate,
+      ParameterConverterService parameterConverterService,
+      CallableStatementExecutorBlockService callableStatementExecutorBlockService,
+      OutputParametersGetterBlockService outputParametersGetterBlockService,
+      ParametersSetterBlockService parametersSetterBlockService,
+      RegisterOutParametersBlockService registerOutParametersBlockService,
+      ResultSetConverterBlockService resultSetConverterBlockService,
+      IStoredProcedureInfoManager storedProcedureInfoManager) throws Exception {
     this.jdbcTemplate = jdbcTemplate;
-
-    // Gets information about all procedures from database
-    theStoredProcedureInfoManager = new StoredProcedureInfoManagerInitOnStartup(jdbcTemplate);
+    this.parameterConverterService = parameterConverterService;
+    this.callableStatementExecutorBlockService = callableStatementExecutorBlockService;
+    this.outputParametersGetterBlockService = outputParametersGetterBlockService;
+    this.parametersSetterBlockService = parametersSetterBlockService;
+    this.registerOutParametersBlockService = registerOutParametersBlockService;
+    this.resultSetConverterBlockService = resultSetConverterBlockService;
+    this.storedProcedureInfoManager = storedProcedureInfoManager;
   }
 
   /**
    * Creates method info for bets performance
-   *
-   * @param aDaoMethod method
+   * @param daoMethod method
    * @return method info
    */
-  public DaoMethodInvoker createDaoMethodInvoker(Method aDaoMethod) {
-    AStoredProcedure procedureAnnotation = aDaoMethod.getAnnotation(AStoredProcedure.class);
+  public DaoMethodInvoker createDaoMethodInvoker(Method daoMethod) {
+    AStoredProcedure procedureAnnotation = daoMethod.getAnnotation(AStoredProcedure.class);
     Assert.notNull(procedureAnnotation, "Method must have @AStoredProcedure annotation");
 
     String procedureName = procedureAnnotation.name();
-    Assert.hasText(procedureName, "Method " + aDaoMethod.toString()
+    Assert.hasText(procedureName, "Method " + daoMethod.toString()
         + " has empty name() parameter in @AStoredProcedure annotation");
 
-    StoredProcedureInfo procedureInfo 
-        = theStoredProcedureInfoManager.getProcedureInfo(procedureName);
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("      Found procedure info: " + procedureInfo);
+    StoredProcedureInfo procedureInfo = storedProcedureInfoManager.getProcedureInfo(procedureName);
+    if(LOG.isDebugEnabled()) {
+      LOG.debug("      Found procedure info: "+procedureInfo);
     }
     Assert.notNull(procedureInfo, "There are no procedure '" + procedureName + "' in database");
 
     String callString = createCallString(procedureInfo);
 
-    boolean isReturnIterator = BlockFactoryUtils.isReturnIterator(aDaoMethod);
+    boolean isReturnIterator = BlockFactoryUtils.isReturnIterator(daoMethod);
 
-    return new DaoMethodInvoker(
-        procedureInfo.getProcedureName()
-        , callString
-        , theRegisterOutParametersBlockFactory.create(procedureInfo)
-        , theParametersSetterBlockFactory.create(jdbcTemplate, theParameterConverterManager, 
-            aDaoMethod, procedureInfo)
-        , theCallableStatementExecutorBlockFactory.create(aDaoMethod, procedureInfo)
-        , theOutputParametersGetterBlockFactory.create(theParameterConverterManager, aDaoMethod, 
-            procedureInfo)
-        , theResultSetConverterBlockFactory.create(aDaoMethod, procedureInfo, 
-            theParameterConverterManager)
+    return new DaoMethodInvoker(procedureInfo.getProcedureName(), callString
+        , registerOutParametersBlockService.create(procedureInfo)
+        , parametersSetterBlockService.create(jdbcTemplate, parameterConverterService, daoMethod
+            , procedureInfo)
+        , callableStatementExecutorBlockService.create(daoMethod, procedureInfo)
+        , outputParametersGetterBlockService.create(parameterConverterService, daoMethod
+            , procedureInfo)
+        , resultSetConverterBlockService.create(daoMethod, procedureInfo, parameterConverterService)
         , isReturnIterator
     );
   }
-
 
   /**
    * Create call query string.
@@ -140,17 +134,16 @@ public class DAOMethodInfoGuice implements DAOMethodInfo {
     return sb.toString();
   }
 
-  @Override
   public String toString() {
     return "DaoMethodInfoFactory{" +
         "jdbcTemplate=" + jdbcTemplate +
-        ", theParameterConverterManager=" + theParameterConverterManager +
-        ", theStoredProcedureInfoManager=" + theStoredProcedureInfoManager +
-        ", theCallableStatementExecutorBlockFactory=" + theCallableStatementExecutorBlockFactory +
-        ", theOutputParametersGetterBlockFactory=" + theOutputParametersGetterBlockFactory +
-        ", theParametersSetterBlockFactory=" + theParametersSetterBlockFactory +
-        ", theRegisterOutParametersBlockFactory=" + theRegisterOutParametersBlockFactory +
-        ", theResultSetConverterBlockFactory=" + theResultSetConverterBlockFactory +
+        ", parameterConverterService=" + parameterConverterService +
+        ", storedProcedureInfoManager=" + storedProcedureInfoManager +
+        ", callableStatementExecutorBlockService=" + callableStatementExecutorBlockService +
+        ", outputParametersGetterBlockService=" + outputParametersGetterBlockService +
+        ", parametersSetterBlockService=" + parametersSetterBlockService +
+        ", registerOutParametersBlockService=" + registerOutParametersBlockService +
+        ", resultSetConverterBlockService=" + resultSetConverterBlockService +
         '}';
   }
 }

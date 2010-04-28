@@ -12,13 +12,24 @@
  * limitations under the License.
  */
 
-
 package com.googlecode.jdbcproc.daofactory.guice;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.googlecode.jdbcproc.daofactory.DAOMethodInfo;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.CallableStatementExecutorBlockService;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.CallableStatementExecutorBlockServiceImpl;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.OutputParametersGetterBlockService;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.OutputParametersGetterBlockServiceImpl;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.ParametersSetterBlockService;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.ParametersSetterBlockServiceImpl;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.RegisterOutParametersBlockService;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.RegisterOutParametersBlockServiceImpl;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterBlockService;
+import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterBlockServiceImpl;
+import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
+import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterServiceImpl;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeeDao;
 
@@ -32,6 +43,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
   @Override
   protected void configure() {
     bind(DAOMethodInfo.class).to(DAOMethodInfoGuice.class);
+    bind(ParameterConverterService.class).to(ParameterConverterServiceImpl.class);
+    bind(CallableStatementExecutorBlockService.class).to(CallableStatementExecutorBlockServiceImpl.class);
+    bind(OutputParametersGetterBlockService.class).to(OutputParametersGetterBlockServiceImpl.class);
+    bind(ParametersSetterBlockService.class).to(ParametersSetterBlockServiceImpl.class);
+    bind(RegisterOutParametersBlockService.class).to(RegisterOutParametersBlockServiceImpl.class);
+    bind(ResultSetConverterBlockService.class).to(ResultSetConverterBlockServiceImpl.class);
   }
   
   @Provides

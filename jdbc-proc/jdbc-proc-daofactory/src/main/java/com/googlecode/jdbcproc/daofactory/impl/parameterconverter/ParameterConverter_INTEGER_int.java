@@ -5,8 +5,12 @@ import java.sql.*;
 /**
  *  INTEGER - int
  */
-public class ParameterConverter_INTEGER_int implements IParameterConverter<Integer> {
+public class ParameterConverter_INTEGER_int 
+    implements IParameterConverter<ParameterConverter_INTEGER_int, Integer> {
 
+  public static final Type<ParameterConverter_INTEGER_int> TYPE 
+      = new Type<ParameterConverter_INTEGER_int>(Types.INTEGER, int.class);
+  
     public void setValue(Integer aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
         aStmt.setInt(aIndex, aValue);
     }
@@ -23,9 +27,9 @@ public class ParameterConverter_INTEGER_int implements IParameterConverter<Integ
         return aResultSet.getInt(aParameterName);
     }
 
-    public ParameterSetterKey getKey() {
-        return new ParameterSetterKey(Types.INTEGER, int.class);
-    }
+  public Type<ParameterConverter_INTEGER_int> getType() {
+    return TYPE;
+  }
 
     public String toString() {
         return "ParameterConverter_INTEGER_int{}";

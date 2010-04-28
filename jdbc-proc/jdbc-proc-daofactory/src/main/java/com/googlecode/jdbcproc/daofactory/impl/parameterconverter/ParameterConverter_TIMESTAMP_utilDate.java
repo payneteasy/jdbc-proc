@@ -6,8 +6,12 @@ import java.util.Date;
 /**
  *  TIMESTAMP - java.util.Date
  */
-public class ParameterConverter_TIMESTAMP_utilDate implements IParameterConverter<java.util.Date> {
+public class ParameterConverter_TIMESTAMP_utilDate 
+    implements IParameterConverter<ParameterConverter_TIMESTAMP_utilDate, java.util.Date> {
 
+  public static final Type<ParameterConverter_TIMESTAMP_utilDate> TYPE 
+      = new Type<ParameterConverter_TIMESTAMP_utilDate>(Types.TIMESTAMP, java.util.Date.class);
+  
     public void setValue(Date aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
         if(aValue!=null) {
             java.sql.Timestamp timestamp = new Timestamp(aValue.getTime());
@@ -34,9 +38,9 @@ public class ParameterConverter_TIMESTAMP_utilDate implements IParameterConverte
         return aResultSet.getTimestamp(aParameterName);
     }
 
-    public ParameterSetterKey getKey() {
-        return new ParameterSetterKey(Types.TIMESTAMP, java.util.Date.class);
-    }
+  public Type<ParameterConverter_TIMESTAMP_utilDate> getType() {
+    return TYPE;
+  }
 
     public String toString() {
         return "ParameterConverter_TIMESTAMP_utilDate{}";

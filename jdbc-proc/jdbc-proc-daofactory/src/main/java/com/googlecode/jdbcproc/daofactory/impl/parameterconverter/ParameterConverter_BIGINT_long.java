@@ -5,8 +5,12 @@ import java.sql.*;
 /**
  *  BIGINT - long
  */
-public class ParameterConverter_BIGINT_long implements IParameterConverter<Long> {
+public class ParameterConverter_BIGINT_long 
+    implements IParameterConverter<ParameterConverter_BIGINT_long, Long> {
 
+  public static final Type<ParameterConverter_BIGINT_long> TYPE 
+      = new Type<ParameterConverter_BIGINT_long>(Types.BIGINT, long.class);
+  
     public void setValue(Long aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
         if(aValue!=null) {
             aStmt.setLong(aIndex, aValue);
@@ -31,9 +35,9 @@ public class ParameterConverter_BIGINT_long implements IParameterConverter<Long>
         return aResultSet.getLong(aParameterName);
     }
 
-    public ParameterSetterKey getKey() {
-        return new ParameterSetterKey(Types.BIGINT, long.class);
-    }
+  public Type<ParameterConverter_BIGINT_long> getType() {
+    return TYPE;
+  }
 
     public String toString() {
         return "ParameterConverter_BIGINT_long{}";

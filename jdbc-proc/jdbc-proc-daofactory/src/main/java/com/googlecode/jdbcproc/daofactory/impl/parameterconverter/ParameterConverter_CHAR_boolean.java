@@ -5,8 +5,12 @@ import java.sql.*;
 /**
  *  CHAR - boolean
  */
-public class ParameterConverter_CHAR_boolean implements IParameterConverter<Boolean> {
+public class ParameterConverter_CHAR_boolean 
+    implements IParameterConverter<ParameterConverter_CHAR_boolean, Boolean> {
 
+  public static final Type<ParameterConverter_CHAR_boolean> TYPE 
+      = new Type<ParameterConverter_CHAR_boolean>(Types.CHAR, boolean.class);
+  
     public void setValue(Boolean aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
         String strValue = aValue!=null && aValue ? "Y" : "N";
         aStmt.setString(aIndex, strValue);
@@ -27,11 +31,11 @@ public class ParameterConverter_CHAR_boolean implements IParameterConverter<Bool
         return "Y".equals(strValue);
     }
 
-    public ParameterSetterKey getKey() {
-        return new ParameterSetterKey(Types.CHAR, boolean.class);
-    }
+  public Type<ParameterConverter_CHAR_boolean> getType() {
+    return TYPE;
+  }
 
-    public String toString() {
+  public String toString() {
         return "ParameterConverter_CHAR_boolean{}";
     }
 }

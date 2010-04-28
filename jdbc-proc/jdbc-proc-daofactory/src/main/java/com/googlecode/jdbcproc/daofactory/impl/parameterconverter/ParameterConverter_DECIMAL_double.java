@@ -6,8 +6,12 @@ import java.math.BigDecimal;
 /**
  *  DECIMAL - boolean
  */
-public class ParameterConverter_DECIMAL_double implements IParameterConverter<Double> {
+public class ParameterConverter_DECIMAL_double 
+    implements IParameterConverter<ParameterConverter_DECIMAL_double, Double> {
 
+  public static final Type<ParameterConverter_DECIMAL_double> TYPE 
+      = new Type<ParameterConverter_DECIMAL_double>(Types.DECIMAL, double.class);
+  
     public void setValue(Double aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
         if(aValue!=null) {
             aStmt.setBigDecimal(aIndex, new BigDecimal(aValue));
@@ -34,9 +38,9 @@ public class ParameterConverter_DECIMAL_double implements IParameterConverter<Do
         return decValue!=null ? decValue.doubleValue() : 0;
     }
 
-    public ParameterSetterKey getKey() {
-        return new ParameterSetterKey(Types.DECIMAL, double.class);
-    }
+  public Type<ParameterConverter_DECIMAL_double> getType() {
+    return TYPE;
+  }
 
     public String toString() {
         return "ParameterConverter_DECIMAL_double{}";

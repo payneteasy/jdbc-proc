@@ -1,5 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.procedureinfo;
 
+import com.google.inject.Inject;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Connection;
@@ -15,11 +17,12 @@ import java.util.Map;
  */
 public class StoredProcedureInfoManagerInitOnStartup extends AbstractStoredProcedureInfoManager {
     
-    public StoredProcedureInfoManagerInitOnStartup(JdbcTemplate aJdbcTemplate) throws Exception {
+  @Inject
+    public StoredProcedureInfoManagerInitOnStartup(JdbcTemplate jdbcTemplate) throws Exception {
         LOG.info("Creating dao columns cache map...");
 
         Map<String, StoredProcedureInfo> map = new HashMap<String, StoredProcedureInfo>();
-        Connection con = aJdbcTemplate.getDataSource().getConnection();
+        Connection con = jdbcTemplate.getDataSource().getConnection();
 
         try {
             DatabaseMetaData meta = con.getMetaData();

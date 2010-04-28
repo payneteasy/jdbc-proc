@@ -20,7 +20,8 @@ public class StoredProcedureDaoFactoryBean implements FactoryBean {
     public Object getObject() throws Exception {
         return Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader()
                 , new Class[] {theInterface}
-                , new StoredProcedureDaoInvocationHandler(theInterface, theJdbcTemplate, theDaoMethodInfoFactory)
+                , new StoredProcedureDaoInvocationHandler(theInterface, theJdbcTemplate,
+                theDaoMethodInfoFactory)
         );
     }
 
@@ -47,7 +48,8 @@ public class StoredProcedureDaoFactoryBean implements FactoryBean {
     public void setJdbcTemplate(JdbcTemplate aJdbcTemplate) { theJdbcTemplate = aJdbcTemplate ; }
 
     /** DaoMethodInfoFactory */
-    public void setDaoMethodInfoFactory(DaoMethodInfoFactory aDaoMethodInfoFactory) { theDaoMethodInfoFactory = aDaoMethodInfoFactory ; }
+    public void setDaoMethodInfoFactory(DaoMethodInfoFactory aDaoMethodInfoFactory) { theDaoMethodInfoFactory
+        = aDaoMethodInfoFactory; }
 
     public String toString() {
         return "StoredProcedureDaoFactoryBean{" +
@@ -58,7 +60,7 @@ public class StoredProcedureDaoFactoryBean implements FactoryBean {
     }
 
     /** DaoMethodInfoFactory */
-    private DaoMethodInfoFactory theDaoMethodInfoFactory ;
+    private DaoMethodInfoFactory theDaoMethodInfoFactory;
     /** JdbcTemplate */
     private JdbcTemplate theJdbcTemplate ;
     /** Interface class to be proxied */
