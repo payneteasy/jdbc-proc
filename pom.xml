@@ -10,6 +10,8 @@
 
     <description>A java persistence engine for stored procedures</description>
 
+    <url>http://jdbc-proc.googlecode.com</url>
+
     <modules>
         <module>jdbc-proc-daofactory</module>
         <module>jdbc-proc-integration-test</module>
@@ -201,7 +203,7 @@
     <!-- signs artifacts. This profile will be activated when the value of maven property performRelease is true -->
     <profiles>
         <profile>
-            <id>release-sign-artifacts</id>
+            <id>release-profile</id>
             <activation>
                 <property>
                     <name>performRelease</name>
@@ -210,6 +212,8 @@
             </activation>
             <build>
                 <plugins>
+
+                    <!-- SIGNS -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
