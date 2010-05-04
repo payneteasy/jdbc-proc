@@ -8,16 +8,43 @@
 
     <name>jdbc-proc                              ${version}</name>
 
+    <description>A java persistence engine for stored procedures</description>
+
     <modules>
         <module>jdbc-proc-daofactory</module>
         <module>jdbc-proc-integration-test</module>
     </modules>
 
     <scm>
-        <connection>scm:svn:https://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc</connection>
+        <connection>scm:svn:http://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc</connection>
         <developerConnection>scm:svn:https://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc</developerConnection>
-        <url>http://jdbc-proc.googlecode.com</url>
+        <url>http://code.google.com/p/jdbc-proc/source/browse/</url>
     </scm>
+
+    <developers>
+        <developer>
+            <name>Evgeniy Sinev</name>
+            <email>esinev@gmail.com</email>
+        </developer>
+        <developer>
+            <email>gendlin@gmail.com</email>
+        </developer>
+        <developer>
+            <email>mgoryachkin@gmail.com</email>
+        </developer>
+        <developer>
+            <email>kuccyp@gmail.com</email>
+        </developer>
+        <developer>
+            <email>slava.zarubin@gmail.com</email>
+        </developer>
+        <developer>
+            <email>roman.puchkovskiy@gmail.com</email>
+        </developer>
+        <developer>
+            <email>sfkononov@gmail.com</email>
+        </developer>
+    </developers>
 
     <!--
     -      Distributions
@@ -177,5 +204,13 @@
         <spring.version>3.0.0.RELEASE</spring.version>
         <slf4j.version>1.5.10</slf4j.version>
     </properties>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
 </project>
