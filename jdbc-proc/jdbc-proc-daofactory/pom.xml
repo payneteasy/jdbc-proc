@@ -4,14 +4,14 @@
 
     <groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
     <artifactId>jdbc-proc-daofactory</artifactId>
-    <version>1.0-27-SNAPSHOT</version>
+    <version>1.0-27</version>
     
     <name>.jdbc-proc-daofactory                  ${version}</name>
     
     <parent>
         <groupId>com.googlecode.jdbc-proc</groupId>
         <artifactId>jdbc-proc</artifactId>
-        <version>1.0-27-SNAPSHOT</version>
+        <version>1.0-27</version>
     </parent>
 
     <dependencies>
