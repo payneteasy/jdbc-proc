@@ -3,9 +3,9 @@ mvn clean install 					\
   && cd ~/tmp/test-jdbc-proc-archetype 			\
   && rm -fr my-artifactId 				\
   && mvn archetype:generate -B                         	\
-    -DarchetypeGroupId=com.googlecode                	\
+    -DarchetypeGroupId=com.googlecode.jdbc-proc        	\
     -DarchetypeArtifactId=jdbc-proc-archetype        	\
-    -DarchetypeVersion=1.0-SNAPSHOT                  	\
+    -DarchetypeVersion=1.0-2-SNAPSHOT                  	\
     -DarchetypeRepository=http://jdbc-proc.googlecode.com/svn/maven2/release \
     -DgroupId=my.groupid                             	\
     -DartifactId=my-artifactId 				\

@@ -22,9 +22,9 @@
         <!-- proc jdbc -->
         <dependency>
             <artifactId>jdbc-proc-daofactory</artifactId>
-            <groupId>com.googlecode.jdbc-proc</groupId>
-            <!-- Latest 1.0-x (not 2.0), at least 1.0-12 -->
-            <version>[1.0-12,2.0)</version>
+            <groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
+            <!-- Latest 1.0-x (not 2.0), at least 1.0-25 -->
+            <version>[1.0-25,2.0)</version>
         </dependency>
 
         <!-- DBCP -->
