@@ -3,15 +3,43 @@
     <packaging>jar</packaging>
 
     <artifactId>jdbc-proc-archetype</artifactId>
-    <groupId>com.googlecode</groupId>
+    <groupId>com.googlecode.jdbc-proc</groupId>
     <version>1.0-2-SNAPSHOT</version>
 
+    <name>jdbc-proc-archetype                    ${version}</name>
+
+    <description>Creates simple project with jdbc-proc support</description>
+
     <scm>
-        <connection>scm:svn:https://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc-archetype</connection>
-        <developerConnection>scm:svn:https://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc-archetype
-        </developerConnection>
-        <url>http://jdbc-proc.googlecode.com</url>
+        <connection>scm:svn:http://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc-archetype</connection>
+        <developerConnection>scm:svn:https://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc-archetype</developerConnection>
+        <url>http://http://code.google.com/p/jdbc-proc/source/browse/trunk/jdbc-proc-archetype</url>
     </scm>
+
+    <developers>
+        <developer>
+            <name>Evgeniy Sinev</name>
+            <email>esinev@gmail.com</email>
+        </developer>
+        <developer>
+            <email>gendlin@gmail.com</email>
+        </developer>
+        <developer>
+            <email>mgoryachkin@gmail.com</email>
+        </developer>
+        <developer>
+            <email>kuccyp@gmail.com</email>
+        </developer>
+        <developer>
+            <email>slava.zarubin@gmail.com</email>
+        </developer>
+        <developer>
+            <email>roman.puchkovskiy@gmail.com</email>
+        </developer>
+        <developer>
+            <email>sfkononov@gmail.com</email>
+        </developer>
+    </developers>
 
     <!--
     -      Distributions
@@ -33,4 +61,72 @@
         </snapshotRepository>
     </distributionManagement>
 
+    <build>
+        <plugins>
+            <plugin>
+                <inherited>true</inherited>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                    <optimise>true</optimise>
+                    <debug>true</debug>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-idea-plugin</artifactId>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- signs artifacts. This profile will be activated when the value of maven property performRelease is true -->
+    <profiles>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
 </project>
