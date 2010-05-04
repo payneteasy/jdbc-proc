@@ -4,16 +4,18 @@
 
     <artifactId>jdbc-proc-archetype</artifactId>
     <groupId>com.googlecode.jdbc-proc</groupId>
-    <version>1.0-3-SNAPSHOT</version>
+    <version>1.0-3</version>
 
     <name>jdbc-proc-archetype                    ${version}</name>
 
     <description>Creates simple project with jdbc-proc support</description>
 
+    <url>http://jdbc-proc.googlecode.com</url>
+    
     <scm>
-        <connection>scm:svn:http://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc-archetype</connection>
-        <developerConnection>scm:svn:https://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc-archetype</developerConnection>
-        <url>http://http://code.google.com/p/jdbc-proc/source/browse/trunk/jdbc-proc-archetype</url>
+        <connection>scm:svn:http://jdbc-proc.googlecode.com/svn/tags/jdbc-proc-archetype-1.0-3</connection>
+        <developerConnection>scm:svn:https://jdbc-proc.googlecode.com/svn/tags/jdbc-proc-archetype-1.0-3</developerConnection>
+        <url>http://http://code.google.com/p/jdbc-proc/source/browse/tags/jdbc-proc-archetype-1.0-3</url>
     </scm>
 
     <developers>
@@ -47,16 +49,13 @@
     <distributionManagement>
         <repository>
             <id>jdbc-proc-release</id>
-            <name>Local Maven repository of releases</name>
-            <!--
-               Use https://jdbc-proc.googlecode.com/svn/maven2/release to include jdbc-proc repository
-           -->
-            <url>file:///${HOME}/svn/jdbc-proc-maven2-release</url>
+            <name>sonatype oss RELEASE repository</name>
+            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2</url>
         </repository>
         <snapshotRepository>
             <id>jdbc-proc-snapshot</id>
-            <name>Local Maven repository of snapshots</name>
-            <url>file:///${HOME}/svn/jdbc-proc-maven2-snapshot</url>
+            <name>sonatype oss SNAPSHOT repository</name>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
