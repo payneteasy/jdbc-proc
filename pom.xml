@@ -3,7 +3,7 @@
     <packaging>pom</packaging>
 
     <artifactId>jdbc-proc</artifactId>
-    <groupId>com.googlecode</groupId>
+    <groupId>com.googlecode.jdbc-proc</groupId>
     <version>1.0-25-SNAPSHOT</version>
 
     <name>jdbc-proc                              ${version}</name>
@@ -72,7 +72,7 @@
 
             <!-- JDBC PROC -->
             <dependency>
-                <groupId>com.googlecode.jdbc-proc</groupId>
+                <groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
                 <artifactId>jdbc-proc-daofactory</artifactId>
                 <version>1.0-25-SNAPSHOT</version>
             </dependency>
