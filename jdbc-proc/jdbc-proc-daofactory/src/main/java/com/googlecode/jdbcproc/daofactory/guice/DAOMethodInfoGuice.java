@@ -16,6 +16,7 @@ package com.googlecode.jdbcproc.daofactory.guice;
 
 import com.google.inject.Inject;
 import com.googlecode.jdbcproc.daofactory.DAOMethodInfo;
+import com.googlecode.jdbcproc.daofactory.IMetaLoginInfoService;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.googlecode.jdbcproc.daofactory.impl.DaoMethodInvoker;
 import com.googlecode.jdbcproc.daofactory.impl.block.BlockFactoryUtils;
@@ -52,6 +53,7 @@ public class DAOMethodInfoGuice implements DAOMethodInfo {
   private final RegisterOutParametersBlockService registerOutParametersBlockService;
   private final ResultSetConverterBlockService resultSetConverterBlockService;
   private final IStoredProcedureInfoManager storedProcedureInfoManager;
+  private final IMetaLoginInfoService metaLoginInfoService;
 
   @Inject
   public DAOMethodInfoGuice(JdbcTemplate jdbcTemplate,
@@ -61,7 +63,8 @@ public class DAOMethodInfoGuice implements DAOMethodInfo {
       ParametersSetterBlockService parametersSetterBlockService,
       RegisterOutParametersBlockService registerOutParametersBlockService,
       ResultSetConverterBlockService resultSetConverterBlockService,
-      IStoredProcedureInfoManager storedProcedureInfoManager) throws Exception {
+      IStoredProcedureInfoManager storedProcedureInfoManager,
+      IMetaLoginInfoService metaLoginInfoService) throws Exception {
     this.jdbcTemplate = jdbcTemplate;
     this.parameterConverterService = parameterConverterService;
     this.callableStatementExecutorBlockService = callableStatementExecutorBlockService;
@@ -70,6 +73,7 @@ public class DAOMethodInfoGuice implements DAOMethodInfo {
     this.registerOutParametersBlockService = registerOutParametersBlockService;
     this.resultSetConverterBlockService = resultSetConverterBlockService;
     this.storedProcedureInfoManager = storedProcedureInfoManager;
+    this.metaLoginInfoService = metaLoginInfoService;
   }
 
   /**
@@ -98,7 +102,7 @@ public class DAOMethodInfoGuice implements DAOMethodInfo {
     return new DaoMethodInvoker(procedureInfo.getProcedureName(), callString
         , registerOutParametersBlockService.create(procedureInfo)
         , parametersSetterBlockService.create(jdbcTemplate, parameterConverterService, daoMethod
-            , procedureInfo)
+            , procedureInfo, metaLoginInfoService)
         , callableStatementExecutorBlockService.create(daoMethod, procedureInfo)
         , outputParametersGetterBlockService.create(parameterConverterService, daoMethod
             , procedureInfo)

@@ -20,8 +20,7 @@ public class StoredProcedureDaoFactoryBean implements FactoryBean {
     public Object getObject() throws Exception {
         return Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader()
                 , new Class[] {theInterface}
-                , new StoredProcedureDaoInvocationHandler(theInterface, theJdbcTemplate,
-                theDaoMethodInfoFactory)
+                , new StoredProcedureDaoInvocationHandler(theInterface, theJdbcTemplate, theDaoMethodInfoFactory)
         );
     }
 

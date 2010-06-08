@@ -16,28 +16,18 @@ package com.googlecode.jdbcproc.daofactory.impl.block.service;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.BlockFactoryUtils;
 import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.ArgumentGetter;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.EntityArgumentGetter;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.EntityArgumentGetterOneToOne;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.EntityArgumentGetterOneToOneJoinColumn;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.IEntityArgumentGetter;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockArguments;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockEntity;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockList;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockListAggregator;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockNull1;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.*;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
+import com.googlecode.jdbcproc.daofactory.annotation.AMetaLoginInfo;
+import com.googlecode.jdbcproc.daofactory.IMetaLoginInfoService;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -58,317 +48,415 @@ import org.springframework.jdbc.core.StatementCallback;
 import org.springframework.util.Assert;
 
 /**
- * @version 1.00 Apr 28, 2010 12:16:19 PM
- *
  * @author esinev
  * @author dmk
+ * @version 1.00 Apr 28, 2010 12:16:19 PM
  */
 public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockService {
 
-  private final Logger LOG = LoggerFactory.getLogger(ParametersSetterBlockServiceImpl.class);
+    private final Logger LOG = LoggerFactory.getLogger(ParametersSetterBlockServiceImpl.class);
 
-  public List<IParametersSetterBlock> create(JdbcTemplate jdbcTemplate,
-      ParameterConverterService converterService, Method method,
-      StoredProcedureInfo procedureInfo) {
-    if (BlockFactoryUtils.isGetAllMethod(method, procedureInfo)) {
-      // List getAll()
-      return Collections.singletonList((IParametersSetterBlock) new ParametersSetterBlockNull1(
-          procedureInfo.getArguments().get(0).getDataType()));
+    public List<IParametersSetterBlock> create(
+              JdbcTemplate jdbcTemplate
+            , ParameterConverterService converterService
+            , Method method
+            , StoredProcedureInfo procedureInfo
+            , IMetaLoginInfoService aMetaLoginInfoService
+    ) {
 
-    } else if (procedureInfo.getArgumentsCounts() > method.getParameterTypes().length
-        && method.getParameterTypes().length == 1 
-        && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])) {
-      // is entity, e.g. saveProcessor(TransactionProcessor)
-      Assert.isTrue(method.getParameterTypes().length == 1
-          , "Method " + method.getName() + " parameters count must be equals to 1");
-      Class entityClass = method.getParameterTypes()[0];
+        // List getAll()
+        if (BlockFactoryUtils.isGetAllMethod(method, procedureInfo)) {
+            return createGetAll(procedureInfo);
 
-      return Collections
-          .singletonList(createEntityBlock(converterService, procedureInfo, entityClass));
+        // is entity, e.g. void saveProcessor(TransactionProcessor) (meta login supported)
+        } else if (procedureInfo.getArgumentsCounts() > method.getParameterTypes().length
+                && method.getParameterTypes().length == 1
+                && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])) {
+            return createSaveMethod(converterService, method, procedureInfo, aMetaLoginInfoService);
 
-      // if no parameters
-    } else if (method.getParameterTypes().length == 0
-        && procedureInfo.getInputArgumentsCount() == 0) {
-      return Collections.emptyList();
+        // if no parameters
+        } else if (method.getParameterTypes().length == 0 && procedureInfo.getInputArgumentsCount() == 0) {
+            return Collections.emptyList();
 
-      // if parameters is simple puted to procedure
-    } else if (method.getParameterTypes().length == procedureInfo.getInputArgumentsCount()) {
-      List<ArgumentGetter> getters = new LinkedList<ArgumentGetter>();
-      int index = 0;
-      for (StoredProcedureArgumentInfo argumentInfo : procedureInfo.getInputArguments()) {
-        if (argumentInfo.isInputParameter()) {
-          IParameterConverter paramConverter = converterService
-              .getConverter(argumentInfo.getDataType(), method.getParameterTypes()[index]);
-          getters.add(new ArgumentGetter(paramConverter, argumentInfo.getColumnName()));
+        // if parameters is simple puted to procedure
+        } else if (method.getParameterTypes().length == procedureInfo.getInputArgumentsCount()) {
+            return createSimpleParameters(converterService, method, procedureInfo);
+
+        // if AMetaLoginInfo and parameters is simple puted to procedure
+        } else if (method.isAnnotationPresent(AMetaLoginInfo.class) && method.getParameterTypes().length + 2 == procedureInfo.getInputArgumentsCount()) {
+            return createSimpleParametersWithMetaLoginInfo(aMetaLoginInfoService, converterService, method, procedureInfo);
+            
+        // if all parameters is list and no arguments
+        } else if (areAllParametersListAndNoArguments(method, procedureInfo)) {
+            return createAllList(jdbcTemplate, converterService, method);
+
+        // if both list and arguments parameters provides
+        } else if (areListAndNonListParametersProvides(method, procedureInfo)) {
+            return createListAndArguments(jdbcTemplate, converterService, method, procedureInfo);
+
+        // else not supported
+        } else {
+            throw new IllegalStateException(method + " is Unsupported");
         }
-        index++;
-      }
-      return Collections
-          .singletonList((IParametersSetterBlock) new ParametersSetterBlockArguments(getters));
 
-      // if all parameters is list and no arguments
-    } else if (areAllParametersListAndNoArguments(method, procedureInfo)) {
-      if (method.getParameterTypes().length == 1) {
-        // only one argument
-        return Collections.singletonList(
-            (IParametersSetterBlock) createParametersSetterBlockList(jdbcTemplate, converterService,
-                method, 0));
-      } else {
-        // many arguments
+
+    }
+
+    /**
+     * if both list and arguments parameters provides
+     */
+    private List<IParametersSetterBlock> createListAndArguments(JdbcTemplate jdbcTemplate, ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo) {
+        List<IParametersSetterBlock> parametersSetterBlocks
+                = new LinkedList<IParametersSetterBlock>();
         Class<?>[] parameters = method.getParameterTypes();
+
         List<ParametersSetterBlockList> list = new LinkedList<ParametersSetterBlockList>();
+        List<Integer> argumentIndexes = new LinkedList<Integer>();
         for (int i = 0; i < parameters.length; i++) {
-          ParametersSetterBlockList block 
-              = createParametersSetterBlockList(jdbcTemplate, converterService, method, i);
-          list.add(block);
+            Class clazz = parameters[i];
+            if (clazz.equals(List.class)) {
+                ParametersSetterBlockList block
+                        = createParametersSetterBlockList(jdbcTemplate, converterService, method, i);
+                list.add(block);
+            } else {
+                argumentIndexes.add(i);
+            }
         }
-        return Collections
-            .singletonList((IParametersSetterBlock) new ParametersSetterBlockListAggregator(list));
-      }
+        parametersSetterBlocks.add(new ParametersSetterBlockListAggregator(list));
 
-      // if both list and arguments parameters provides
-    } else if (areListAndNonListParametersProvides(method, procedureInfo)) {
-      List<IParametersSetterBlock> parametersSetterBlocks
-          = new LinkedList<IParametersSetterBlock>();
-      Class<?>[] parameters = method.getParameterTypes();
+        if (procedureInfo.getInputArgumentsCount() > argumentIndexes.size()) {
+            Assert.isTrue(argumentIndexes.size() == 1
+                    , "Method " + method.getName() + " non List<?> parameters count must be equals to 1");
+            Class entityClass = method.getParameterTypes()[argumentIndexes.get(0)];
+            parametersSetterBlocks.add(createEntityBlock(converterService, procedureInfo, entityClass));
+        } else if (argumentIndexes.size() == procedureInfo.getInputArgumentsCount()) {
+            List<ArgumentGetter> getters = new LinkedList<ArgumentGetter>();
+            int index = 0;
+            for (StoredProcedureArgumentInfo argumentInfo : procedureInfo.getArguments()) {
+                if (argumentInfo.isInputParameter()) {
+                    IParameterConverter paramConverter = converterService
+                            .getConverter(argumentInfo.getDataType(),
+                                    method.getParameterTypes()[argumentIndexes.get(index)]);
+                    getters.add(new ArgumentGetter(paramConverter, argumentInfo.getColumnName()));
+                }
+                index++;
+            }
+            parametersSetterBlocks.add(new ParametersSetterBlockArguments(getters));
+        }
 
-      List<ParametersSetterBlockList> list = new LinkedList<ParametersSetterBlockList>();
-      List<Integer> argumentIndexes = new LinkedList<Integer>();
-      for (int i = 0; i < parameters.length; i++) {
-        Class clazz = parameters[i];
-        if (clazz.equals(List.class)) {
-          ParametersSetterBlockList block 
-              = createParametersSetterBlockList(jdbcTemplate, converterService, method, i);
-          list.add(block);
+        return parametersSetterBlocks;
+    }
+
+    /**
+     * if all parameters is list and no arguments
+     */
+    private List<IParametersSetterBlock> createAllList(JdbcTemplate jdbcTemplate, ParameterConverterService converterService, Method method) {
+        if (method.getParameterTypes().length == 1) {
+            // only one argument
+            return Collections.singletonList(
+                    (IParametersSetterBlock) createParametersSetterBlockList(jdbcTemplate, converterService,
+                            method, 0));
         } else {
-          argumentIndexes.add(i);
+            // many arguments
+            Class<?>[] parameters = method.getParameterTypes();
+            List<ParametersSetterBlockList> list = new LinkedList<ParametersSetterBlockList>();
+            for (int i = 0; i < parameters.length; i++) {
+                ParametersSetterBlockList block
+                        = createParametersSetterBlockList(jdbcTemplate, converterService, method, i);
+                list.add(block);
+            }
+            return Collections
+                    .singletonList((IParametersSetterBlock) new ParametersSetterBlockListAggregator(list));
         }
-      }
-      parametersSetterBlocks.add(new ParametersSetterBlockListAggregator(list));
-
-      if (procedureInfo.getInputArgumentsCount() > argumentIndexes.size()) {
-        Assert.isTrue(argumentIndexes.size() == 1
-            , "Method " + method.getName() + " non List<?> parameters count must be equals to 1");
-        Class entityClass = method.getParameterTypes()[argumentIndexes.get(0)];
-        parametersSetterBlocks.add(createEntityBlock(converterService, procedureInfo, entityClass));
-      } else if (argumentIndexes.size() == procedureInfo.getInputArgumentsCount()) {
-        List<ArgumentGetter> getters = new LinkedList<ArgumentGetter>();
-        int index = 0;
-        for (StoredProcedureArgumentInfo argumentInfo : procedureInfo.getArguments()) {
-          if (argumentInfo.isInputParameter()) {
-            IParameterConverter paramConverter = converterService
-                .getConverter(argumentInfo.getDataType(),
-                    method.getParameterTypes()[argumentIndexes.get(index)]);
-            getters.add(new ArgumentGetter(paramConverter, argumentInfo.getColumnName()));
-          }
-          index++;
-        }
-        parametersSetterBlocks.add(new ParametersSetterBlockArguments(getters));
-      }
-
-      return parametersSetterBlocks;
-
-      // else not supported
-    } else {
-      throw new IllegalStateException(method + " is Unsupported");
     }
-  }
 
-  /**
-   * Creates entity block
-   * @param converterService converter manager
-   * @param procedureInfo procedure into
-   * @param entityClass entity class
-   * @return block
-   */
-  private IParametersSetterBlock createEntityBlock(ParameterConverterService converterService,
-      StoredProcedureInfo procedureInfo, Class entityClass) {
-    List<EntityArgumentGetter> getters = new LinkedList<EntityArgumentGetter>();
-    for (Method getterMethod : entityClass.getMethods()) {
-      if (getterMethod.isAnnotationPresent(Column.class)) {
-        Column columnAnnotation = getterMethod.getAnnotation(Column.class);
-        StoredProcedureArgumentInfo argumentInfo = procedureInfo
-            .getArgumentInfo(columnAnnotation.name());
-        if (argumentInfo == null) {
-          throw new IllegalStateException("Column " + columnAnnotation.name() 
-              + " was not found in " + procedureInfo.getProcedureName());
+    private boolean isMetaLoginInfoPresented(Method aMethod) {
+        return aMethod.isAnnotationPresent(AMetaLoginInfo.class);
+    }
+
+    /**
+     * if parameters is simple puted to procedure
+     * @param converterService converter
+     * @param method method
+     * @param procedureInfo procedure
+     * @return list of setter blocks
+     */
+    private List<IParametersSetterBlock> createSimpleParameters(ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo) {
+        IParametersSetterBlock block = createSimpleParameters(0, converterService, method, procedureInfo);
+        return Collections.singletonList(block);
+
+    }
+
+    private List<IParametersSetterBlock> createMetaLoginList(IParametersSetterBlock aOriginalBlock, IMetaLoginInfoService aMetaLoginInfoService) {
+        List<IParametersSetterBlock> list = new LinkedList<IParametersSetterBlock>();
+
+        // add username and principal
+        list.add(new ParametersSetterBlockMetaLoginInfo(aMetaLoginInfoService));
+
+        // add simple parameters
+        list.add(aOriginalBlock);
+        return list;
+    }
+
+    /**
+     * if parameters is simple puted to procedure
+     * @param converterService converter
+     * @param method method
+     * @param procedureInfo procedure
+     * @return list of setter blocks
+     */
+    private List<IParametersSetterBlock> createSimpleParametersWithMetaLoginInfo(IMetaLoginInfoService aMetaLoginInfoService, ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo) {
+       return createMetaLoginList(createSimpleParameters(2, converterService, method, procedureInfo), aMetaLoginInfoService);
+    }
+
+    /**
+     * if parameters is simple puted to procedure
+     *
+     * @param converterService converter
+     * @param method method
+     * @param procedureInfo procedure
+     * @return list of setter blocks
+     */
+    private IParametersSetterBlock createSimpleParameters(int aFromProcedureArgument, ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo) {
+
+        final LinkedList<ArgumentGetter> getters = new LinkedList<ArgumentGetter>();
+
+        int methodIndex = 0;
+
+        for(int procedureIndex = aFromProcedureArgument; procedureIndex < procedureInfo.getInputArguments().size(); procedureIndex++) {
+            StoredProcedureArgumentInfo argumentInfo = procedureInfo.getInputArguments().get(procedureIndex);
+            if( argumentInfo.isInputParameter() ) {
+                IParameterConverter paramConverter = converterService.getConverter(argumentInfo.getDataType(), method.getParameterTypes()[methodIndex]);
+                getters.add(new ArgumentGetter(paramConverter, argumentInfo.getColumnName()));
+            }
+
+            methodIndex++;
         }
-        if (argumentInfo.getColumnType() == 1) {
-          IParameterConverter paramConverter = converterService
-              .getConverter(argumentInfo.getDataType(), getterMethod.getReturnType());
-          getters.add(new EntityArgumentGetter(getterMethod, paramConverter
-              , argumentInfo.getColumnName()));
-        }
-      } else if (getterMethod.isAnnotationPresent(OneToOne.class) 
-          || getterMethod.isAnnotationPresent(ManyToOne.class)) {
-        if (getterMethod.isAnnotationPresent(JoinColumn.class)) {
-          JoinColumn joinColumn = getterMethod.getAnnotation(JoinColumn.class);
-          StoredProcedureArgumentInfo argumentInfo = procedureInfo
-              .getArgumentInfo(joinColumn.name());
-          if (argumentInfo == null) {
-            throw new IllegalStateException("Column " + joinColumn.name() 
-                + " was not found in " + procedureInfo.getProcedureName());
-          }
-          getters.add(new EntityArgumentGetterOneToOneJoinColumn(getterMethod
-              , argumentInfo.getColumnName()));
+        return new ParametersSetterBlockArguments(getters);
+    }
+
+    /**
+     * is entity, e.g. saveProcessor(TransactionProcessor)
+     */
+    private List<IParametersSetterBlock> createSaveMethod(ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo, IMetaLoginInfoService aMetaLoginInfoService) {
+        Assert.isTrue(method.getParameterTypes().length == 1
+                , "Method " + method.getName() + " parameters count must be equals to 1");
+
+        Class entityClass = method.getParameterTypes()[0];
+
+        final IParametersSetterBlock block = createEntityBlock(converterService, procedureInfo, entityClass);
+
+        if(isMetaLoginInfoPresented(method)) {
+            return createMetaLoginList(block, aMetaLoginInfoService);
         } else {
-          throw new IllegalStateException("No @JoinColumn annotation was found in " 
-              + entityClass.getSimpleName() + "." + getterMethod.getName() + "()");
+            return Collections.singletonList(block);
         }
-      }
     }
-    return new ParametersSetterBlockEntity(getters);
-  }
 
-  private ParametersSetterBlockList createParametersSetterBlockList(JdbcTemplate jdbcTemplate,
-      ParameterConverterService converterService, Method method, int parameterIndex) {
-    Class entityClass = getListEntityClass(method.getGenericParameterTypes()[parameterIndex]);
-    String tableName = getListTableName(entityClass);
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Getting metadata for table {}...", tableName);
+    /**
+     * List getAll()
+     */
+    private List<IParametersSetterBlock> createGetAll(StoredProcedureInfo procedureInfo) {
+        return Collections.singletonList((IParametersSetterBlock) new ParametersSetterBlockNull1(
+                procedureInfo.getArguments().get(0).getDataType()));
     }
-    Map<String, Integer> types = createTypes(jdbcTemplate, tableName);
-    List<IEntityArgumentGetter> getters = createListGetters("", entityClass, types
-        , converterService);
-    String insertQuery = createListInsertQuery(getters, tableName);
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("insert query: {}", insertQuery);
-    }
-    String truncateTableQuery = "truncate table " + tableName;
-    return new ParametersSetterBlockList(insertQuery, getters, truncateTableQuery);
-  }
 
-  private Map<String, Integer> createTypes(JdbcTemplate jdbcTemplate, final String tableName) {
-    return jdbcTemplate.execute(new StatementCallback<Map<String, Integer>>() {
-      public Map<String, Integer> doInStatement(Statement stmt)
-          throws SQLException, DataAccessException {
-        ResultSet rs = stmt.executeQuery("select * from " + tableName);
-        try {
-          ResultSetMetaData meta = rs.getMetaData();
-          Map<String, Integer> types = new HashMap<String, Integer>();
-          int count = meta.getColumnCount();
-          for (int i = 1; i <= count; i++) {
-            String name = meta.getColumnName(i);
-            int type = meta.getColumnType(i);
-            types.put(name, type);
-          }
-          return types;
-        } finally {
-          rs.close();
+    /**
+     * Creates entity block
+     *
+     * @param converterService converter manager
+     * @param procedureInfo    procedure into
+     * @param entityClass      entity class
+     * @return block
+     */
+    private IParametersSetterBlock createEntityBlock(ParameterConverterService converterService,
+                                                     StoredProcedureInfo procedureInfo, Class entityClass) {
+        List<EntityArgumentGetter> getters = new LinkedList<EntityArgumentGetter>();
+        for (Method getterMethod : entityClass.getMethods()) {
+            if (getterMethod.isAnnotationPresent(Column.class)) {
+                Column columnAnnotation = getterMethod.getAnnotation(Column.class);
+                StoredProcedureArgumentInfo argumentInfo = procedureInfo
+                        .getArgumentInfo(columnAnnotation.name());
+                if (argumentInfo == null) {
+                    throw new IllegalStateException("Column " + columnAnnotation.name()
+                            + " was not found in " + procedureInfo.getProcedureName());
+                }
+                if (argumentInfo.getColumnType() == 1) {
+                    IParameterConverter paramConverter = converterService
+                            .getConverter(argumentInfo.getDataType(), getterMethod.getReturnType());
+                    getters.add(new EntityArgumentGetter(getterMethod, paramConverter
+                            , argumentInfo.getColumnName()));
+                }
+            } else if (getterMethod.isAnnotationPresent(OneToOne.class)
+                    || getterMethod.isAnnotationPresent(ManyToOne.class)) {
+                if (getterMethod.isAnnotationPresent(JoinColumn.class)) {
+                    JoinColumn joinColumn = getterMethod.getAnnotation(JoinColumn.class);
+                    StoredProcedureArgumentInfo argumentInfo = procedureInfo
+                            .getArgumentInfo(joinColumn.name());
+                    if (argumentInfo == null) {
+                        throw new IllegalStateException("Column " + joinColumn.name()
+                                + " was not found in " + procedureInfo.getProcedureName());
+                    }
+                    getters.add(new EntityArgumentGetterOneToOneJoinColumn(getterMethod
+                            , argumentInfo.getColumnName()));
+                } else {
+                    throw new IllegalStateException("No @JoinColumn annotation was found in "
+                            + entityClass.getSimpleName() + "." + getterMethod.getName() + "()");
+                }
+            }
         }
-      }
-    });
-  }
+        return new ParametersSetterBlockEntity(getters);
+    }
 
-  private List<IEntityArgumentGetter> createListGetters(String columnPrefix, Class entityClass,
-      Map<String, Integer> types, ParameterConverterService converterService) {
-    List<IEntityArgumentGetter> getters = new LinkedList<IEntityArgumentGetter>();
-    for (Method method : entityClass.getMethods()) {
-      if (method.isAnnotationPresent(Column.class)) {
-        Column column = method.getAnnotation(Column.class);
-        Assert.notNull(column, "Method " + method + " has no Column annotation");
-        Assert
-            .hasText(column.name(), "Column annotation has no name parameter in method " + method);
-        String columnName = columnPrefix + column.name();
-        Integer dataType = types.get(columnName);
-        Assert.notNull(dataType,
-            "NO information abount column " + columnName + " in method " + method);
-        IParameterConverter paramConverter = converterService
-            .getConverter(dataType, method.getReturnType());
-        getters.add(new EntityArgumentGetter(method, paramConverter, columnName));
-      } else if (method.isAnnotationPresent(OneToOne.class) || method
-          .isAnnotationPresent(ManyToOne.class)) {
-        Class oneToOneClass = method.getReturnType();
-        if (method.isAnnotationPresent(JoinColumn.class)) {
-          // table name
-          JoinColumn joinColumn = method.getAnnotation(JoinColumn.class);
-          Assert.hasText(joinColumn.table(),
-              "JoinColumn annotation has no table parameter in method " + method);
-          String tableName = joinColumn.table();
+    private ParametersSetterBlockList createParametersSetterBlockList(JdbcTemplate jdbcTemplate,
+                                                                      ParameterConverterService converterService, Method method, int parameterIndex) {
+        Class entityClass = getListEntityClass(method.getGenericParameterTypes()[parameterIndex]);
+        String tableName = getListTableName(entityClass);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Getting metadata for table {}...", tableName);
+        }
+        Map<String, Integer> types = createTypes(jdbcTemplate, tableName);
+        List<IEntityArgumentGetter> getters = createListGetters("", entityClass, types
+                , converterService);
+        String insertQuery = createListInsertQuery(getters, tableName);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("insert query: {}", insertQuery);
+        }
+        String truncateTableQuery = "truncate table " + tableName;
+        return new ParametersSetterBlockList(insertQuery, getters, truncateTableQuery);
+    }
 
-          //
-          List<IEntityArgumentGetter> oneToOneClassGetters = createListGetters(tableName + "_",
-              oneToOneClass, types, converterService);
-          for (IEntityArgumentGetter oneToOneClassGetter : oneToOneClassGetters) {
-            EntityArgumentGetterOneToOne oneToOneConverter = new EntityArgumentGetterOneToOne(
-                method, oneToOneClassGetter);
-            getters.add(oneToOneConverter);
-          }
+    private Map<String, Integer> createTypes(JdbcTemplate jdbcTemplate, final String tableName) {
+        return jdbcTemplate.execute(new StatementCallback<Map<String, Integer>>() {
+            public Map<String, Integer> doInStatement(Statement stmt)
+                    throws SQLException, DataAccessException {
+                ResultSet rs = stmt.executeQuery("select * from " + tableName);
+                try {
+                    ResultSetMetaData meta = rs.getMetaData();
+                    Map<String, Integer> types = new HashMap<String, Integer>();
+                    int count = meta.getColumnCount();
+                    for (int i = 1; i <= count; i++) {
+                        String name = meta.getColumnName(i);
+                        int type = meta.getColumnType(i);
+                        types.put(name, type);
+                    }
+                    return types;
+                } finally {
+                    rs.close();
+                }
+            }
+        });
+    }
+
+    private List<IEntityArgumentGetter> createListGetters(String columnPrefix, Class entityClass,
+                                                          Map<String, Integer> types, ParameterConverterService converterService) {
+        List<IEntityArgumentGetter> getters = new LinkedList<IEntityArgumentGetter>();
+        for (Method method : entityClass.getMethods()) {
+            if (method.isAnnotationPresent(Column.class)) {
+                Column column = method.getAnnotation(Column.class);
+                Assert.notNull(column, "Method " + method + " has no Column annotation");
+                Assert
+                        .hasText(column.name(), "Column annotation has no name parameter in method " + method);
+                String columnName = columnPrefix + column.name();
+                Integer dataType = types.get(columnName);
+                Assert.notNull(dataType,
+                        "NO information abount column " + columnName + " in method " + method);
+                IParameterConverter paramConverter = converterService
+                        .getConverter(dataType, method.getReturnType());
+                getters.add(new EntityArgumentGetter(method, paramConverter, columnName));
+            } else if (method.isAnnotationPresent(OneToOne.class) || method
+                    .isAnnotationPresent(ManyToOne.class)) {
+                Class oneToOneClass = method.getReturnType();
+                if (method.isAnnotationPresent(JoinColumn.class)) {
+                    // table name
+                    JoinColumn joinColumn = method.getAnnotation(JoinColumn.class);
+                    Assert.hasText(joinColumn.table(),
+                            "JoinColumn annotation has no table parameter in method " + method);
+                    String tableName = joinColumn.table();
+
+                    //
+                    List<IEntityArgumentGetter> oneToOneClassGetters = createListGetters(tableName + "_",
+                            oneToOneClass, types, converterService);
+                    for (IEntityArgumentGetter oneToOneClassGetter : oneToOneClassGetters) {
+                        EntityArgumentGetterOneToOne oneToOneConverter = new EntityArgumentGetterOneToOne(
+                                method, oneToOneClassGetter);
+                        getters.add(oneToOneConverter);
+                    }
+                }
+
+            }
+        }
+        return getters;
+    }
+
+    @SuppressWarnings("unchecked")
+    private String getListTableName(Class entityClass) {
+        Entity entity = (Entity) entityClass.getAnnotation(Entity.class);
+        Assert.notNull(entity, "No Entity annotation found in " + entityClass.getSimpleName());
+        Assert.hasText(entity.name(),
+                "Entity name is empty in Entity annotation for " + entityClass.getSimpleName());
+        return entity.name();
+    }
+
+    private Class getListEntityClass(Type type) {
+        ParameterizedType parameterizedType = (ParameterizedType) type;
+        return (Class) parameterizedType.getActualTypeArguments()[0];
+    }
+
+    private String createListInsertQuery(List<IEntityArgumentGetter> getters, String tableName) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("insert into ").append(tableName).append(" ( ");
+        boolean firstPassed = false;
+        for (IEntityArgumentGetter getter : getters) {
+            if (firstPassed) {
+                sb.append(", ");
+            } else {
+                firstPassed = true;
+            }
+            sb.append(getter.getParameterName());
+        }
+        sb.append(" ) values ( ");
+
+        firstPassed = false;
+        for (IEntityArgumentGetter getter : getters) {
+            if (firstPassed) {
+                sb.append(", ");
+            } else {
+                firstPassed = true;
+            }
+            sb.append("?");
         }
 
-      }
-    }
-    return getters;
-  }
-
-  @SuppressWarnings("unchecked")
-  private String getListTableName(Class entityClass) {
-    Entity entity = (Entity) entityClass.getAnnotation(Entity.class);
-    Assert.notNull(entity, "No Entity annotation found in " + entityClass.getSimpleName());
-    Assert.hasText(entity.name(),
-        "Entity name is empty in Entity annotation for " + entityClass.getSimpleName());
-    return entity.name();
-  }
-
-  private Class getListEntityClass(Type type) {
-    ParameterizedType parameterizedType = (ParameterizedType) type;
-    return (Class) parameterizedType.getActualTypeArguments()[0];
-  }
-
-  private String createListInsertQuery(List<IEntityArgumentGetter> getters, String tableName) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("insert into ").append(tableName).append(" ( ");
-    boolean firstPassed = false;
-    for (IEntityArgumentGetter getter : getters) {
-      if (firstPassed) {
-        sb.append(", ");
-      } else {
-        firstPassed = true;
-      }
-      sb.append(getter.getParameterName());
-    }
-    sb.append(" ) values ( ");
-
-    firstPassed = false;
-    for (IEntityArgumentGetter getter : getters) {
-      if (firstPassed) {
-        sb.append(", ");
-      } else {
-        firstPassed = true;
-      }
-      sb.append("?");
+        sb.append(" )");
+        return sb.toString();
     }
 
-    sb.append(" )");
-    return sb.toString();
-  }
-
-  private boolean areAllParametersListAndNoArguments(Method method,
-      StoredProcedureInfo procedureInfo) {
-    if (procedureInfo.getInputArgumentsCount() == 0 && method.getParameterTypes().length > 0) {
-      for (Class<?> parameterClass : method.getParameterTypes()) {
-        if (!parameterClass.equals(List.class)) {
-          return false;
+    private boolean areAllParametersListAndNoArguments(Method method,
+                                                       StoredProcedureInfo procedureInfo) {
+        if (procedureInfo.getInputArgumentsCount() == 0 && method.getParameterTypes().length > 0) {
+            for (Class<?> parameterClass : method.getParameterTypes()) {
+                if (!parameterClass.equals(List.class)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
         }
-      }
-      return true;
-    } else {
-      return false;
     }
-  }
 
-  private boolean areListAndNonListParametersProvides(Method method,
-      StoredProcedureInfo procedureInfo) {
-    if (method.getParameterTypes().length >= procedureInfo.getInputArgumentsCount()) {
-      int argumentsCount = 0;
-      for (Class<?> parameterClass : method.getParameterTypes()) {
-        if (!parameterClass.equals(List.class)) {
-          argumentsCount++;
+    private boolean areListAndNonListParametersProvides(Method method,
+                                                        StoredProcedureInfo procedureInfo) {
+        if (method.getParameterTypes().length >= procedureInfo.getInputArgumentsCount()) {
+            int argumentsCount = 0;
+            for (Class<?> parameterClass : method.getParameterTypes()) {
+                if (!parameterClass.equals(List.class)) {
+                    argumentsCount++;
+                }
+            }
+            return procedureInfo.getInputArgumentsCount() == argumentsCount;
+        } else {
+            return false;
         }
-      }
-      return procedureInfo.getInputArgumentsCount() == argumentsCount;
-    } else {
-      return false;
     }
-  }
 }

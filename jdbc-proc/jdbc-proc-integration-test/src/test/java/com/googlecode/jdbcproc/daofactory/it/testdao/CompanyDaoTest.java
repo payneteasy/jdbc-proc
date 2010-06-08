@@ -24,6 +24,17 @@ public class CompanyDaoTest extends DatabaseAwareTest {
         assertNotNull(company.getId());
     }
 
+    public void testCreateCompanySecured() {
+
+        Company company = new Company();
+        company.setName("first-secured");
+        theCompanyDao.createCompanySecured(company);
+        assertNotNull(company.getId());
+
+        long id = theCompanyDao.createCompanySecured("second-secured");
+        assertTrue(id!=0);
+    }
+
     public void testCreateCompany2() {
         long id = theCompanyDao.createCompany("second");
         assertTrue("Company Id must not be 0", 0!=id);
