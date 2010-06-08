@@ -17,6 +17,7 @@ package com.googlecode.jdbcproc.daofactory.impl.block.service;
 import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
+import com.googlecode.jdbcproc.daofactory.IMetaLoginInfoService;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -30,6 +31,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 public interface ParametersSetterBlockService {
   
-  List<IParametersSetterBlock> create(JdbcTemplate jdbcTemplate, 
-      ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo);
+  List<IParametersSetterBlock> create(
+          JdbcTemplate jdbcTemplate
+          , ParameterConverterService converterService
+          , Method method
+          , StoredProcedureInfo procedureInfo
+          , IMetaLoginInfoService aMetaLoginInfoService
+  );
+    
 }

@@ -102,9 +102,9 @@ public class StoredProcedureDaoInvocationHandler implements InvocationHandler {
                     );
                 }
             } catch(Exception e) {
-                String message = String.format("Error invoking %s.%s(%s) for procedure %s"
+                String message = String.format("Error invoking %s.%s(%s) for procedure %s: %s"
                         , theInterface.getSimpleName(), aMethod.getName(), createMethodParametersString(aMethod.getParameterTypes())
-                        , getProcedureName(aMethod)
+                        , getProcedureName(aMethod), methodInvoker.getCallString()
                 );
                 throw new RuntimeException(message, e);
             }

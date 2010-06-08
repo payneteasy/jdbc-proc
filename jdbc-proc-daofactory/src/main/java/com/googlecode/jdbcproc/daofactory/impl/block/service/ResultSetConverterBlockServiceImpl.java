@@ -172,12 +172,11 @@ public class ResultSetConverterBlockServiceImpl implements ResultSetConverterBlo
    */
   private ResultSetConverterBlockSimpleType createBlockSimpleType(
       ParameterConverterService converterService, Class type, StoredProcedureInfo procedureInfo) {
-    Assert.isTrue(1 == procedureInfo.getResultSetColumns().size()
-        , "Count of columns in result set must be equals 1");
+
+    Assert.isTrue(1 == procedureInfo.getResultSetColumns().size(), "Count of columns in result set must be equals 1");
 
     ResultSetColumnInfo columnInfo = procedureInfo.getResultSetColumns().get(0);
-    return new ResultSetConverterBlockSimpleType(
-        converterService.getConverter(columnInfo.getDataType(), type), columnInfo.getColumnName());
+    return new ResultSetConverterBlockSimpleType( converterService.getConverter(columnInfo.getDataType(), type), columnInfo.getColumnName() );
   }
 
   /**

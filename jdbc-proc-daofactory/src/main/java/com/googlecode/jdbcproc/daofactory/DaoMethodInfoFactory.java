@@ -58,6 +58,9 @@ public class DaoMethodInfoFactory implements InitializingBean, DAOMethodInfo {
   private RegisterOutParametersBlockService registerOutParametersBlockService;
   private ResultSetConverterBlockService resultSetConverterBlockService;
   private IStoredProcedureInfoManager storedProcedureInfoManager;
+  /** MetaLoginInfoService */
+  private IMetaLoginInfoService theMetaLoginInfoService;
+
 
   /**
    * Creates method info for bets performance
@@ -82,16 +85,15 @@ public class DaoMethodInfoFactory implements InitializingBean, DAOMethodInfo {
 
     boolean isReturnIterator = BlockFactoryUtils.isReturnIterator(daoMethod);
 
-    return new DaoMethodInvoker(procedureInfo.getProcedureName(), callString
-        , registerOutParametersBlockService.create(procedureInfo)
-        , parametersSetterBlockService.create(jdbcTemplate, parameterConverterService, daoMethod
-            , procedureInfo)
-        , callableStatementExecutorBlockService.create(daoMethod, procedureInfo)
-        , outputParametersGetterBlockService.create(parameterConverterService, daoMethod
-            , procedureInfo)
-        , resultSetConverterBlockService.create(daoMethod, procedureInfo, parameterConverterService)
-        , isReturnIterator
-    );
+      return new DaoMethodInvoker(procedureInfo.getProcedureName()
+              , callString
+              , registerOutParametersBlockService.create(procedureInfo)
+              , parametersSetterBlockService.create(jdbcTemplate, parameterConverterService, daoMethod, procedureInfo, theMetaLoginInfoService)
+              , callableStatementExecutorBlockService.create(daoMethod, procedureInfo)
+              , outputParametersGetterBlockService.create(parameterConverterService, daoMethod, procedureInfo)
+              , resultSetConverterBlockService.create(daoMethod, procedureInfo, parameterConverterService)
+              , isReturnIterator
+      );
   }
 
   /* 
@@ -158,6 +160,12 @@ public class DaoMethodInfoFactory implements InitializingBean, DAOMethodInfo {
   public void setStoredProcedureInfoManager(IStoredProcedureInfoManager storedProcedureInfoManager) {
     this.storedProcedureInfoManager = storedProcedureInfoManager;
   }
+
+    /**
+     * MetaLoginInfoService to use AMetaLoginInfo annotation in stored procedure
+     *
+     */
+    public void setMetaLoginInfoService(IMetaLoginInfoService aMetaLoginInfoService) { theMetaLoginInfoService = aMetaLoginInfoService; }
 
   /**
    * Create call query string.

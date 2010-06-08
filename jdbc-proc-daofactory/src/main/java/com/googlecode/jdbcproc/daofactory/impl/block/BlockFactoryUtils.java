@@ -2,6 +2,7 @@ package com.googlecode.jdbcproc.daofactory.impl.block;
 
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
+import com.googlecode.jdbcproc.daofactory.annotation.AMetaLoginInfo;
 
 import javax.persistence.Column;
 import javax.persistence.OneToMany;
@@ -128,7 +129,9 @@ public class BlockFactoryUtils {
         }
         
         boolean ret =  countOutputParameters==1
-              && aDaoMethod.getParameterTypes().length == aProcedureInfo.getInputArgumentsCount()
+              && ( aDaoMethod.getParameterTypes().length == aProcedureInfo.getInputArgumentsCount()
+                   || ( aDaoMethod.isAnnotationPresent(AMetaLoginInfo.class) && aDaoMethod.getParameterTypes().length + 2 == aProcedureInfo.getInputArgumentsCount())
+                 )
               && BlockFactoryUtils.isSimpleType(aDaoMethod.getReturnType())
         ;
 

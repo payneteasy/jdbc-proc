@@ -18,14 +18,16 @@ public class ParametersSetterBlockArguments extends AbstractParametersSetterBloc
     }
 
     public void setParameters(CallableStatement aStmt, Object[] aArgs) throws DataAccessException, SQLException {
-        Assert.notNull(aArgs         , "Argument aArgs must not be null"   );
-        final Object[] arguments = skipCollectionArguments(aArgs);
-        Assert.isTrue(arguments.length==theArgumentsGetters.size()
-                , "Count of procedure arguments must be equals to count of method arguments");
+
+        Assert.notNull(aArgs, "Argument aArgs must not be null"   );
+
+        final Object[] methodArguments = skipCollectionArguments(aArgs);
+
+        Assert.isTrue(methodArguments.length==theArgumentsGetters.size(), "Count of procedure arguments must be equals to count of virtual method arguments");
 
         int index = 0 ;
         for(ArgumentGetter getter : theArgumentsGetters) {
-            getter.setParameter(arguments[index], aStmt);
+            getter.setParameter(methodArguments[index], aStmt);
             index++;
         }
     }

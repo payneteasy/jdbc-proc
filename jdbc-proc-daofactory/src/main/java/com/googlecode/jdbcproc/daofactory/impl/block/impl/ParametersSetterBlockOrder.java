@@ -7,11 +7,12 @@ import java.util.HashMap;
 
 public enum ParametersSetterBlockOrder {
     
-    PSB_LIST_AGGREGATOR(ParametersSetterBlockListAggregator.class, 0),
-    PSB_LIST(ParametersSetterBlockList.class, 1),
-    PSB_ENTITY(ParametersSetterBlockEntity.class, 2),
-    PSB_ARGUMENTS(ParametersSetterBlockArguments.class, 3),
-    PSB_NULL(ParametersSetterBlockNull1.class, 4);
+    PSB_META_LOGIN_INFO(ParametersSetterBlockMetaLoginInfo.class, 0),
+    PSB_LIST_AGGREGATOR(ParametersSetterBlockListAggregator.class, 1),
+    PSB_LIST(ParametersSetterBlockList.class, 2),
+    PSB_ENTITY(ParametersSetterBlockEntity.class, 3),
+    PSB_ARGUMENTS(ParametersSetterBlockArguments.class, 4),
+    PSB_NULL(ParametersSetterBlockNull1.class, 5);
     
     private final Class<? extends IParametersSetterBlock> clazz;
     private final int index;

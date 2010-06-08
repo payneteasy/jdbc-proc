@@ -1,6 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.it.testdao.dao;
 
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
+import com.googlecode.jdbcproc.daofactory.annotation.AMetaLoginInfo;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Company;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.CompanyWithEmployees;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.onetomany2x.Company2x;
@@ -23,6 +24,14 @@ public interface ICompanyDao {
     void createCompany(Company aCompany);
 
     /**
+     * Creates company with secured info
+     * @param aCompany company
+     */
+    @AStoredProcedure(name = "create_company_secured")
+    @AMetaLoginInfo        
+    void createCompanySecured(Company aCompany);
+
+    /**
      * Creates company
      *
      * @param aName company name
@@ -30,6 +39,16 @@ public interface ICompanyDao {
      */
     @AStoredProcedure(name = "create_company")
     long createCompany(String aName);
+
+    /**
+     * Creates company secured
+     *
+     * @param aName company name
+     * @return company id
+     */
+    @AStoredProcedure(name = "create_company_secured")
+    @AMetaLoginInfo
+    long createCompanySecured(String aName);
 
     /**
      * Gets company with employees by id
