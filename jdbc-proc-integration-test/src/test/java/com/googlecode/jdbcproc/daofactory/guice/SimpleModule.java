@@ -18,6 +18,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.googlecode.jdbcproc.daofactory.DAOMethodInfo;
+import com.googlecode.jdbcproc.daofactory.IMetaLoginInfoService;
 import com.googlecode.jdbcproc.daofactory.impl.block.service.CallableStatementExecutorBlockService;
 import com.googlecode.jdbcproc.daofactory.impl.block.service.CallableStatementExecutorBlockServiceImpl;
 import com.googlecode.jdbcproc.daofactory.impl.block.service.OutputParametersGetterBlockService;
@@ -32,6 +33,7 @@ import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConve
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterServiceImpl;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeeDao;
+import com.googlecode.jdbcproc.daofactory.it.testdao.service.impl.SimpleMetaLoginInfoServiceImpl;
 
 import javax.sql.DataSource;
 
@@ -49,6 +51,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
     bind(ParametersSetterBlockService.class).to(ParametersSetterBlockServiceImpl.class);
     bind(RegisterOutParametersBlockService.class).to(RegisterOutParametersBlockServiceImpl.class);
     bind(ResultSetConverterBlockService.class).to(ResultSetConverterBlockServiceImpl.class);
+    bind(IMetaLoginInfoService.class).to(SimpleMetaLoginInfoServiceImpl.class);  
   }
   
   @Provides
