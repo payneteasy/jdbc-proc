@@ -46,6 +46,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.StatementCallback;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * @author esinev
@@ -289,16 +290,21 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
                 }
             } else if (getterMethod.isAnnotationPresent(OneToOne.class)
                     || getterMethod.isAnnotationPresent(ManyToOne.class)) {
+
                 if (getterMethod.isAnnotationPresent(JoinColumn.class)) {
                     JoinColumn joinColumn = getterMethod.getAnnotation(JoinColumn.class);
-                    StoredProcedureArgumentInfo argumentInfo = procedureInfo
-                            .getArgumentInfo(joinColumn.name());
-                    if (argumentInfo == null) {
-                        throw new IllegalStateException("Column " + joinColumn.name()
-                                + " was not found in " + procedureInfo.getProcedureName());
+
+                    if(StringUtils.hasText(joinColumn.name())) {
+                        StoredProcedureArgumentInfo argumentInfo = procedureInfo.getArgumentInfo(joinColumn.name());
+
+                        if (argumentInfo == null) {
+                            throw new IllegalStateException("Column " + joinColumn.name()
+                                    + " was not found in " + procedureInfo.getProcedureName());
+                        }
+                        getters.add(new EntityArgumentGetterOneToOneJoinColumn(getterMethod, argumentInfo.getColumnName()));
+                    } else {
+                        throw new IllegalStateException("@JoinColumn.name is empty for "+ entityClass.getSimpleName() + "." + getterMethod.getName() + "()");
                     }
-                    getters.add(new EntityArgumentGetterOneToOneJoinColumn(getterMethod
-                            , argumentInfo.getColumnName()));
                 } else {
                     throw new IllegalStateException("No @JoinColumn annotation was found in "
                             + entityClass.getSimpleName() + "." + getterMethod.getName() + "()");
