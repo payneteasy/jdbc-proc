@@ -28,11 +28,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.*;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -78,6 +74,12 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         // if no parameters
         } else if (method.getParameterTypes().length == 0 && procedureInfo.getInputArgumentsCount() == 0) {
             return Collections.emptyList();
+
+        // METHOD @AMetaLoginInfo
+        // METHOD no parameter
+        // PROCEDURE 2 parameters
+        } else if (method.isAnnotationPresent(AMetaLoginInfo.class) && method.getParameterTypes().length == 0 && procedureInfo.getInputArgumentsCount() == 2) {
+            return Arrays.asList((IParametersSetterBlock)new ParametersSetterBlockMetaLoginInfo(aMetaLoginInfoService));
 
         // if parameters is simple puted to procedure
         } else if (method.getParameterTypes().length == procedureInfo.getInputArgumentsCount()) {

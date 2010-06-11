@@ -88,6 +88,16 @@ public interface ICompanyDao {
      *
      * @return companies's names
      */
+    @AStoredProcedure(name = "get_companies_names_secured")
+    @AMetaLoginInfo        
+    List<String> getCompaniesNamesSecured();
+
+
+    /**
+     * Gets companies' names
+     *
+     * @return companies's names
+     */
     @AStoredProcedure(name = "get_companies_names")
     CloseableIterator<String> getCompaniesNamesIterator();
 

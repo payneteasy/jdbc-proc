@@ -48,6 +48,7 @@ public abstract class AbstractDatabaseTest {
     executeMysql("jdbcprocdb", "src/test/resources/sql/get_company_employees.sql");
     executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies.sql");
     executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies_names.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies_names_secured.sql");
     executeMysql("jdbcprocdb", "src/test/resources/sql/get_company_2x.sql");
     executeMysql("jdbcprocdb", "src/test/resources/sql/create_certificate.sql");
 
