@@ -24,6 +24,7 @@ public class CompanyDaoTest extends DatabaseAwareTest {
         assertNotNull(company.getId());
     }
 
+
     public void testCreateCompanySecured() {
 
         Company company = new Company();
@@ -58,6 +59,21 @@ public class CompanyDaoTest extends DatabaseAwareTest {
         }
 
         List<String> names = theCompanyDao.getCompaniesNames();
+        assertEquals(10, names.size());
+        for(int i=0; i<10; i++) {
+            assertEquals("company-"+i, names.get(i));
+        }
+    }
+
+    public void testGetCompaniesNamesSecured() {
+        // creates companies
+        for(int i=0; i<10; i++) {
+            Company company = new Company();
+            company.setName("company-"+i);
+            theCompanyDao.createCompany(company);
+        }
+
+        List<String> names = theCompanyDao.getCompaniesNamesSecured();
         assertEquals(10, names.size());
         for(int i=0; i<10; i++) {
             assertEquals("company-"+i, names.get(i));
