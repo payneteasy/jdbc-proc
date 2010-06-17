@@ -31,6 +31,8 @@ import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterB
 import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterBlockServiceImpl;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterServiceImpl;
+import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.IStoredProcedureInfoManager;
+import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfoManagerInitOnStartup;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeeDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.service.impl.SimpleMetaLoginInfoServiceImpl;
@@ -51,7 +53,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
     bind(ParametersSetterBlockService.class).to(ParametersSetterBlockServiceImpl.class);
     bind(RegisterOutParametersBlockService.class).to(RegisterOutParametersBlockServiceImpl.class);
     bind(ResultSetConverterBlockService.class).to(ResultSetConverterBlockServiceImpl.class);
-    bind(IMetaLoginInfoService.class).to(SimpleMetaLoginInfoServiceImpl.class);  
+    bind(IMetaLoginInfoService.class).to(SimpleMetaLoginInfoServiceImpl.class);
+    bind(IStoredProcedureInfoManager.class).to(StoredProcedureInfoManagerInitOnStartup.class);  
   }
   
   @Provides
