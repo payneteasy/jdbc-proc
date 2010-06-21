@@ -24,11 +24,6 @@ import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
-/**
- * @version 1.00 Apr 28, 2010 12:14:58 PM
- *
- * @author crazydmk
- */
 public interface ParametersSetterBlockService {
   
   List<IParametersSetterBlock> create(

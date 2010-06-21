@@ -36,11 +36,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.Assert;
 
-/**
- * @version 1.00 Apr 28, 2010 1:17:09 PM
- *
- * @author crazydmk
- */
 public class DAOMethodInfoGuice implements DAOMethodInfo {
 
   private final Logger LOG = LoggerFactory.getLogger(getClass());

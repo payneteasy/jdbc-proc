@@ -90,8 +90,11 @@ public class VerticalityDAOTest  extends DatabaseAwareTest {
         
         Date uploadDate = new Date();
         verticalityDAO.uploadCarabinders(uploadDate, carabiners);
+        verticalityDAO.uploadCarabindersWithMetaLoginInfo(uploadDate, carabiners);
         verticalityDAO.uploadDynamicRopes(dynamicRopes, uploadDate);
+        verticalityDAO.uploadDynamicRopesWithMetaLoginInfo(dynamicRopes, uploadDate);
         verticalityDAO.uploadVerticality(uploadDate, carabiners,  dynamicRopes);
+        verticalityDAO.uploadVerticalityWithMetaLoginInfo(uploadDate, carabiners,  dynamicRopes);
     }
     
     public void testReturnEntityWithBigintTypeField() {

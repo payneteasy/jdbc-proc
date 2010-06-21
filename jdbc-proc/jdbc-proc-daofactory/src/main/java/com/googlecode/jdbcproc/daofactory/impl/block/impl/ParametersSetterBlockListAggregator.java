@@ -1,5 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
+import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
@@ -13,7 +15,7 @@ import java.util.List;
  */
 public class ParametersSetterBlockListAggregator extends AbstractParametersSetterBlock {
 
-    public ParametersSetterBlockListAggregator(List<ParametersSetterBlockList> aList) {
+    public ParametersSetterBlockListAggregator(List<IParametersSetterBlock> aList) {
         theList = Collections.unmodifiableList(aList);
     }
 
@@ -22,7 +24,7 @@ public class ParametersSetterBlockListAggregator extends AbstractParametersSette
         final Object[] arguments = skipNonCollectionArguments(aArgs);
         for(int i=0; i<arguments.length; i++) {
             Object argument = arguments[i];
-            ParametersSetterBlockList block = theList.get(i);
+            IParametersSetterBlock block = theList.get(i);
             block.setParameters(aStmt, new Object[] {argument});
         }
     }
@@ -33,5 +35,5 @@ public class ParametersSetterBlockListAggregator extends AbstractParametersSette
                 '}';
     }
 
-    private final List<ParametersSetterBlockList> theList ;
+    private final List<IParametersSetterBlock> theList ;
 }
