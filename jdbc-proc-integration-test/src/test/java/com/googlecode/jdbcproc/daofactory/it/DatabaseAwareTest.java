@@ -43,8 +43,11 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
 
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/create_collections.prc");
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_carabiners.prc");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_carabiners_with_meta_login_info.prc");
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_dynamic_ropes.prc");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_dynamic_ropes_with_meta_login_info.prc");
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_verticality.prc");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_verticality_with_meta_login_info.prc");
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_harnesses.prc");
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/create_chalk_bag.prc");
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/get_chalk_bags.prc");

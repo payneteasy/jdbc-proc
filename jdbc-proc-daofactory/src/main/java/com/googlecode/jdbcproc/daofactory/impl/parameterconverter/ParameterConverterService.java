@@ -14,11 +14,6 @@
 
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
-/**
- * @version 1.00 Apr 27, 2010 8:28:56 PM
- *
- * @author crazydmk
- */
 public interface ParameterConverterService {
 
   IParameterConverter getConverter(int sqlType);

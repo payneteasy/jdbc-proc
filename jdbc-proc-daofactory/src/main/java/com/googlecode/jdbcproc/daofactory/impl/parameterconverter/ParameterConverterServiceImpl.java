@@ -20,11 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @version 1.00 Apr 27, 2010 9:02:00 PM
- *
- * @author crazydmk
- */
 public class ParameterConverterServiceImpl implements ParameterConverterService {
 
   private final Map<IParameterConverter.Type, IParameterConverter> parameterSetters;
