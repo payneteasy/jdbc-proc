@@ -83,6 +83,11 @@ public class StoredProcedureInfoManagerOnDemand extends AbstractStoredProcedureI
                 String procedureName = rs.getString(PROCEDURE_NAME);
                 String columnName = rs.getString(COLUMN_NAME);
                 short  columnType = rs.getShort(COLUMN_TYPE);
+
+                // for ms sql
+                if(columnName!=null && columnName.contains("@")) {
+                    columnName = columnName.replace("@", "");
+                }
                 short  dataType   = rs.getShort(DATA_TYPE);
 
                 // adds column info
