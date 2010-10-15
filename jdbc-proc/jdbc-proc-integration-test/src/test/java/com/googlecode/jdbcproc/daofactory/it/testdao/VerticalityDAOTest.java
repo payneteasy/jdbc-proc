@@ -89,8 +89,12 @@ public class VerticalityDAOTest  extends DatabaseAwareTest {
         dynamicRopes.add(dynamicRope2);
         
         Date uploadDate = new Date();
-        verticalityDAO.uploadCarabinders(uploadDate, carabiners);
-        verticalityDAO.uploadCarabindersWithMetaLoginInfo(uploadDate, carabiners);
+        verticalityDAO.uploadCarabiners(uploadDate, carabiners);
+        int entityId = verticalityDAO.uploadCarabiners(uploadDate, carabiners, uploadDate);
+        assertEquals(1, entityId);
+        entityId = verticalityDAO.uploadCarabiners(null, carabiners, uploadDate);
+        assertEquals(1, entityId);
+        verticalityDAO.uploadCarabinersWithMetaLoginInfo(uploadDate, carabiners);
         verticalityDAO.uploadDynamicRopes(dynamicRopes, uploadDate);
         verticalityDAO.uploadDynamicRopesWithMetaLoginInfo(dynamicRopes, uploadDate);
         verticalityDAO.uploadVerticality(uploadDate, carabiners,  dynamicRopes);

@@ -13,11 +13,14 @@ import java.util.List;
 public interface VerticalityDAO {
     
     @AStoredProcedure(name = "upload_carabiners")
-    void uploadCarabinders(Date uploadDate, List<Carabiner> carabiners);
+    void uploadCarabiners(Date uploadDate, List<Carabiner> carabiners);
+    
+    @AStoredProcedure(name = "upload_carabiners_2")
+    int uploadCarabiners(Date uploadDate, List<Carabiner> carabiners, Date uploadDate2);
     
     @AMetaLoginInfo
     @AStoredProcedure(name = "upload_carabiners_with_meta_login_info")
-    void uploadCarabindersWithMetaLoginInfo(Date uploadDate, List<Carabiner> carabiners);
+    void uploadCarabinersWithMetaLoginInfo(Date uploadDate, List<Carabiner> carabiners);
     
     @AStoredProcedure(name = "upload_dynamic_ropes")
     void uploadDynamicRopes(List<DynamicRope> dynamicRopes, Date uploadDate);

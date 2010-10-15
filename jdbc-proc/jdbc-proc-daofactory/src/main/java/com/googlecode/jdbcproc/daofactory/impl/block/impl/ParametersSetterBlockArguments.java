@@ -1,5 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
+import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
@@ -11,24 +13,32 @@ import java.util.List;
 /**
  * Sets parameters to procedure from method's arguments
  */
-public class ParametersSetterBlockArguments extends AbstractParametersSetterBlock {
+public class ParametersSetterBlockArguments implements IParametersSetterBlock {
 
     public ParametersSetterBlockArguments(List<ArgumentGetter> aArgumentsGetters) {
+        this(aArgumentsGetters, null);
+    }
+    
+    public ParametersSetterBlockArguments(List<ArgumentGetter> aArgumentsGetters, 
+        int[] aNonListArgumentIndexes) {
         theArgumentsGetters = Collections.unmodifiableList(aArgumentsGetters);
+        theNonListArgumentIndexes = aNonListArgumentIndexes;
     }
 
     public void setParameters(CallableStatement aStmt, Object[] aArgs) throws DataAccessException, SQLException {
-
         Assert.notNull(aArgs, "Argument aArgs must not be null"   );
 
-        final Object[] methodArguments = skipCollectionArguments(aArgs);
-
-        Assert.isTrue(methodArguments.length==theArgumentsGetters.size(), "Count of procedure arguments must be equals to count of virtual method arguments");
-
         int index = 0 ;
-        for(ArgumentGetter getter : theArgumentsGetters) {
-            getter.setParameter(methodArguments[index], aStmt);
-            index++;
+        if (theNonListArgumentIndexes != null) {
+            for(ArgumentGetter getter : theArgumentsGetters) {
+                getter.setParameter(aArgs[theNonListArgumentIndexes[index]], aStmt);
+                index++;
+            }
+        } else {
+            for(ArgumentGetter getter : theArgumentsGetters) {
+                getter.setParameter(aArgs[index], aStmt);
+                index++;
+            }
         }
     }
 
@@ -39,4 +49,5 @@ public class ParametersSetterBlockArguments extends AbstractParametersSetterBloc
     }
 
     private final List<ArgumentGetter> theArgumentsGetters ;
+    private final int[] theNonListArgumentIndexes;
 }
