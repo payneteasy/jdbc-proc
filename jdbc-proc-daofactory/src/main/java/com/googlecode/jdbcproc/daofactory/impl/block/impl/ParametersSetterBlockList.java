@@ -1,5 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
+import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 import org.slf4j.Logger;
@@ -12,11 +14,12 @@ import java.util.List;
 /**
  * Inserts parameters to table
  */
-public class ParametersSetterBlockList extends AbstractParametersSetterBlock {
+public class ParametersSetterBlockList implements IParametersSetterBlock {
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
-    public ParametersSetterBlockList(String aInsertQuery, List<IEntityArgumentGetter> aArgumentsGetters, String aTrancateTableQuery) {
+    public ParametersSetterBlockList(String aInsertQuery, List<IEntityArgumentGetter> aArgumentsGetters, 
+      String aTrancateTableQuery) {
         theInsertQuery = aInsertQuery;
         theArgumentsGetters = Collections.unmodifiableList(aArgumentsGetters);
         theTruncateTableQuery = aTrancateTableQuery;
@@ -27,8 +30,7 @@ public class ParametersSetterBlockList extends AbstractParametersSetterBlock {
             LOG.debug("Executing insert: {}", theInsertQuery);
         }
         Assert.notNull(aArgs         , "Argument aArgs must not be null"   );
-        final Object[] arguments = skipNonCollectionArguments(aArgs);
-        Assert.isTrue(arguments.length==1, "Count of argument must be equals 1");
+        Assert.isTrue(aArgs.length==1, "Count of argument must be equals 1");
 
         try {
             Connection con = aStmt.getConnection();
@@ -37,7 +39,8 @@ public class ParametersSetterBlockList extends AbstractParametersSetterBlock {
             truncateTable(con);
 
             // inserts current data to table
-            List list = (List) arguments[0];
+            List list = (List) aArgs[0];
+            
             for (Object entity : list) {
                 PreparedStatement stmt = con.prepareStatement(theInsertQuery);
                 try {
