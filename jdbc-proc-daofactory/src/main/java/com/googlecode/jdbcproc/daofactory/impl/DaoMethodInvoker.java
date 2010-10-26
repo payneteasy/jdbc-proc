@@ -88,32 +88,45 @@ public class DaoMethodInvoker {
                     startTime = System.currentTimeMillis();
                 }
 
+                final StringBuilder logger = new StringBuilder();                
                 if(LOG.isDebugEnabled()) {
+                    logger.append("Procedure [").append(theProcedureName).append(']');
                     // debugs all methods in CallableStatement
                     aStmt = (CallableStatement) Proxy.newProxyInstance(
                             Thread.currentThread().getContextClassLoader()
                             , new Class[] {CallableStatement.class}
-                            , new DebugLogInvocationHandler(aStmt, LOG_CALLABLE_STATEMENT)
+                            , new AppendableLogInvocationHandler(aStmt) {
+                          @Override public void append(String str) {
+                              logger.append(str);
+                          }
+                      }
                     );
                 }
 
-                // register output parameters
-                // eg. aStmt.registerOutParameter(1, Types.INTEGER);
-                if(theRegisterOutParametersBlock!=null) {
-                    theRegisterOutParametersBlock.registerOutParameters(aStmt);
-                }
+                ResultSet resultSet;
+                try {
+                    // register output parameters
+                    // eg. aStmt.registerOutParameter(1, Types.INTEGER);
+                    if(theRegisterOutParametersBlock!=null) {
+                        theRegisterOutParametersBlock.registerOutParameters(aStmt);
+                    }
 
-                // set parameters value
-                // eg. aStmt.setString(1, "hello");
-                if(theParametersSetterBlocks !=null) {
-                  for (IParametersSetterBlock block : theParametersSetterBlocks)
-                    block.setParameters(aStmt, aArgs);
-                }
+                    // set parameters value
+                    // eg. aStmt.setString(1, "hello");
+                    if(theParametersSetterBlocks !=null) {
+                        for (IParametersSetterBlock block : theParametersSetterBlocks)
+                            block.setParameters(aStmt, aArgs);
+                    }
 
-                // callable statement executor
-                // eg. int result = aStmt.executeUpdate();
-                // or  ResultSet rs = aStmt.executeQuery();
-                ResultSet resultSet = theCallableStatementExecutor.execute(aStmt);
+                    // callable statement executor
+                    // eg. int result = aStmt.executeUpdate();
+                    // or  ResultSet rs = aStmt.executeQuery();
+                    resultSet = theCallableStatementExecutor.execute(aStmt);
+                } finally {
+                    if (LOG.isDebugEnabled()) {
+                        LOG_CALLABLE_STATEMENT.debug(logger.toString());
+                    }
+                }
                 try {
                     // gets output parameters and sets it to arguments
                     if(theOutputParametersGetterBlock !=null) {
