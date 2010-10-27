@@ -28,6 +28,10 @@ public class ParameterConverterServiceImpl implements ParameterConverterService 
     Map<IParameterConverter.Type, IParameterConverter> settersMap 
         = new HashMap<IParameterConverter.Type, IParameterConverter>();
 
+    // TIME
+    putSetters(settersMap, new ParameterConverter_TIME_utilDate());
+    putSetters(settersMap, new ParameterConverter_TIME_Time());
+
     // TIMESTAMP
     putSetters(settersMap, new ParameterConverter_TIMESTAMP_utilDate());
     putSetters(settersMap, new ParameterConverter_TIMESTAMP_Timestamp());
