@@ -11,27 +11,31 @@ public class ParameterConverter_VARCHAR_langBoolean
   public static final Type<ParameterConverter_VARCHAR_langBoolean> TYPE
       = new Type<ParameterConverter_VARCHAR_langBoolean>(Types.VARCHAR, Boolean.class);
 
-  public void setValue(Boolean value, PreparedStatement stmt, int index) throws SQLException {
-    String strValue = value != null && value ? "Y" : "N";
-    stmt.setString(index, strValue);
-  }
+    public void setValue(Boolean aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
+        if( aValue != null ) {
+            aStmt.setString(aIndex, aValue ? "Y" : "N");
+        } else {
+            aStmt.setString(aIndex, null);
+        }
+    }
 
-  public void setValue(Boolean value, CallableStatement stmt, String parameterName)
-      throws SQLException {
-    String strValue = value != null && value ? "Y" : "N";
-    stmt.setString(parameterName, strValue);
-  }
+    public void setValue(Boolean aValue, CallableStatement aStmt, String aParameterName) throws SQLException {
+        if( aValue != null ) {
+            aStmt.setString(aParameterName, aValue ? "Y" : "N");
+        } else {
+            aStmt.setString(aParameterName, null);
+        }
+    }
 
-  public Boolean getOutputParameter(CallableStatement stmt, String parameterName)
-      throws SQLException {
-    String strValue = stmt.getString(parameterName);
-    return "Y".equals(strValue);
-  }
+    public Boolean getOutputParameter(CallableStatement aStmt, String aParameterName) throws SQLException {
+        String strValue = aStmt.getString(aParameterName);
+        return aStmt.wasNull() ? null : "Y".equals(strValue);
+    }
 
-  public Boolean getFromResultSet(ResultSet resultSet, String parameterName) throws SQLException {
-    String strValue = resultSet.getString(parameterName);
-    return "Y".equals(strValue);
-  }
+    public Boolean getFromResultSet(ResultSet aResultSet, String aParameterName) throws SQLException {
+        String strValue = aResultSet.getString(aParameterName);
+        return aResultSet.wasNull() ? null : "Y".equals(strValue);
+    }
 
   public Type<ParameterConverter_VARCHAR_langBoolean> getType() {
     return TYPE;
