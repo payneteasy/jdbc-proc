@@ -26,6 +26,10 @@ public class ParametersSetterBlockMetaLoginInfo implements IParametersSetterBloc
         aStmt.setString(theUsernameParameterName, theMetaLoginInfoService.getUsername());
         aStmt.setString(theRoleParameterName    , theMetaLoginInfoService.getRole());
     }
+    
+    public void cleanup(CallableStatement aStmt) throws DataAccessException,
+            SQLException {
+    }
 
     private final IMetaLoginInfoService theMetaLoginInfoService;
     private final String theUsernameParameterName;

@@ -111,17 +111,30 @@ public class DaoMethodInvoker {
                         theRegisterOutParametersBlock.registerOutParameters(aStmt);
                     }
 
-                    // set parameters value
-                    // eg. aStmt.setString(1, "hello");
-                    if(theParametersSetterBlocks !=null) {
-                        for (IParametersSetterBlock block : theParametersSetterBlocks)
-                            block.setParameters(aStmt, aArgs);
+                    try {
+                        // set parameters value
+                        // eg. aStmt.setString(1, "hello");
+                        if(theParametersSetterBlocks !=null) {
+                            for (IParametersSetterBlock block : theParametersSetterBlocks)
+                                block.setParameters(aStmt, aArgs);
+                        }
+    
+                        // callable statement executor
+                        // eg. int result = aStmt.executeUpdate();
+                        // or  ResultSet rs = aStmt.executeQuery();
+                        resultSet = theCallableStatementExecutor.execute(aStmt);
+                    } finally {
+                        // cleaning up
+                        if (theParametersSetterBlocks != null) {
+                            for (IParametersSetterBlock block : theParametersSetterBlocks)
+                                try {
+                                    block.cleanup(aStmt);
+                                } catch (Exception e) {
+                                    // ignore
+                                    LOG.error("Exception while cleaning up", e);
+                                }
+                        }
                     }
-
-                    // callable statement executor
-                    // eg. int result = aStmt.executeUpdate();
-                    // or  ResultSet rs = aStmt.executeQuery();
-                    resultSet = theCallableStatementExecutor.execute(aStmt);
                 } finally {
                     if (LOG.isDebugEnabled()) {
                         LOG_CALLABLE_STATEMENT.debug(logger.toString());

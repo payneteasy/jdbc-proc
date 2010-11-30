@@ -41,6 +41,13 @@ public class ParametersSetterBlockListAggregator implements IParametersSetterBlo
             }
         }
     }
+    
+    public void cleanup(CallableStatement aStmt) throws DataAccessException,
+            SQLException {
+        for (IParametersSetterBlock block : theList) {
+            block.cleanup(aStmt);
+        }
+    }
 
     public String toString() {
         return "ParametersSetterBlockListAggregator{" +

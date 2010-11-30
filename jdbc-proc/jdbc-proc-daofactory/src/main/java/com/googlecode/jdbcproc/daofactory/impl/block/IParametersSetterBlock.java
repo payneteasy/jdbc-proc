@@ -8,7 +8,7 @@ import java.sql.SQLException;
 /**
  * Sets parameters
  */
-public interface IParametersSetterBlock {
+public interface IParametersSetterBlock extends ICleanable {
 
     /**
      * Sets paremeters
