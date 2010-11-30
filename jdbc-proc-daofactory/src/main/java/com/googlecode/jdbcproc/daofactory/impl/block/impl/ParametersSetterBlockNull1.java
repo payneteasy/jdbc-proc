@@ -1,14 +1,12 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
-import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
-import com.googlecode.jdbcproc.daofactory.impl.TypeNameUtil;
-import org.springframework.dao.DataAccessException;
-import org.springframework.util.Assert;
-
 import java.sql.CallableStatement;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
+
+import org.springframework.dao.DataAccessException;
+
+import com.googlecode.jdbcproc.daofactory.impl.TypeNameUtil;
+import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
 
 /**
  * Sets null to first argument
@@ -23,6 +21,9 @@ public class ParametersSetterBlockNull1 implements IParametersSetterBlock {
         aStmt.setNull(1, theDataType);
     }
 
+    public void cleanup(CallableStatement aStmt) throws DataAccessException,
+            SQLException {
+    }
 
     public String toString() {
         return "ParametersSetterBlockNull1{" +

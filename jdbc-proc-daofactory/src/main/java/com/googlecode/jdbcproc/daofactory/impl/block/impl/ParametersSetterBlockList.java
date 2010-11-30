@@ -17,6 +17,8 @@ import java.util.List;
 public class ParametersSetterBlockList implements IParametersSetterBlock {
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
+    
+    private Connection theConnection;
 
     public ParametersSetterBlockList(String aInsertQuery, List<IEntityArgumentGetter> aArgumentsGetters, 
       String aTrancateTableQuery) {
@@ -33,16 +35,16 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
         Assert.isTrue(aArgs.length==1, "Count of argument must be equals 1");
 
         try {
-            Connection con = aStmt.getConnection();
+            theConnection = aStmt.getConnection();
 
             // delete previous data from table
-            truncateTable(con);
+            truncateTable(theConnection);
 
             // inserts current data to table
             List list = (List) aArgs[0];
             
             for (Object entity : list) {
-                PreparedStatement stmt = con.prepareStatement(theInsertQuery);
+                PreparedStatement stmt = theConnection.prepareStatement(theInsertQuery);
                 try {
                     int index = 0;
                     for (IEntityArgumentGetter getter : theArgumentsGetters) {
@@ -62,6 +64,14 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
             }
         } catch(SQLException e) {
             throw new IllegalStateException(e);
+        }
+    }
+    
+    public void cleanup(CallableStatement aStmt) throws DataAccessException,
+            SQLException {
+        if (theConnection != null) {
+            truncateTable(theConnection);
+            theConnection = null;
         }
     }
 

@@ -6,6 +6,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
 import java.sql.CallableStatement;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,6 +39,10 @@ public class ParametersSetterBlockEntity implements IParametersSetterBlock {
                 throw new IllegalStateException("Can not set parameter: "+e.getMessage(), e);
             }
         }
+    }
+    
+    public void cleanup(CallableStatement aStmt) throws DataAccessException,
+            SQLException {
     }
 
     public String toString() {

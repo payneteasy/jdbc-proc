@@ -41,6 +41,10 @@ public class ParametersSetterBlockArguments implements IParametersSetterBlock {
             }
         }
     }
+    
+    public void cleanup(CallableStatement aStmt) throws DataAccessException,
+            SQLException {
+    }
 
     public String toString() {
         return "ParametersSetterBlockArguments{" +
