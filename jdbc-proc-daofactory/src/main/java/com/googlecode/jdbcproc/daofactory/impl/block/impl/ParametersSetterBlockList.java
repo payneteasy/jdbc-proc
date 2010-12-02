@@ -18,9 +18,7 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
     
-    private Connection theConnection;
-
-    public ParametersSetterBlockList(String aInsertQuery, List<IEntityArgumentGetter> aArgumentsGetters, 
+    public ParametersSetterBlockList(String aInsertQuery, List<IEntityArgumentGetter> aArgumentsGetters,
       String aTrancateTableQuery) {
         theInsertQuery = aInsertQuery;
         theArgumentsGetters = Collections.unmodifiableList(aArgumentsGetters);
@@ -35,16 +33,15 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
         Assert.isTrue(aArgs.length==1, "Count of argument must be equals 1");
 
         try {
-            theConnection = aStmt.getConnection();
-
+            Connection con = aStmt.getConnection();
             // delete previous data from table
-            truncateTable(theConnection);
+            truncateTable( con );
 
             // inserts current data to table
             List list = (List) aArgs[0];
             
             for (Object entity : list) {
-                PreparedStatement stmt = theConnection.prepareStatement(theInsertQuery);
+                PreparedStatement stmt = con.prepareStatement(theInsertQuery);
                 try {
                     int index = 0;
                     for (IEntityArgumentGetter getter : theArgumentsGetters) {
@@ -67,12 +64,8 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
         }
     }
     
-    public void cleanup(CallableStatement aStmt) throws DataAccessException,
-            SQLException {
-        if (theConnection != null) {
-            truncateTable(theConnection);
-            theConnection = null;
-        }
+    public void cleanup(CallableStatement aStmt) throws DataAccessException, SQLException {
+         truncateTable(aStmt.getConnection());
     }
 
     private void truncateTable(Connection aConnection) throws SQLException {
