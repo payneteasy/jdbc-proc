@@ -4,7 +4,7 @@
 
     <artifactId>jdbc-proc</artifactId>
     <groupId>com.googlecode.jdbc-proc</groupId>
-    <version>1.0-32-SNAPSHOT</version>
+    <version>1.0-32</version>
 
     <name>jdbc-proc                              ${version}</name>
 
@@ -18,9 +18,9 @@
     </modules>
 
     <scm>
-        <connection>scm:svn:http://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc</connection>
-        <developerConnection>scm:svn:https://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc</developerConnection>
-        <url>http://code.google.com/p/jdbc-proc/source/browse/</url>
+        <connection>scm:svn:http://jdbc-proc.googlecode.com/svn/tags/jdbc-proc-1.0-32</connection>
+        <developerConnection>scm:svn:https://jdbc-proc.googlecode.com/svn/tags/jdbc-proc-1.0-32</developerConnection>
+        <url>http://code.google.com/p/jdbc-proc/source/browse/tags/jdbc-proc-1.0-32</url>
     </scm>
 
     <developers>
@@ -73,7 +73,7 @@
             <dependency>
                 <groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
                 <artifactId>jdbc-proc-daofactory</artifactId>
-                <version>1.0-32-SNAPSHOT</version>
+                <version>1.0-32</version>
             </dependency>
 
             <!-- SPRING -->
