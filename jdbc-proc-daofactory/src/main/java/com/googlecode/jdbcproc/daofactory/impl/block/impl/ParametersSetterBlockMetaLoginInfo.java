@@ -15,7 +15,7 @@ import org.springframework.util.Assert;
 public class ParametersSetterBlockMetaLoginInfo implements IParametersSetterBlock {
 
     public ParametersSetterBlockMetaLoginInfo(IMetaLoginInfoService aMetaLoginInfoService) {
-        Assert.notNull(aMetaLoginInfoService, "IMetaLoginInfoService is not setted to factory (DaoMethodInfoFactory.MetaLoginInfoService or DAOMethodInfoGuice.init)");
+        Assert.notNull(aMetaLoginInfoService, "IMetaLoginInfoService is not setted to factory (DaoMethodInfoFactory.MetaLoginInfoService or DaoMethodInfoGuice.init)");
 
         theMetaLoginInfoService = aMetaLoginInfoService;
         theUsernameParameterName = aMetaLoginInfoService.getUsernameParameterName();

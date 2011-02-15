@@ -21,14 +21,8 @@ import com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeeDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Company;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Employee;
 
-import org.junit.Test;
+public class EmployeeDaoTest extends AbstractDatabaseTest {
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
-public class EmployeeDAOTest extends AbstractDatabaseTest {
-
-  @Test
   public void test() {
     Injector injector = Guice.createInjector(new SimpleModule());
 

@@ -22,6 +22,8 @@ import com.googlecode.jdbcproc.daofactory.IMetaLoginInfoService;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public interface ParametersSetterBlockService {
@@ -31,7 +33,7 @@ public interface ParametersSetterBlockService {
           , ParameterConverterService converterService
           , Method method
           , StoredProcedureInfo procedureInfo
-          , IMetaLoginInfoService aMetaLoginInfoService
+          , @Nullable IMetaLoginInfoService aMetaLoginInfoService
   );
     
 }

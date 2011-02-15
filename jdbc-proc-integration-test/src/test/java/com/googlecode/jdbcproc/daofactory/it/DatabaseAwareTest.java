@@ -123,7 +123,7 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
     protected String[] getConfigLocations() {
         return new String[]{
                 "/spring/test-datasource.xml"
-                , "/spring/test-dao.xml"
+                , "/spring/test-dao-metalogin.xml"
         };
     }
 

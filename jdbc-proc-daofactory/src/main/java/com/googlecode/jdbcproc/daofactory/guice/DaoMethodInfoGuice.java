@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.Assert;
 
-public class DAOMethodInfoGuice implements DAOMethodInfo {
+public class DaoMethodInfoGuice implements DAOMethodInfo {
 
   private final Logger LOG = LoggerFactory.getLogger(getClass());
 
@@ -48,18 +48,17 @@ public class DAOMethodInfoGuice implements DAOMethodInfo {
   private final RegisterOutParametersBlockService registerOutParametersBlockService;
   private final ResultSetConverterBlockService resultSetConverterBlockService;
   private final IStoredProcedureInfoManager storedProcedureInfoManager;
-  private final IMetaLoginInfoService metaLoginInfoService;
+  private IMetaLoginInfoService metaLoginInfoService;
 
   @Inject
-  public DAOMethodInfoGuice(JdbcTemplate jdbcTemplate,
+  public DaoMethodInfoGuice(JdbcTemplate jdbcTemplate,
       ParameterConverterService parameterConverterService,
       CallableStatementExecutorBlockService callableStatementExecutorBlockService,
       OutputParametersGetterBlockService outputParametersGetterBlockService,
       ParametersSetterBlockService parametersSetterBlockService,
       RegisterOutParametersBlockService registerOutParametersBlockService,
       ResultSetConverterBlockService resultSetConverterBlockService,
-      IStoredProcedureInfoManager storedProcedureInfoManager,
-      IMetaLoginInfoService metaLoginInfoService) throws Exception {
+      IStoredProcedureInfoManager storedProcedureInfoManager) throws Exception {
     this.jdbcTemplate = jdbcTemplate;
     this.parameterConverterService = parameterConverterService;
     this.callableStatementExecutorBlockService = callableStatementExecutorBlockService;
@@ -68,9 +67,13 @@ public class DAOMethodInfoGuice implements DAOMethodInfo {
     this.registerOutParametersBlockService = registerOutParametersBlockService;
     this.resultSetConverterBlockService = resultSetConverterBlockService;
     this.storedProcedureInfoManager = storedProcedureInfoManager;
-    this.metaLoginInfoService = metaLoginInfoService;
   }
 
+  @Inject(optional = true)
+  public void setMetaLoginInfoService(IMetaLoginInfoService metaLoginInfoService) {
+    this.metaLoginInfoService = metaLoginInfoService;
+  }
+  
   /**
    * Creates method info for bets performance
    * @param daoMethod method
