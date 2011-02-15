@@ -24,14 +24,6 @@ public interface ICompanyDao {
     void createCompany(Company aCompany);
 
     /**
-     * Creates company with secured info
-     * @param aCompany company
-     */
-    @AStoredProcedure(name = "create_company_secured")
-    @AMetaLoginInfo        
-    void createCompanySecured(Company aCompany);
-
-    /**
      * Creates company
      *
      * @param aName company name
@@ -39,16 +31,6 @@ public interface ICompanyDao {
      */
     @AStoredProcedure(name = "create_company")
     long createCompany(String aName);
-
-    /**
-     * Creates company secured
-     *
-     * @param aName company name
-     * @return company id
-     */
-    @AStoredProcedure(name = "create_company_secured")
-    @AMetaLoginInfo
-    long createCompanySecured(String aName);
 
     /**
      * Gets company with employees by id
@@ -82,16 +64,6 @@ public interface ICompanyDao {
      */
     @AStoredProcedure(name = "get_companies_names")
     List<String> getCompaniesNames();
-
-    /**
-     * Gets companies' names
-     *
-     * @return companies's names
-     */
-    @AStoredProcedure(name = "get_companies_names_secured")
-    @AMetaLoginInfo        
-    List<String> getCompaniesNamesSecured();
-
 
     /**
      * Gets companies' names

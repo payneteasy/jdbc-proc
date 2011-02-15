@@ -32,15 +32,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * @author dmk
  */
 @Singleton
-public class StoredProcedureDAOProvider<T> implements Provider<T> {
+public class StoredProcedureDaoProvider<T> implements Provider<T> {
 
   private final Class<T> interfaze;
   private final JdbcTemplate jdbcTemplate;
   private final DAOMethodInfo daoMethodInfo;
 
   @Inject
-  public StoredProcedureDAOProvider(Class<T> interfaze, JdbcTemplate jdbcTemplate, 
-                                    DAOMethodInfo daoMethodInfo) {
+  public StoredProcedureDaoProvider(Class<T> interfaze, JdbcTemplate jdbcTemplate,
+      DAOMethodInfo daoMethodInfo) {
     this.interfaze = interfaze;
     this.jdbcTemplate = jdbcTemplate;
     this.daoMethodInfo = daoMethodInfo;

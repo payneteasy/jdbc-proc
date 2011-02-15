@@ -17,16 +17,16 @@ package com.googlecode.jdbcproc.daofactory.guice;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractDatabaseTest {
+import junit.framework.TestCase;
+
+public abstract class AbstractDatabaseTest extends TestCase {
 
   private static final Logger LOG = LoggerFactory.getLogger(AbstractDatabaseTest.class);
 
-  @BeforeClass
-  public static void beforeClass() throws Throwable {
+  @Override public void runBare() throws Throwable {
     // drops and creates database
     executeMysql("", "src/test/resources/sql/create_database.sql");
 
@@ -54,11 +54,13 @@ public abstract class AbstractDatabaseTest {
 
     executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/create_collections.prc");
     executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_carabiners.prc");
+    executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_harnesses.prc");
     executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_dynamic_ropes.prc");
     executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_verticality.prc");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_harnesses.prc");
     executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/create_chalk_bag.prc");
     executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/get_chalk_bags.prc");
+    
+    super.runBare();
   }
 
   private static void executeMysql(String aDatabase, String aSqlFile)

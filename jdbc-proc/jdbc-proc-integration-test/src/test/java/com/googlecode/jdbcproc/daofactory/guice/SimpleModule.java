@@ -18,43 +18,19 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.googlecode.jdbcproc.daofactory.DAOMethodInfo;
-import com.googlecode.jdbcproc.daofactory.IMetaLoginInfoService;
-import com.googlecode.jdbcproc.daofactory.impl.block.service.CallableStatementExecutorBlockService;
-import com.googlecode.jdbcproc.daofactory.impl.block.service.CallableStatementExecutorBlockServiceImpl;
-import com.googlecode.jdbcproc.daofactory.impl.block.service.OutputParametersGetterBlockService;
-import com.googlecode.jdbcproc.daofactory.impl.block.service.OutputParametersGetterBlockServiceImpl;
-import com.googlecode.jdbcproc.daofactory.impl.block.service.ParametersSetterBlockService;
-import com.googlecode.jdbcproc.daofactory.impl.block.service.ParametersSetterBlockServiceImpl;
-import com.googlecode.jdbcproc.daofactory.impl.block.service.RegisterOutParametersBlockService;
-import com.googlecode.jdbcproc.daofactory.impl.block.service.RegisterOutParametersBlockServiceImpl;
-import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterBlockService;
-import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterBlockServiceImpl;
-import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
-import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterServiceImpl;
-import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.IStoredProcedureInfoManager;
-import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfoManagerInitOnStartup;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeeDao;
-import com.googlecode.jdbcproc.daofactory.it.testdao.service.impl.SimpleMetaLoginInfoServiceImpl;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
- public class SimpleModule extends AbstractModule {
+class SimpleModule extends AbstractModule {
   
   @Override
   protected void configure() {
-    bind(DAOMethodInfo.class).to(DAOMethodInfoGuice.class);
-    bind(ParameterConverterService.class).to(ParameterConverterServiceImpl.class);
-    bind(CallableStatementExecutorBlockService.class).to(CallableStatementExecutorBlockServiceImpl.class);
-    bind(OutputParametersGetterBlockService.class).to(OutputParametersGetterBlockServiceImpl.class);
-    bind(ParametersSetterBlockService.class).to(ParametersSetterBlockServiceImpl.class);
-    bind(RegisterOutParametersBlockService.class).to(RegisterOutParametersBlockServiceImpl.class);
-    bind(ResultSetConverterBlockService.class).to(ResultSetConverterBlockServiceImpl.class);
-    bind(IMetaLoginInfoService.class).to(SimpleMetaLoginInfoServiceImpl.class);
-    bind(IStoredProcedureInfoManager.class).to(StoredProcedureInfoManagerInitOnStartup.class);  
+    install(new InitJdbcProcModule());
   }
   
   @Provides
@@ -78,15 +54,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
   
   @Provides
   @Singleton
-  ICompanyDao provideCompanyDAO(JdbcTemplate jdbcTemplate, DAOMethodInfo daoMethodInfo) {
-    return new StoredProcedureDAOProvider<ICompanyDao>(ICompanyDao.class, 
+  ICompanyDao provideCompanyDao(JdbcTemplate jdbcTemplate, DAOMethodInfo daoMethodInfo) {
+    return new StoredProcedureDaoProvider<ICompanyDao>(ICompanyDao.class, 
         jdbcTemplate, daoMethodInfo).get();
   }
   
   @Provides
   @Singleton
-  IEmployeeDao provideEmployeeDAO(JdbcTemplate jdbcTemplate, DAOMethodInfo daoMethodInfo) {
-    return new StoredProcedureDAOProvider<IEmployeeDao>(IEmployeeDao.class, 
+  IEmployeeDao provideEmployeeDao(JdbcTemplate jdbcTemplate, DAOMethodInfo daoMethodInfo) {
+    return new StoredProcedureDaoProvider<IEmployeeDao>(IEmployeeDao.class, 
         jdbcTemplate, daoMethodInfo).get();
   }
 }

@@ -24,18 +24,6 @@ public class CompanyDaoTest extends DatabaseAwareTest {
         assertNotNull(company.getId());
     }
 
-
-    public void testCreateCompanySecured() {
-
-        Company company = new Company();
-        company.setName("first-secured");
-        theCompanyDao.createCompanySecured(company);
-        assertNotNull(company.getId());
-
-        long id = theCompanyDao.createCompanySecured("second-secured");
-        assertTrue(id!=0);
-    }
-
     public void testCreateCompany2() {
         long id = theCompanyDao.createCompany("second");
         assertTrue("Company Id must not be 0", 0!=id);
@@ -47,7 +35,6 @@ public class CompanyDaoTest extends DatabaseAwareTest {
             assertEquals(id, company.getId());
             assertEquals("second", company.getName());
         }
-
     }
 
     public void testGetCompaniesNames() {
@@ -59,21 +46,6 @@ public class CompanyDaoTest extends DatabaseAwareTest {
         }
 
         List<String> names = theCompanyDao.getCompaniesNames();
-        assertEquals(10, names.size());
-        for(int i=0; i<10; i++) {
-            assertEquals("company-"+i, names.get(i));
-        }
-    }
-
-    public void testGetCompaniesNamesSecured() {
-        // creates companies
-        for(int i=0; i<10; i++) {
-            Company company = new Company();
-            company.setName("company-"+i);
-            theCompanyDao.createCompany(company);
-        }
-
-        List<String> names = theCompanyDao.getCompaniesNamesSecured();
         assertEquals(10, names.size());
         for(int i=0; i<10; i++) {
             assertEquals("company-"+i, names.get(i));
@@ -165,7 +137,7 @@ public class CompanyDaoTest extends DatabaseAwareTest {
 
         System.out.println("companies = " + companies);
     }
-    
+
     /** Company dao */
     public void setCompanyDao(ICompanyDao aCompanyDao) {
         theCompanyDao = aCompanyDao;
@@ -178,6 +150,12 @@ public class CompanyDaoTest extends DatabaseAwareTest {
         theEmployeeDao = aEmployeeDao;
     }
 
+    @Override protected String[] getConfigLocations() {
+        return new String[] {"/spring/test-datasource.xml"
+          , "/spring/test-dao.xml"
+        };
+    }
+
     /**
      * Employee dao
      */
@@ -185,6 +163,6 @@ public class CompanyDaoTest extends DatabaseAwareTest {
     /**
      * Company dao
      */
-    private ICompanyDao theCompanyDao;
+    protected ICompanyDao theCompanyDao;
 
 }

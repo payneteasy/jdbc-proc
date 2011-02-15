@@ -16,7 +16,17 @@ package com.googlecode.jdbcproc.daofactory.impl.block.service;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.BlockFactoryUtils;
 import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.*;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ArgumentGetter;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.EntityArgumentGetter;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.EntityArgumentGetterOneToOne;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.EntityArgumentGetterOneToOneJoinColumn;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.IEntityArgumentGetter;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockArguments;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockEntity;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockList;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockListAggregator;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockMetaLoginInfo;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockNull1;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
@@ -27,8 +37,16 @@ import com.googlecode.jdbcproc.daofactory.IMetaLoginInfoService;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.sql.*;
-import java.util.*;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -60,50 +78,69 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             , StoredProcedureInfo procedureInfo
             , IMetaLoginInfoService aMetaLoginInfoService
     ) {
+        if (method.isAnnotationPresent(AMetaLoginInfo.class)) {
+          if (aMetaLoginInfoService == null) {
+            throw new IllegalStateException(AMetaLoginInfo.class.getName() 
+                + " annotation is present but no implementation for " 
+                + IMetaLoginInfoService.class.getName() + " was bound");
+          }
 
-        // List getAll()
-        if (BlockFactoryUtils.isGetAllMethod(method, procedureInfo)) {
-            return createGetAll(procedureInfo);
-
-        // is entity, e.g. void saveProcessor(TransactionProcessor) (meta login supported)
-        } else if (procedureInfo.getArgumentsCounts() > method.getParameterTypes().length
-                && method.getParameterTypes().length == 1
-                && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])) {
+          // is entity, e.g. void saveProcessor(TransactionProcessor) (meta login supported)
+          if (procedureInfo.getArgumentsCounts() > method.getParameterTypes().length
+              && method.getParameterTypes().length == 1
+              && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])) {
             return createSaveMethod(converterService, method, procedureInfo, aMetaLoginInfoService);
 
-        // if no parameters
-        } else if (method.getParameterTypes().length == 0 && procedureInfo.getInputArgumentsCount() == 0) {
-            return Collections.emptyList();
-
-        // METHOD @AMetaLoginInfo
-        // METHOD no parameter
-        // PROCEDURE 2 parameters
-        } else if (method.isAnnotationPresent(AMetaLoginInfo.class) && method.getParameterTypes().length == 0 && procedureInfo.getInputArgumentsCount() == 2) {
+            // METHOD @AMetaLoginInfo
+            // METHOD no parameter
+            // PROCEDURE 2 parameters
+          } else if (method.getParameterTypes().length == 0 && procedureInfo.getInputArgumentsCount() == 2) {
             return Arrays.asList((IParametersSetterBlock)new ParametersSetterBlockMetaLoginInfo(aMetaLoginInfoService));
 
-        // if parameters is simple puted to procedure
-        } else if (method.getParameterTypes().length == procedureInfo.getInputArgumentsCount() && !method.isAnnotationPresent(AMetaLoginInfo.class)) {
+            // if AMetaLoginInfo and parameters is simple puted to procedure
+          } else if (method.getParameterTypes().length + 2 == procedureInfo.getInputArgumentsCount()) {
+            return createSimpleParametersWithMetaLoginInfo(aMetaLoginInfoService, converterService, method, procedureInfo);
+
+            // if both list and arguments parameters provides with MetaLoginInfo
+          } else if (areListAndNonListParametersProvidesWithMetaLoginInfo(method, procedureInfo)) {
+            return createListAndArgumentsWithMetaLoginInfo(createListAndArguments(2, jdbcTemplate, converterService, method, procedureInfo), aMetaLoginInfoService);
+
+            // else not supported
+          } else {
+            throw new IllegalStateException(method + " is Unsupported");
+          }
+
+        } else {
+          // List getAll()
+          if (BlockFactoryUtils.isGetAllMethod(method, procedureInfo)) {
+            return createGetAll(procedureInfo);
+
+            // is entity, e.g. void saveProcessor(TransactionProcessor) (meta login not supported)
+          } else if (procedureInfo.getArgumentsCounts() > method.getParameterTypes().length
+              && method.getParameterTypes().length == 1
+              && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])) {
+            return createSaveMethod(converterService, method, procedureInfo);
+
+            // if no parameters
+          } else if (method.getParameterTypes().length == 0 && procedureInfo.getInputArgumentsCount() == 0) {
+            return Collections.emptyList();
+
+            // if parameters is simple puted to procedure
+          } else if (method.getParameterTypes().length == procedureInfo.getInputArgumentsCount()) {
             return createSimpleParameters(converterService, method, procedureInfo);
 
-        // if AMetaLoginInfo and parameters is simple puted to procedure
-        } else if (method.isAnnotationPresent(AMetaLoginInfo.class) && method.getParameterTypes().length + 2 == procedureInfo.getInputArgumentsCount()) {
-            return createSimpleParametersWithMetaLoginInfo(aMetaLoginInfoService, converterService, method, procedureInfo);
-            
-        // if all parameters is list and no arguments
-        } else if (areAllParametersListAndNoArguments(method, procedureInfo)) {
+            // if all parameters is list and no arguments
+          } else if (areAllParametersListAndNoArguments(method, procedureInfo)) {
             return createAllList(jdbcTemplate, converterService, method);
 
-        // if both list and arguments parameters provides
-        } else if (areListAndNonListParametersProvides(method, procedureInfo)) {
+            // if both list and arguments parameters provides
+          } else if (areListAndNonListParametersProvides(method, procedureInfo)) {
             return createListAndArguments(0, jdbcTemplate, converterService, method, procedureInfo);
-        
-          // if both list and arguments parameters provides with MetaLoginInfo
-        } else if (method.isAnnotationPresent(AMetaLoginInfo.class) && areListAndNonListParametersProvidesWithMetaLoginInfo(method, procedureInfo)) {
-            return createListAndArgumentsWithMetaLoginInfo(createListAndArguments(2, jdbcTemplate, converterService, method, procedureInfo), aMetaLoginInfoService);
-          
-        // else not supported
-        } else {
+
+            // else not supported
+          } else {
             throw new IllegalStateException(method + " is Unsupported");
+          }
         }
     }
 
@@ -291,6 +328,16 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         } else {
             return Collections.singletonList(block);
         }
+    }
+
+    private List<IParametersSetterBlock> createSaveMethod(ParameterConverterService converterService, 
+        Method method, StoredProcedureInfo procedureInfo) {
+        Assert.isTrue(method.getParameterTypes().length == 1
+                , "Method " + method.getName() + " parameters count must be equals to 1");
+        Class entityClass = method.getParameterTypes()[0];
+
+        final IParametersSetterBlock block = createEntityBlock(converterService, procedureInfo, entityClass, null);
+        return Collections.singletonList(block);
     }
 
     /**

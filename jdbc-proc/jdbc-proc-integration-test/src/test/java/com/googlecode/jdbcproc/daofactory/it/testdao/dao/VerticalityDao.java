@@ -10,7 +10,7 @@ import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import java.util.Date;
 import java.util.List;
 
-public interface VerticalityDAO {
+public interface VerticalityDao {
     
     @AStoredProcedure(name = "upload_carabiners")
     void uploadCarabiners(Date uploadDate, List<Carabiner> carabiners);

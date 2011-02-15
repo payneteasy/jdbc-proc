@@ -1,11 +1,11 @@
 package com.googlecode.jdbcproc.daofactory.it.testdao;
 
 import com.googlecode.jdbcproc.daofactory.it.DatabaseAwareTest;
+import com.googlecode.jdbcproc.daofactory.it.testdao.dao.VerticalityDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.model.Carabiner;
 import com.googlecode.jdbcproc.daofactory.it.testdao.model.DynamicRope;
 import com.googlecode.jdbcproc.daofactory.it.testdao.model.Harness;
 import com.googlecode.jdbcproc.daofactory.it.testdao.model.ChalkBag;
-import com.googlecode.jdbcproc.daofactory.it.testdao.dao.VerticalityDAO;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -14,10 +14,10 @@ import java.util.Date;
 
 public class VerticalityDAOTest  extends DatabaseAwareTest {
     
-    private VerticalityDAO verticalityDAO;
+    private VerticalityDao verticalityDao;
 
-    public void setVerticalityDAO(VerticalityDAO verticalityDAO) {
-        this.verticalityDAO = verticalityDAO;
+    public void setVerticalityDao(VerticalityDao verticalityDao) {
+        this.verticalityDao = verticalityDao;
     }
 
     public void testProcedureWithListParameters() {
@@ -36,7 +36,7 @@ public class VerticalityDAOTest  extends DatabaseAwareTest {
         harnesses.add(harness1);
         harnesses.add(harness2);
         
-        verticalityDAO.uploadHarnesses(harnesses);
+        verticalityDao.uploadHarnesses(harnesses);
     }
   
     public void testProcedureWithListAndNonListParameters() {
@@ -89,16 +89,16 @@ public class VerticalityDAOTest  extends DatabaseAwareTest {
         dynamicRopes.add(dynamicRope2);
         
         Date uploadDate = new Date();
-        verticalityDAO.uploadCarabiners(uploadDate, carabiners);
-        int entityId = verticalityDAO.uploadCarabiners(uploadDate, carabiners, uploadDate);
+        verticalityDao.uploadCarabiners(uploadDate, carabiners);
+        int entityId = verticalityDao.uploadCarabiners(uploadDate, carabiners, uploadDate);
         assertEquals(1, entityId);
-        entityId = verticalityDAO.uploadCarabiners(null, carabiners, uploadDate);
+        entityId = verticalityDao.uploadCarabiners(null, carabiners, uploadDate);
         assertEquals(1, entityId);
-        verticalityDAO.uploadCarabinersWithMetaLoginInfo(uploadDate, carabiners);
-        verticalityDAO.uploadDynamicRopes(dynamicRopes, uploadDate);
-        verticalityDAO.uploadDynamicRopesWithMetaLoginInfo(dynamicRopes, uploadDate);
-        verticalityDAO.uploadVerticality(uploadDate, carabiners,  dynamicRopes);
-        verticalityDAO.uploadVerticalityWithMetaLoginInfo(uploadDate, carabiners,  dynamicRopes);
+        verticalityDao.uploadCarabinersWithMetaLoginInfo(uploadDate, carabiners);
+        verticalityDao.uploadDynamicRopes(dynamicRopes, uploadDate);
+        verticalityDao.uploadDynamicRopesWithMetaLoginInfo(dynamicRopes, uploadDate);
+        verticalityDao.uploadVerticality(uploadDate, carabiners,  dynamicRopes);
+        verticalityDao.uploadVerticalityWithMetaLoginInfo(uploadDate, carabiners,  dynamicRopes);
     }
     
     public void testReturnEntityWithBigintTypeField() {
@@ -111,10 +111,10 @@ public class VerticalityDAOTest  extends DatabaseAwareTest {
         chalkBag2.setColor("TOPO print sandstone");
         chalkBag2.setMaterials("polyester and nylon");
         
-        verticalityDAO.createChalkBag(chalkBag1);
-        verticalityDAO.createChalkBag(chalkBag2);
+        verticalityDao.createChalkBag(chalkBag1);
+        verticalityDao.createChalkBag(chalkBag2);
         
-        List<ChalkBag> chalkBags = verticalityDAO.getChalkBags();
+        List<ChalkBag> chalkBags = verticalityDao.getChalkBags();
         assertEquals(2, chalkBags.size());
     }
 }
