@@ -36,6 +36,7 @@ public class ResultSetConverterBlockEntityOneToMany2xList implements IResultSetC
             if(firstLevelHolder.isNew()) {
                 firstLevelHolder.clearChildren();
                 ret.add(firstLevelHolder.getLoadedEntity());
+                forceHoldersNew(holders, 1);
             }
 
             for(int i= 1; i< holders.size(); i++) {
@@ -45,6 +46,7 @@ public class ResultSetConverterBlockEntityOneToMany2xList implements IResultSetC
                 if(holder.isNotEmpty() && holder.isNew()) {
                     holder.clearChildren();
                     parentHolder.addToList(holder.getLoadedEntity());
+                    forceHoldersNew(holders, i + i);
                 }
             }
 
@@ -53,6 +55,13 @@ public class ResultSetConverterBlockEntityOneToMany2xList implements IResultSetC
         }
         return Collections.unmodifiableList(ret);
 
+    }
+    
+    private void forceHoldersNew(List<Holder> holders, int fromIndex) {
+        for (int i = fromIndex; i < holders.size(); i++) {
+            Holder holder = holders.get(i);
+            holder.forceNew();
+        }
     }
 
 
@@ -110,6 +119,10 @@ public class ResultSetConverterBlockEntityOneToMany2xList implements IResultSetC
 
         public void clearChildren() {
             theList = new LinkedList<Object>();
+        }
+        
+        public void forceNew() {
+            thePreviousEntity = null;
         }
 
         private Object thePreviousEntity = null ;
