@@ -1,16 +1,16 @@
 package com.googlecode.jdbcproc.daofactory.it.testdao;
 
+import java.util.Iterator;
+import java.util.List;
+
+import com.googlecode.jdbcproc.daofactory.CloseableIterator;
 import com.googlecode.jdbcproc.daofactory.it.DatabaseAwareTest;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeeDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Company;
-import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Employee;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.CompanyWithEmployees;
+import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Employee;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.EmployeeOnly;
-import com.googlecode.jdbcproc.daofactory.CloseableIterator;
-
-import java.util.List;
-import java.util.Iterator;
 
 /**
  *
@@ -137,7 +137,7 @@ public class CompanyDaoTest extends DatabaseAwareTest {
 
         System.out.println("companies = " + companies);
     }
-
+    
     /** Company dao */
     public void setCompanyDao(ICompanyDao aCompanyDao) {
         theCompanyDao = aCompanyDao;
