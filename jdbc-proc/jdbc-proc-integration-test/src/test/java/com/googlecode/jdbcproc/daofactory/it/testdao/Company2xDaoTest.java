@@ -1,16 +1,17 @@
 package com.googlecode.jdbcproc.daofactory.it.testdao;
 
-import junit.framework.TestCase;
+import java.util.List;
+
 import com.googlecode.jdbcproc.daofactory.it.DatabaseAwareTest;
+import com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyDao;
+import com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeeDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Company;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Employee;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.onetomany2x.Certificate2x;
-import com.googlecode.jdbcproc.daofactory.it.testdao.domain.onetomany2x.Employee2x;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.onetomany2x.Company2x;
-import com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyDao;
-import com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeeDao;
-
-import java.util.List;
+import com.googlecode.jdbcproc.daofactory.it.testdao.domain.onetomany2x.Employee2x;
+import com.googlecode.jdbcproc.daofactory.it.testdao.domain.onetomany2x.Father;
+import com.googlecode.jdbcproc.daofactory.it.testdao.domain.onetomany2x.Grandfather;
 
 /**
  * Test for OneToMany 2x links
@@ -265,6 +266,27 @@ public class Company2xDaoTest extends DatabaseAwareTest {
             }
         }
 
+    }
+    
+    public void testAncestry() {
+        List<Grandfather> grandfathers = theCompanyDao.getGrandfathers2xMultiLevelGrouping();
+        assertEquals(2, grandfathers.size());
+        Grandfather tom = grandfathers.get(0);
+        Grandfather sam = grandfathers.get(1);
+        assertEquals("Grand Tom", tom.getName());
+        assertEquals("Grand Sam", sam.getName());
+        assertEquals(1, tom.getSons().size());
+        assertEquals(1, sam.getSons().size());
+        Father john1 = tom.getSons().get(0);
+        Father john2 = sam.getSons().get(0);
+        assertEquals("John", john1.getName());
+        assertEquals("John", john2.getName());
+        assertEquals(2, john1.getSons().size());
+        assertEquals("Little Jimmy", john1.getSons().get(0).getName());
+        assertEquals("Little Timmy", john1.getSons().get(1).getName());
+        assertEquals(2, john2.getSons().size());
+        assertEquals("Little Jacky", john2.getSons().get(0).getName());
+        assertEquals("Little Stanny", john2.getSons().get(1).getName());
     }
 
 
