@@ -1,14 +1,14 @@
 package com.googlecode.jdbcproc.daofactory.it.testdao.dao;
 
+import java.util.List;
+
+import com.googlecode.jdbcproc.daofactory.CloseableIterator;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
-import com.googlecode.jdbcproc.daofactory.annotation.AMetaLoginInfo;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Company;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.CompanyWithEmployees;
-import com.googlecode.jdbcproc.daofactory.it.testdao.domain.onetomany2x.Company2x;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.onetomany2x.Certificate2x;
-import com.googlecode.jdbcproc.daofactory.CloseableIterator;
-
-import java.util.List;
+import com.googlecode.jdbcproc.daofactory.it.testdao.domain.onetomany2x.Company2x;
+import com.googlecode.jdbcproc.daofactory.it.testdao.domain.onetomany2x.Grandfather;
 
 /**
  * Test dao
@@ -79,7 +79,16 @@ public interface ICompanyDao {
      */
     @AStoredProcedure(name = "get_company_2x")
     List<Company2x> getCompanies2x();
-
+    
+    /**
+     * Gets grandfathers, fathers and sons with OneToMany Links with
+     * tricky multi-level grouping which requires grouper to check not only
+     * parents but all ancestors, too.
+     * @return companies
+     */
+    @AStoredProcedure(name = "get_ancestry_2x_multi_level_grouping")
+    List<Grandfather> getGrandfathers2xMultiLevelGrouping();
+    
     /**
      * Creates certificate for employee
      * @param aCertificate certificate
