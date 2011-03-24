@@ -3,7 +3,7 @@
     <packaging>pom</packaging>
 
     <artifactId>jdbc-proc</artifactId>
-    <groupId>com.googlecode.jdbc-proc</groupId>
+    <groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
     <version>1.0-35-SNAPSHOT</version>
 
     <name>jdbc-proc                              ${version}</name>
