@@ -9,7 +9,7 @@
     <name>.jdbc-proc-daofactory                  ${version}</name>
     
     <parent>
-        <groupId>com.googlecode.jdbc-proc</groupId>
+        <groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
         <artifactId>jdbc-proc</artifactId>
         <version>1.0-35-SNAPSHOT</version>
     </parent>
