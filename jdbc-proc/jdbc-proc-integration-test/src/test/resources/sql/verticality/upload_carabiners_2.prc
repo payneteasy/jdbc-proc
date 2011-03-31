@@ -28,3 +28,5 @@ delimiter ;
 
 insert into resultset_info (specific_name, routine_resultset)
 values ('upload_carabiners_2', 'entity_id int');
+
+commit;

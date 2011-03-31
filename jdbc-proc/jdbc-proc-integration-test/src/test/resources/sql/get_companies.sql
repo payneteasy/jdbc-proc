@@ -11,3 +11,5 @@ $$
 insert into resultset_info (specific_name, routine_resultset)
 values ('get_companies'
        , 'company_id int, name varchar');
+
+commit;

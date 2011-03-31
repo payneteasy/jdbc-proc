@@ -18,3 +18,4 @@ $$
 insert into resultset_info (specific_name, routine_resultset)
 values ('get_ancestry_2x_multi_level_grouping'
        , 'name varchar, son_name varchar, son_son_name varchar');
+commit;

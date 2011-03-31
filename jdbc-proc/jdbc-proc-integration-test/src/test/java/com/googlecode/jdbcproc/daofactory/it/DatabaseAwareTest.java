@@ -55,6 +55,11 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/create_chalk_bag.prc");
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/get_chalk_bags.prc");
 
+          // tx manager
+          executeMysql("jdbcprocdb", "src/test/resources/sql/tx_table.sql");
+          executeMysql("jdbcprocdb", "src/test/resources/sql/tx_table_test.sql");
+          executeMysql("jdbcprocdb", "src/test/resources/sql/tx_table_test_success.sql");
+
         super.runBare();
     }
 

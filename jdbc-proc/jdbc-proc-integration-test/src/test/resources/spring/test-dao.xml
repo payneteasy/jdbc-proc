@@ -63,5 +63,15 @@
     <bean id="companyService" class="com.googlecode.jdbcproc.daofactory.it.testdao.service.impl.CompanyServiceImpl">
         <property name="companyDao" ref="companyDao" />
     </bean>
+
+    <!-- Tx manager -->
+    <bean id="txManagerDao" parent="abstractDao">
+        <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.ITxManagerDao"/>
+    </bean>
+
+    <bean id='txManagerService' class="com.googlecode.jdbcproc.daofactory.it.testdao.service.impl.TxManagerServiceImpl">
+        <property name="txManagerDao" ref="txManagerDao" />
+    </bean>
+
 </beans>
 
