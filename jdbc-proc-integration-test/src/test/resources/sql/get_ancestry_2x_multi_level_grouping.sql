@@ -10,7 +10,7 @@ begin
 	from grandfather g
 	   join father f on f.grandfather_id = g.grandfather_id
 	   join boy b on b.father_id = f.father_id
-	order by g.grandfather_id, f.father_id;
+	order by g.grandfather_id, f.father_id, b.boy_id;
 
 end
 $$
