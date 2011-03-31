@@ -9,3 +9,6 @@ $$
 
 insert into resultset_info (specific_name, routine_resultset)
 values ('get_chalk_bags', 'chalk_bag_id bigint, chalk_bag_name varchar, color varchar, materials varchar');
+
+commit;
+

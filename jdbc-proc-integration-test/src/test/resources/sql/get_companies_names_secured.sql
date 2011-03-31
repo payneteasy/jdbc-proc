@@ -14,3 +14,5 @@ $$
 insert into resultset_info (specific_name, routine_resultset)
 values ('get_companies_names_secured'
        , 'name varchar');
+
+commit;

@@ -31,3 +31,5 @@ $$
 insert into resultset_info (specific_name, routine_resultset)
 values ('get_company_employees'
        , 'company_id int, name varchar, employee_employee_id int, employee_firstname varchar, employee_lastname varchar');
+
+commit;
