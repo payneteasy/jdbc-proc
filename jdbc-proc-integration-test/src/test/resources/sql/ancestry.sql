@@ -38,3 +38,5 @@ insert into boy (boy_id, name, father_id) values
     (3, 'Little Jacky', 2),
     (4, 'Little Stanny', 2)
 ;
+
+commit;
