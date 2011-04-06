@@ -1,3 +1,7 @@
+drop table if exists boy;
+drop table if exists father;
+drop table if exists grandfather;
+
 create table grandfather (
      grandfather_id   int(10) unsigned not null auto_increment
    , name             varchar(60)
