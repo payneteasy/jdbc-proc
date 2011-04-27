@@ -1,4 +1,4 @@
-package com.googlecode.jdbcproc.daofactory.model;
+package com.googlecode.jdbcproc.daofactory.impl.block.service;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

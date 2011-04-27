@@ -5,18 +5,17 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.googlecode.jdbcproc.daofactory.IMetaLoginInfoService;
-import com.googlecode.jdbcproc.daofactory.ITestDao;
 import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
-import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter.Type;
+import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
-
-import junit.framework.TestCase;
 
 /**
  * TODO: this test is a quick-fix. It's better to refactor
@@ -79,7 +78,7 @@ public class ParametersSetterBlockServiceImplTest extends TestCase {
         
         procedureInfo = new StoredProcedureInfo("save_list_not_entity");
         blocks = setter.create(null, nullConverterService,
-                ITestDao.class.getMethod("saveListNotEntity", new Class[]{List.class}),
+                IMappingTestDao.class.getMethod("saveListNotEntity", new Class[]{List.class}),
                 procedureInfo, null);
         
         assertSame(createAllListMarker, blocks);
@@ -89,7 +88,7 @@ public class ParametersSetterBlockServiceImplTest extends TestCase {
         procedureInfo.addColumn(new StoredProcedureArgumentInfo("i_b", (short) StoredProcedureArgumentInfo.IN, (short) Types.VARCHAR));
         try {
             blocks = setter.create(null, nullConverterService,
-                    ITestDao.class.getMethod("saveListNotEntity", new Class[]{List.class}),
+                    IMappingTestDao.class.getMethod("saveListNotEntity", new Class[]{List.class}),
                     procedureInfo, null);
             fail("Exception is expected here");
         } catch (IllegalStateException e) {
@@ -119,7 +118,7 @@ public class ParametersSetterBlockServiceImplTest extends TestCase {
         procedureInfo.addColumn(new StoredProcedureArgumentInfo("i_username", (short) StoredProcedureArgumentInfo.IN, (short) Types.VARCHAR));
         procedureInfo.addColumn(new StoredProcedureArgumentInfo("i_role", (short) StoredProcedureArgumentInfo.IN, (short) Types.VARCHAR));
         blocks = setter.create(null, nullConverterService,
-                ITestDao.class.getMethod("callWithList", new Class[]{List.class}),
+                IMappingTestDao.class.getMethod("callWithList", new Class[]{List.class}),
                 procedureInfo, metaLoginInfoService);
         
         assertSame(createListAndArgumentsWithMetaLoginInfo, blocks);
