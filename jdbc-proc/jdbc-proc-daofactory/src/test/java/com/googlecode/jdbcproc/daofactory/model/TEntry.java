@@ -1,0 +1,28 @@
+package com.googlecode.jdbcproc.daofactory.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+
+@Entity(name = "test_entry")
+public class TEntry {
+    private int a;
+    private String b;
+
+    @Column(name = "a")
+    public int getA() {
+        return a;
+    }
+
+    public void setA(int a) {
+        this.a = a;
+    }
+
+    @Column(name = "b")
+    public String getB() {
+        return b;
+    }
+
+    public void setB(String b) {
+        this.b = b;
+    }
+}

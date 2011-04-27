@@ -8,7 +8,7 @@ import com.googlecode.jdbcproc.daofactory.impl.TypeNameUtil;
 public class StoredProcedureArgumentInfo {
 
     public static final int OUT = 4;
-    private static final int IN  = 1;
+    public static final int IN  = 1;
     private static final int FUNCTION_RETURN = 5;
 
 

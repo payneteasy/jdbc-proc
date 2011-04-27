@@ -88,7 +88,8 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
           // is entity, e.g. void saveProcessor(TransactionProcessor) (meta login supported)
           if (procedureInfo.getArgumentsCounts() > method.getParameterTypes().length
               && method.getParameterTypes().length == 1
-              && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])) {
+              && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])
+              && !BlockFactoryUtils.isListType(method.getParameterTypes()[0])) {
             return createSaveMethod(converterService, method, procedureInfo, aMetaLoginInfoService);
 
             // METHOD @AMetaLoginInfo
@@ -103,7 +104,9 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
 
             // if both list and arguments parameters provides with MetaLoginInfo
           } else if (areListAndNonListParametersProvidesWithMetaLoginInfo(method, procedureInfo)) {
-            return createListAndArgumentsWithMetaLoginInfo(createListAndArguments(2, jdbcTemplate, converterService, method, procedureInfo), aMetaLoginInfoService);
+            return createListAndArgumentsWithMetaLoginInfo(jdbcTemplate,
+                    converterService, method, procedureInfo,
+                    aMetaLoginInfoService);
 
             // else not supported
           } else {
@@ -118,7 +121,8 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             // is entity, e.g. void saveProcessor(TransactionProcessor) (meta login not supported)
           } else if (procedureInfo.getArgumentsCounts() > method.getParameterTypes().length
               && method.getParameterTypes().length == 1
-              && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])) {
+              && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])
+              && !BlockFactoryUtils.isListType(method.getParameterTypes()[0])) {
             return createSaveMethod(converterService, method, procedureInfo);
 
             // if no parameters
@@ -142,6 +146,14 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             throw new IllegalStateException(method + " is Unsupported");
           }
         }
+    }
+
+    protected List<IParametersSetterBlock> createListAndArgumentsWithMetaLoginInfo(
+            JdbcTemplate jdbcTemplate,
+            ParameterConverterService converterService, Method method,
+            StoredProcedureInfo procedureInfo,
+            IMetaLoginInfoService aMetaLoginInfoService) {
+        return createListAndArgumentsWithMetaLoginInfo(createListAndArguments(2, jdbcTemplate, converterService, method, procedureInfo), aMetaLoginInfoService);
     }
 
     /**
@@ -227,7 +239,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
     /**
      * if all parameters is list and no arguments
      */
-    private List<IParametersSetterBlock> createAllList(JdbcTemplate jdbcTemplate, ParameterConverterService converterService, Method method) {
+    protected List<IParametersSetterBlock> createAllList(JdbcTemplate jdbcTemplate, ParameterConverterService converterService, Method method) {
         if (method.getParameterTypes().length == 1) {
             // only one argument
             return Collections.singletonList(
@@ -330,7 +342,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         }
     }
 
-    private List<IParametersSetterBlock> createSaveMethod(ParameterConverterService converterService, 
+    protected List<IParametersSetterBlock> createSaveMethod(ParameterConverterService converterService, 
         Method method, StoredProcedureInfo procedureInfo) {
         Assert.isTrue(method.getParameterTypes().length == 1
                 , "Method " + method.getName() + " parameters count must be equals to 1");
