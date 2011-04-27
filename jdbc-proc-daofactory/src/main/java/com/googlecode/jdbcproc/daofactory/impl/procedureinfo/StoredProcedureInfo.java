@@ -11,7 +11,7 @@ public class StoredProcedureInfo {
         theName = aName;
     }
 
-    protected void addColumn(StoredProcedureArgumentInfo aArgumentInfo) {
+    public void addColumn(StoredProcedureArgumentInfo aArgumentInfo) {
         theArguments.add(aArgumentInfo);
         String name = aArgumentInfo.getColumnName();
         if(name.startsWith("i_") || name.startsWith("o_")) {

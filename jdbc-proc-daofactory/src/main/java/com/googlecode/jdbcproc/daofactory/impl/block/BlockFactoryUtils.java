@@ -1,17 +1,18 @@
 package com.googlecode.jdbcproc.daofactory.impl.block;
 
-import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
-import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
-import com.googlecode.jdbcproc.daofactory.annotation.AMetaLoginInfo;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.OneToMany;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.math.BigDecimal;
+
+import com.googlecode.jdbcproc.daofactory.annotation.AMetaLoginInfo;
+import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
+import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
 
 /**
  * Utils for factories
@@ -103,6 +104,10 @@ public class BlockFactoryUtils {
      */
     public static boolean isSimpleType(Class aType) {
         return SIMPLE_TYPES.contains(aType);
+    }
+    
+    public static boolean isListType(Class aType) {
+        return List.class.equals(aType);
     }
 
     public static Method findOneToManyMethod(Class aClass) {
