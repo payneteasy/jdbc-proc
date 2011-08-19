@@ -92,5 +92,12 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- mockobjects -->
+        <dependency>
+            <groupId>mockobjects</groupId>
+            <artifactId>mockobjects</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 </project>

@@ -173,6 +173,13 @@
                 <scope>test</scope>
             </dependency>
             
+			<dependency>
+			    <groupId>mockobjects</groupId>
+			    <artifactId>mockobjects</artifactId>
+			    <version>0.1</version>
+			    <scope>test</scope>
+			</dependency>
+            
         </dependencies>
     </dependencyManagement>
 
