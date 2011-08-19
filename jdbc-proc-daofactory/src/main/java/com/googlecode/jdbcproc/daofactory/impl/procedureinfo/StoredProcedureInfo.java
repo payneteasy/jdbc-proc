@@ -20,7 +20,7 @@ public class StoredProcedureInfo {
         theArgumentsByNameMap.put(name, aArgumentInfo);
     }
 
-    protected void addResultSetColumn(ResultSetColumnInfo aColumnInfo) {
+    public void addResultSetColumn(ResultSetColumnInfo aColumnInfo) {
         theRsColumnByNameMap.put(aColumnInfo.getColumnName(), aColumnInfo);
         theResultSetColumnInfos.add(aColumnInfo);
     }

@@ -11,8 +11,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.googlecode.jdbcproc.daofactory.IMetaLoginInfoService;
 import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
-import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
-import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter.Type;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
@@ -23,19 +21,7 @@ import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo
  */
 public class ParametersSetterBlockServiceImplTest extends TestCase {
     @SuppressWarnings("rawtypes")
-    private ParameterConverterService nullConverterService = new ParameterConverterService() {
-        public IParameterConverter getConverter(Type type) {
-            return null;
-        }
-        
-        public IParameterConverter getConverter(int sqlType, Class javaType) {
-            return null;
-        }
-        
-        public IParameterConverter getConverter(int sqlType) {
-            return null;
-        }
-    };
+    private ParameterConverterService nullConverterService = new NullParameterConverterService();
     private IMetaLoginInfoService metaLoginInfoService = new IMetaLoginInfoService() {
         
         public String getUsernameParameterName() {

@@ -12,4 +12,7 @@ public interface IMappingTestDao {
     @AStoredProcedure(name = "call_with_list")
     @AMetaLoginInfo
     void callWithList(List<TEntry> entries);
+    
+    @AStoredProcedure(name = "get_blob")
+    byte[] returnsByteArray();
 }

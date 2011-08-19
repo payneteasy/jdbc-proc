@@ -33,6 +33,7 @@ public class BlockFactoryUtils {
         SIMPLE_TYPES.add(java.sql.Timestamp.class);
         SIMPLE_TYPES.add(java.sql.Time.class);
         SIMPLE_TYPES.add(String.class);
+        SIMPLE_TYPES.add(byte[].class);
     }
     /**
      * Iterates throw the methods and find @Column annotation
