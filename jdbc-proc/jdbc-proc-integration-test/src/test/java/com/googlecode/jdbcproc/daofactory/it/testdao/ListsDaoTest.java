@@ -19,17 +19,29 @@ public class ListsDaoTest extends DatabaseAwareTest {
         this.listsDao = listsDao;
     }
 
-    public void test() {
+    public void testCreateEntityWithListAndMetaLoginInfoAndOutputParam() {
         EntityWithList entity = new EntityWithList();
         entity.setName("entity");
         ListElement elem = new ListElement();
         elem.setName("name");
         elem.setValue("value");
-        listsDao.saveEntityWithList(entity, Collections.singletonList(elem));
+        listsDao.createEntityWithList(entity, Collections.singletonList(elem));
 
         Assert.assertNotNull(entity.getId());
         Assert.assertEquals(999, (long) entity.getId());
     }
 
+    public void testUpdateEntityWithListAndMetaLoginInfoAndOutputParam() {
+        EntityWithList entity = new EntityWithList();
+        entity.setId(999L);
+        entity.setName("entity");
+        ListElement elem = new ListElement();
+        elem.setName("name");
+        elem.setValue("value");
+        listsDao.updateEntityWithList(entity, Collections.singletonList(elem));
+
+        Assert.assertNotNull(entity.getId());
+        Assert.assertEquals(999, (long) entity.getId());
+    }
 
 }

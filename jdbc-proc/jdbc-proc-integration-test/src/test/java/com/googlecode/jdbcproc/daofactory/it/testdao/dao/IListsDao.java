@@ -11,7 +11,11 @@ import java.util.List;
  * @author rpuch
  */
 public interface IListsDao {
-    @AStoredProcedure(name = "save_entity_with_list")
+    @AStoredProcedure(name = "create_entity_with_list")
     @AMetaLoginInfo
-    void saveEntityWithList(EntityWithList entity, List<ListElement> list);
+    void createEntityWithList(EntityWithList entity, List<ListElement> list);
+
+    @AStoredProcedure(name = "update_entity_with_list")
+    @AMetaLoginInfo
+    void updateEntityWithList(EntityWithList entity, List<ListElement> list);
 }
