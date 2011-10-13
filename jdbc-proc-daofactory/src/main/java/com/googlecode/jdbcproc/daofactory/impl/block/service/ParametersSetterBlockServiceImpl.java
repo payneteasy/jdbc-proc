@@ -92,11 +92,20 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
               && !BlockFactoryUtils.isListType(method.getParameterTypes()[0])) {
             return createSaveMethod(converterService, method, procedureInfo, aMetaLoginInfoService);
 
+            // is entity with list after it (meta login supported)
+          } else if (procedureInfo.getArgumentsCounts() > method.getParameterTypes().length - 1 + 2
+              && method.getParameterTypes().length == 2
+              && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])
+              && !BlockFactoryUtils.isListType(method.getParameterTypes()[0])
+              && BlockFactoryUtils.isListType(method.getParameterTypes()[1])) {
+
+            return createSaveMethodWithList(converterService, method, procedureInfo, aMetaLoginInfoService);
+
             // METHOD @AMetaLoginInfo
             // METHOD no parameter
             // PROCEDURE 2 parameters
           } else if (method.getParameterTypes().length == 0 && procedureInfo.getInputArgumentsCount() == 2) {
-            return Arrays.asList((IParametersSetterBlock)new ParametersSetterBlockMetaLoginInfo(aMetaLoginInfoService));
+            return Arrays.asList((IParametersSetterBlock) new ParametersSetterBlockMetaLoginInfo(aMetaLoginInfoService));
 
             // if AMetaLoginInfo and parameters is simple puted to procedure
           } else if (method.getParameterTypes().length + 2 == procedureInfo.getInputArgumentsCount()) {
@@ -336,8 +345,12 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
      */
     private List<IParametersSetterBlock> createSaveMethod(ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo, IMetaLoginInfoService aMetaLoginInfoService) {
         Assert.isTrue(method.getParameterTypes().length == 1
-                , "Method " + method.getName() + " parameters count must be equals to 1");
+                , "Method " + method.getName() + " parameters count must be equal to 1");
 
+        return doCreateEntityBlock(converterService, method, procedureInfo, aMetaLoginInfoService);
+    }
+
+    private List<IParametersSetterBlock> doCreateEntityBlock(ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo, IMetaLoginInfoService aMetaLoginInfoService) {
         Class entityClass = method.getParameterTypes()[0];
 
         final IParametersSetterBlock block = createEntityBlock(converterService, procedureInfo, entityClass, null);
@@ -347,6 +360,16 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         } else {
             return Collections.singletonList(block);
         }
+    }
+
+    /**
+     * is entity with a list, e.g. saveProcessor(TransactionProcessor, List properties)
+     */
+    private List<IParametersSetterBlock> createSaveMethodWithList(ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo, IMetaLoginInfoService aMetaLoginInfoService) {
+        Assert.isTrue(method.getParameterTypes().length == 2
+                , "Method " + method.getName() + " parameters count must be equal to 1");
+
+        return createListAndArgumentsWithMetaLoginInfo(doCreateEntityBlock(converterService, method, procedureInfo, aMetaLoginInfoService), aMetaLoginInfoService);
     }
 
     protected List<IParametersSetterBlock> createSaveMethod(ParameterConverterService converterService, 
