@@ -32,6 +32,12 @@ create procedure create_collections()
       )
       engine = memory;
 
+    create temporary table if not exists list_elements(
+      id        int(10),
+      name      varchar(32),
+      value     varchar(32)
+    ) engine = memory;
+
     select 1;
   end
 $$

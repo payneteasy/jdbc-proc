@@ -52,6 +52,10 @@
     <bean id="verticalityDao" parent="abstractDao">
         <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.VerticalityDao"/>
     </bean>
+
+    <bean id="listsDao" parent="abstractDao">
+        <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.IListsDao"/>
+    </bean>
     
     <!-- Employee service -->
     <bean id="employeeService" class="com.googlecode.jdbcproc.daofactory.it.testdao.service.impl.EmployeeServiceImpl">
