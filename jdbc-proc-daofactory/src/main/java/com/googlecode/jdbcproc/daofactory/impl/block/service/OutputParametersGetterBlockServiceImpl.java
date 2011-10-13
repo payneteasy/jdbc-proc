@@ -43,8 +43,15 @@ public class OutputParametersGetterBlockServiceImpl implements OutputParametersG
 
       // CREATE ENTITY
     } else if (isCreateEntityMethod(daoMethod, procedureInfo)) {
+      int entityParameterIndex;
+      if (!BlockFactoryUtils.isSimpleOrListType(daoMethod.getParameterTypes()[0])) {
+        entityParameterIndex = 0;
+      } else {
+        // first argument must be a list, so second (and no more parameters are allowed) is entity
+        entityParameterIndex = 1;
+      }
       List<EntityPropertySetter> setters = new LinkedList<EntityPropertySetter>();
-      Class entityClass = daoMethod.getParameterTypes()[0];
+      Class entityClass = daoMethod.getParameterTypes()[entityParameterIndex];
       for (StoredProcedureArgumentInfo argumentInfo : procedureInfo.getArguments()) {
         if (argumentInfo.isOutputParameter()) {
           Method getterMethod = BlockFactoryUtils.findGetterMethod(entityClass, argumentInfo);
@@ -55,7 +62,7 @@ public class OutputParametersGetterBlockServiceImpl implements OutputParametersG
               , argumentInfo.getColumnName(), argumentInfo.getDataType()));
         }
       }
-      return setters.size() > 0 ? new OutputParametersGetterBlockEntity(setters) : null;
+      return setters.size() > 0 ? new OutputParametersGetterBlockEntity(setters, entityParameterIndex) : null;
 
       // return one output parameter
     } else if (BlockFactoryUtils.isOneOutputHasReturn(daoMethod, procedureInfo)) {
@@ -69,6 +76,22 @@ public class OutputParametersGetterBlockServiceImpl implements OutputParametersG
   }
 
   private boolean isCreateEntityMethod(Method daoMethod, StoredProcedureInfo procedureInfo) {
+    boolean ok = false;
+    if (procedureInfo.getArgumentsCounts() > 1) {
+      if (daoMethod.getParameterTypes().length == 1 && !BlockFactoryUtils.isSimpleOrListType(daoMethod.getParameterTypes()[0])) {
+        ok = true;
+      } else {
+        if (daoMethod.getParameterTypes().length == 2) {
+          // maybe it's entity + list
+          if (BlockFactoryUtils.isListType(daoMethod.getParameterTypes()[0]) && !BlockFactoryUtils.isSimpleOrListType(daoMethod.getParameterTypes()[1])
+                  || BlockFactoryUtils.isListType(daoMethod.getParameterTypes()[1]) && !BlockFactoryUtils.isSimpleOrListType(daoMethod.getParameterTypes()[0])) {
+            // yes, it is
+            ok = true;
+          }
+        }
+      }
+      return ok;
+    }
     return procedureInfo.getArgumentsCounts() > 1 
         && daoMethod.getParameterTypes().length == 1
         && !BlockFactoryUtils.isSimpleType(daoMethod.getParameterTypes()[0]);
