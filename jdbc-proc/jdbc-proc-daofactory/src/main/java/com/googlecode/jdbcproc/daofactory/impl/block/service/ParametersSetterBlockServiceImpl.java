@@ -197,7 +197,9 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         parametersSetterBlocks.add(new ParametersSetterBlockListAggregator(list, listArgumentIndexes));
       
         if (procedureInfo.getInputArgumentsCount() > nonListArgumentIndexes.length 
-          && procedureInfo.getInputArgumentsCount() != nonListArgumentIndexes.length + numSkipArguments) {
+          && (procedureInfo.getInputArgumentsCount() != nonListArgumentIndexes.length + numSkipArguments
+              || (nonListArgumentIndexes.length == 1
+                && isEntity(numSkipArguments, procedureInfo, parameters[nonListArgumentIndexes[0]], nonListArgumentIndexes, method)))) {
             // if entity argument and list argument(s)
             Assert.isTrue(nonListArgumentIndexes.length == 1
                     , "Method " + method.getName() + " non List<?> parameters count must be equals to 1");
@@ -219,6 +221,11 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             parametersSetterBlocks.add(new ParametersSetterBlockArguments(getters, nonListArgumentIndexes));
         }
         return parametersSetterBlocks;
+    }
+
+    private boolean isEntity(int numSkipArguments, StoredProcedureInfo procedureInfo, Class<?> parameter, int[] nonListArgumentIndexes, Method method) {
+        return procedureInfo.getInputArgumentsCount() == nonListArgumentIndexes.length + numSkipArguments
+                && (!BlockFactoryUtils.isSimpleType(parameter) || BlockFactoryUtils.isOneOutput(method, procedureInfo));
     }
 
     /**

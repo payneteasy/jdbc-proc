@@ -111,6 +111,10 @@ public class BlockFactoryUtils {
         return List.class.equals(aType);
     }
 
+    public static boolean isSimpleOrListType(Class aType) {
+        return isSimpleType(aType) || isListType(aType);
+    }
+
     public static Method findOneToManyMethod(Class aClass) {
         Method ret = null;
         for (Method method : aClass.getMethods()) {
@@ -127,21 +131,22 @@ public class BlockFactoryUtils {
 
     
     public static boolean isOneOutputHasReturn(Method aDaoMethod, StoredProcedureInfo aProcedureInfo) {
+        return isOneOutput(aDaoMethod, aProcedureInfo)
+              && ( aDaoMethod.getParameterTypes().length == aProcedureInfo.getInputArgumentsCount()
+                   || ( aDaoMethod.isAnnotationPresent(AMetaLoginInfo.class) && aDaoMethod.getParameterTypes().length + 2 == aProcedureInfo.getInputArgumentsCount())
+                 )
+              && BlockFactoryUtils.isSimpleType(aDaoMethod.getReturnType());
+    }
+
+    public static boolean isOneOutput(Method aDaoMethod, StoredProcedureInfo aProcedureInfo) {
         int countOutputParameters = 0;
         for (StoredProcedureArgumentInfo argumentInfo : aProcedureInfo.getArguments()) {
             if(argumentInfo.isOutputParameter()) {
                 countOutputParameters++;
             }
         }
-        
-        boolean ret =  countOutputParameters==1
-              && ( aDaoMethod.getParameterTypes().length == aProcedureInfo.getInputArgumentsCount()
-                   || ( aDaoMethod.isAnnotationPresent(AMetaLoginInfo.class) && aDaoMethod.getParameterTypes().length + 2 == aProcedureInfo.getInputArgumentsCount())
-                 )
-              && BlockFactoryUtils.isSimpleType(aDaoMethod.getReturnType())
-        ;
 
-        return ret;
+        return countOutputParameters==1;
     }
 
 }

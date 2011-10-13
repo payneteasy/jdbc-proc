@@ -42,6 +42,7 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         executeMysql("jdbcprocdb", "src/test/resources/sql/get_company_2x.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/get_ancestry_2x_multi_level_grouping.sql");
         executeMysql("jdbcprocdb", "src/test/resources/sql/create_certificate.sql");
+        executeMysql("jdbcprocdb", "src/test/resources/sql/save_entity_with_list.sql");
 
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/create_collections.prc");
         executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_carabiners.prc");
