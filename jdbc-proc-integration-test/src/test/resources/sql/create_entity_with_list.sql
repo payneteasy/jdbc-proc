@@ -8,7 +8,14 @@ create procedure create_entity_with_list(
                                       )
  main_sql:
   begin
+    declare v_count int(10);
+
     set o_id = 999;
+
+    select count(*) from list_elements into v_count;
+    if v_count <> 1 then
+        call raise_application_error();
+    end if;
   end
 $$
 delimiter ;

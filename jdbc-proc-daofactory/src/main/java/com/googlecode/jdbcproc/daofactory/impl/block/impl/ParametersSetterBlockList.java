@@ -30,7 +30,7 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
             LOG.debug("Executing insert: {}", theInsertQuery);
         }
         Assert.notNull(aArgs         , "Argument aArgs must not be null"   );
-        Assert.isTrue(aArgs.length==1, "Count of argument must be equals 1");
+        Assert.isTrue(aArgs.length > 0, "Count of arguments must be positive");
 
         try {
             Connection con = aStmt.getConnection();
@@ -38,7 +38,7 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
             truncateTable( con );
 
             // inserts current data to table
-            List list = (List) aArgs[0];
+            List list = (List) aArgs[aArgs.length - 1];
             
             for (Object entity : list) {
                 PreparedStatement stmt = con.prepareStatement(theInsertQuery);
