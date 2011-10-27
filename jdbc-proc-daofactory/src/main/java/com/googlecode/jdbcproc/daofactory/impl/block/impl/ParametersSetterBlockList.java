@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,9 +39,9 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
             truncateTable( con );
 
             // inserts current data to table
-            List list = (List) aArgs[aArgs.length - 1];
+            Collection collection = (Collection) aArgs[aArgs.length - 1];
             
-            for (Object entity : list) {
+            for (Object entity : collection) {
                 PreparedStatement stmt = con.prepareStatement(theInsertQuery);
                 try {
                     int index = 0;

@@ -7,6 +7,8 @@ import com.googlecode.jdbcproc.daofactory.it.testdao.model.DynamicRope;
 import com.googlecode.jdbcproc.daofactory.it.testdao.model.Harness;
 import com.googlecode.jdbcproc.daofactory.it.testdao.model.ChalkBag;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,6 +39,8 @@ public class VerticalityDAOTest  extends DatabaseAwareTest {
         harnesses.add(harness2);
         
         verticalityDao.uploadHarnesses(harnesses);
+        
+        verticalityDao.uploadHarnessesCollection(Collections.unmodifiableCollection(harnesses));
     }
   
     public void testProcedureWithListAndNonListParameters() {
@@ -99,6 +103,26 @@ public class VerticalityDAOTest  extends DatabaseAwareTest {
         verticalityDao.uploadDynamicRopesWithMetaLoginInfo(dynamicRopes, uploadDate);
         verticalityDao.uploadVerticality(uploadDate, carabiners,  dynamicRopes);
         verticalityDao.uploadVerticalityWithMetaLoginInfo(uploadDate, carabiners,  dynamicRopes);
+      
+        Collection<Carabiner> carabinersCollection = Collections.unmodifiableCollection(carabiners);
+        Collection<DynamicRope> dynamicRopeCollection 
+            = Collections.unmodifiableCollection(dynamicRopes);
+      
+        verticalityDao.uploadCarabinersCollection(uploadDate, carabinersCollection);
+        entityId = verticalityDao
+            .uploadCarabinersCollection(uploadDate, carabinersCollection, uploadDate);
+        assertEquals(1, entityId);
+        entityId = verticalityDao
+            .uploadCarabinersCollection(null, carabinersCollection, uploadDate);
+        assertEquals(1, entityId);
+        verticalityDao.uploadCarabinersWithMetaLoginInfoCollection(uploadDate, carabinersCollection);
+        verticalityDao.uploadDynamicRopesCollection(dynamicRopeCollection, uploadDate);
+        verticalityDao
+            .uploadDynamicRopesWithMetaLoginInfoCollection(dynamicRopeCollection, uploadDate);
+        verticalityDao
+            .uploadVerticalityCollection(uploadDate, carabinersCollection, dynamicRopeCollection);
+        verticalityDao.uploadVerticalityWithMetaLoginInfoCollection(uploadDate, carabinersCollection
+            , dynamicRopeCollection);
     }
     
     public void testReturnEntityWithBigintTypeField() {

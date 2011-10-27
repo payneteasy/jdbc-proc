@@ -89,15 +89,15 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
           if (procedureInfo.getArgumentsCounts() > method.getParameterTypes().length
               && method.getParameterTypes().length == 1
               && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])
-              && !BlockFactoryUtils.isListType(method.getParameterTypes()[0])) {
+              && !BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[0])) {
             return createSaveMethod(converterService, method, procedureInfo, aMetaLoginInfoService);
 
             // is entity with list after it (meta login supported)
           } else if (procedureInfo.getArgumentsCounts() > method.getParameterTypes().length - 1 + 2
               && method.getParameterTypes().length == 2
               && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])
-              && !BlockFactoryUtils.isListType(method.getParameterTypes()[0])
-              && BlockFactoryUtils.isListType(method.getParameterTypes()[1])) {
+              && !BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[0])
+              && BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[1])) {
 
             return createSaveMethodWithList(jdbcTemplate, converterService, method, procedureInfo, aMetaLoginInfoService);
 
@@ -131,7 +131,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
           } else if (procedureInfo.getArgumentsCounts() > method.getParameterTypes().length
               && method.getParameterTypes().length == 1
               && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])
-              && !BlockFactoryUtils.isListType(method.getParameterTypes()[0])) {
+              && !BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[0])) {
             return createSaveMethod(converterService, method, procedureInfo);
 
             // if no parameters
@@ -180,7 +180,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         int listArgumentsLength = 0;
         for (int i = 0; i < parameters.length; i++) {
             Class clazz = parameters[i];
-            if (clazz.equals(List.class)) {
+            if (BlockFactoryUtils.isCollectionAssignableFrom(clazz)) {
                 ParametersSetterBlockList block
                         = createParametersSetterBlockList(jdbcTemplate, converterService, method, i);
                 list.add(block);
@@ -571,7 +571,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
                                                        StoredProcedureInfo procedureInfo) {
         if (procedureInfo.getInputArgumentsCount() == 0 && method.getParameterTypes().length > 0) {
             for (Class<?> parameterClass : method.getParameterTypes()) {
-                if (!parameterClass.equals(List.class)) {
+                if (!BlockFactoryUtils.isCollectionAssignableFrom(parameterClass)) {
                     return false;
                 }
             }
@@ -586,7 +586,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         if (method.getParameterTypes().length >= procedureInfo.getInputArgumentsCount()) {
             int argumentsCount = 0;
             for (Class<?> parameterClass : method.getParameterTypes()) {
-                if (!parameterClass.equals(List.class)) {
+                if (!BlockFactoryUtils.isCollectionAssignableFrom(parameterClass)) {
                     argumentsCount++;
                 }
             }
@@ -601,7 +601,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         if (method.getParameterTypes().length + 2 >= procedureInfo.getInputArgumentsCount()) {
             int argumentsCount = 0;
             for (Class<?> parameterClass : method.getParameterTypes()) {
-                if (!parameterClass.equals(List.class)) {
+                if (!BlockFactoryUtils.isCollectionAssignableFrom(parameterClass)) {
                     argumentsCount++;
                 }
             }
