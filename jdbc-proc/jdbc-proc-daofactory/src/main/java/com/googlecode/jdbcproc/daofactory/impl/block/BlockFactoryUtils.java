@@ -2,6 +2,7 @@ package com.googlecode.jdbcproc.daofactory.impl.block;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -107,6 +108,10 @@ public class BlockFactoryUtils {
         return SIMPLE_TYPES.contains(aType);
     }
     
+    public static boolean isCollectionAssignableFrom(Class aType) {
+        return Collection.class.isAssignableFrom(aType);
+    }
+
     public static boolean isListType(Class aType) {
         return List.class.equals(aType);
     }
