@@ -32,17 +32,57 @@ import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
+import com.google.inject.binder.AnnotatedBindingBuilder;
 
 public class InitJdbcProcModule extends AbstractModule {
   
   @Override protected void configure() {
-    bind(DAOMethodInfo.class).to(DaoMethodInfoGuice.class).in(Singleton.class);
-    bind(ParameterConverterService.class).to(ParameterConverterServiceImpl.class);
-    bind(CallableStatementExecutorBlockService.class).to(CallableStatementExecutorBlockServiceImpl.class);
-    bind(OutputParametersGetterBlockService.class).to(OutputParametersGetterBlockServiceImpl.class);
-    bind(ParametersSetterBlockService.class).to(ParametersSetterBlockServiceImpl.class);
-    bind(RegisterOutParametersBlockService.class).to(RegisterOutParametersBlockServiceImpl.class);
-    bind(ResultSetConverterBlockService.class).to(ResultSetConverterBlockServiceImpl.class);
-    bind(IStoredProcedureInfoManager.class).to(StoredProcedureInfoManagerInitOnStartup.class);
+    bindDaoMethodInfo(bind(DAOMethodInfo.class));
+    bindParameterConverterService(bind(ParameterConverterService.class));
+    bindCallableStatementExecutorBlockService(bind(CallableStatementExecutorBlockService.class));
+    bindOutputParametersGetterBlockService(bind(OutputParametersGetterBlockService.class));
+    bindParametersSetterBlockService(bind(ParametersSetterBlockService.class));
+    bindRegisterOutParametersBlockService(bind(RegisterOutParametersBlockService.class));
+    bindResultSetConverterBlockService(bind(ResultSetConverterBlockService.class));
+    bindStoredProcedureInfoManager(bind(IStoredProcedureInfoManager.class));
+  }
+  
+  protected void bindDaoMethodInfo(AnnotatedBindingBuilder<DAOMethodInfo> builder) {
+    builder.to(DaoMethodInfoGuice.class).in(Singleton.class);
+  }
+  
+  protected void bindParameterConverterService(
+      AnnotatedBindingBuilder<ParameterConverterService> builder) {
+    builder.to(ParameterConverterServiceImpl.class);
+  }
+  
+  protected void bindCallableStatementExecutorBlockService(
+      AnnotatedBindingBuilder<CallableStatementExecutorBlockService> builder) {
+    builder.to(CallableStatementExecutorBlockServiceImpl.class);
+  }
+  
+  protected void bindOutputParametersGetterBlockService(
+      AnnotatedBindingBuilder<OutputParametersGetterBlockService> builder) {
+    builder.to(OutputParametersGetterBlockServiceImpl.class);
+  }
+  
+  protected void bindParametersSetterBlockService(
+      AnnotatedBindingBuilder<ParametersSetterBlockService> builder) {
+    builder.to(ParametersSetterBlockServiceImpl.class);
+  }
+  
+  protected void bindRegisterOutParametersBlockService(
+      AnnotatedBindingBuilder<RegisterOutParametersBlockService> builder) {
+    builder.to(RegisterOutParametersBlockServiceImpl.class);
+  }
+  
+  protected void bindResultSetConverterBlockService(
+      AnnotatedBindingBuilder<ResultSetConverterBlockService> builder) {
+    builder.to(ResultSetConverterBlockServiceImpl.class);
+  }
+  
+  protected void bindStoredProcedureInfoManager(
+      AnnotatedBindingBuilder<IStoredProcedureInfoManager> builder) {
+    builder.to(StoredProcedureInfoManagerInitOnStartup.class);
   }
 }
