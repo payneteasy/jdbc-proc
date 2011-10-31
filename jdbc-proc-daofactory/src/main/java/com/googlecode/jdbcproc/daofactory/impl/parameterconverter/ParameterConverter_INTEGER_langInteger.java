@@ -1,5 +1,8 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
+
 import java.sql.*;
 
 /**
@@ -27,7 +30,7 @@ public class ParameterConverter_INTEGER_langInteger
         }
     }
 
-    public Integer getOutputParameter(CallableStatement aStmt, String aParameterName) throws SQLException {
+    public Integer getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName) throws SQLException {
         Integer value = aStmt.getInt(aParameterName);
         return aStmt.wasNull() ? null : value;
     }

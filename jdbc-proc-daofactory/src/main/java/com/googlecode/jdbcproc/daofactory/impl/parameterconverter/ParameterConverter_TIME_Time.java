@@ -14,6 +14,9 @@
 
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
+
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -48,9 +51,9 @@ public class ParameterConverter_TIME_Time
         }
     }
 
-    public Time getOutputParameter(CallableStatement stmt, String parameterName) 
+    public Time getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName)
       throws SQLException {
-        return stmt.getTime(parameterName);
+        return aStmt.getTime(aParameterName);
     }
 
     public Time getFromResultSet(ResultSet resultSet, String parameterName) throws SQLException {

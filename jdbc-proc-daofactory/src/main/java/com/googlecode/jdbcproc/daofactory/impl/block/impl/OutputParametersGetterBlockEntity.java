@@ -1,11 +1,10 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
-import com.googlecode.jdbcproc.daofactory.impl.block.BlockFactoryUtils;
 import com.googlecode.jdbcproc.daofactory.impl.block.IOutputParametersGetterBlock;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
-import java.sql.CallableStatement;
 import java.util.List;
 
 /**
@@ -19,7 +18,7 @@ public class OutputParametersGetterBlockEntity implements IOutputParametersGette
         theEntityParameterIndex = aEntityParameterIndex;
     }
 
-    public void fillOutputParameters(CallableStatement aStmt, Object[] aArgs) throws DataAccessException {
+    public void fillOutputParameters(ICallableStatementStrategy aStmt, Object[] aArgs) throws DataAccessException {
         Assert.notNull(aArgs         , "Argument aArgs must not be null"   );
         Assert.isTrue(aArgs.length == 1 || aArgs.length == 2, "Count of arguments must be 1 or 2");
 
@@ -29,9 +28,15 @@ public class OutputParametersGetterBlockEntity implements IOutputParametersGette
             try {
                 setter.fillOutputParameter(entity, aStmt);
             } catch (Exception e) {
-                throw new IllegalStateException("Unable to set output paremter: "+e.getMessage(), e);
+                throw new IllegalStateException("Unable to set output parameter: "+e.getMessage(), e);
             }
         }
+    }
+
+    public boolean hasReturn() { return false; }
+
+    public Object getReturnValue(ICallableStatementStrategy aCallableStatementStrategy) {
+        throw new UnsupportedOperationException("getReturnValue() must never be invoked in OutputParametersGetterBlockEntity");
     }
 
     public String toString() {

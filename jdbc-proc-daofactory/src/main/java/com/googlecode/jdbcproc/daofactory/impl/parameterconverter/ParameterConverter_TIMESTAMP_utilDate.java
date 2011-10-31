@@ -1,5 +1,8 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
+
 import java.sql.*;
 import java.util.Date;
 
@@ -30,7 +33,7 @@ public class ParameterConverter_TIMESTAMP_utilDate
         }
     }
 
-    public java.util.Date getOutputParameter(CallableStatement aStmt, String aParameterName) throws SQLException {
+    public java.util.Date getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName) throws SQLException {
         return aStmt.getTimestamp(aParameterName);
     }
 

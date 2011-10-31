@@ -1,5 +1,8 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
+
 import java.sql.*;
 import java.math.BigDecimal;
 
@@ -20,7 +23,7 @@ public class ParameterConverter_DECIMAL_BigDecimal
         aStmt.setBigDecimal(aParameterName, aValue);
     }
 
-    public BigDecimal getOutputParameter(CallableStatement aStmt, String aParameterName) throws SQLException {
+    public BigDecimal getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName) throws SQLException {
         return aStmt.getBigDecimal(aParameterName);
     }
 

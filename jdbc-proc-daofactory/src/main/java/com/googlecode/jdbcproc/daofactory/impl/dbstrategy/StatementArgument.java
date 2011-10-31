@@ -14,7 +14,7 @@ public class StatementArgument {
     public int getParameterIndex() { return theParameterIndex; }
 
     /** parameter name */
-    public String getParameterName() { return theParameterName; }
+    public String getName() { return theParameterName; }
 
     /** Parameter index */
     private final int theParameterIndex;

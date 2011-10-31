@@ -1,5 +1,8 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
+
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
@@ -77,7 +80,7 @@ public interface IParameterConverter<T extends IParameterConverter, V> {
      * @return               converted value
      * @throws SQLException on error
      */
-    V getOutputParameter(CallableStatement aStmt, String aParameterName) throws SQLException;
+    V getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aStatementArgument) throws SQLException;
 
     /**
      * Gets value from result set

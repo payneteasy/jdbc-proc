@@ -3,6 +3,8 @@ package com.googlecode.jdbcproc.daofactory.impl;
 import com.googlecode.jdbcproc.daofactory.impl.block.*;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockOrder;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.CallableStatementStrategyNameImpl;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.CallableStatementCallback;
 import org.springframework.util.Assert;
@@ -140,17 +142,24 @@ public class DaoMethodInvoker {
                         LOG_CALLABLE_STATEMENT.debug(logger.toString());
                     }
                 }
+
+                ICallableStatementStrategy callableStatementStrategy = new CallableStatementStrategyNameImpl(aStmt);
                 try {
                     // gets output parameters and sets it to arguments
                     if(theOutputParametersGetterBlock !=null) {
-                        theOutputParametersGetterBlock.fillOutputParameters(aStmt, aArgs);
+                        theOutputParametersGetterBlock.fillOutputParameters(callableStatementStrategy, aArgs);
                     }
 
-                    // converts result set to return value
-                    if(theResultSetConverterBlock!=null) {
-                        return theResultSetConverterBlock.convertResultSet(resultSet, aStmt);
+                    if(theOutputParametersGetterBlock!=null && theOutputParametersGetterBlock.hasReturn()) {
+                        return theOutputParametersGetterBlock.getReturnValue(callableStatementStrategy);
+
                     } else {
-                        return null;
+                        // converts result set to return value
+                        if(theResultSetConverterBlock!=null) {
+                            return theResultSetConverterBlock.convertResultSet(resultSet, aStmt);
+                        } else {
+                            return null;
+                        }
                     }
                 } finally {
                     if (theIsReturnIterator) {

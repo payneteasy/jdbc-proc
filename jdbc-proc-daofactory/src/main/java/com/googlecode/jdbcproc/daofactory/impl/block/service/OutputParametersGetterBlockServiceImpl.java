@@ -18,6 +18,7 @@ import com.googlecode.jdbcproc.daofactory.impl.block.BlockFactoryUtils;
 import com.googlecode.jdbcproc.daofactory.impl.block.IOutputParametersGetterBlock;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.EntityPropertySetter;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.OutputParametersGetterBlockEntity;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.OutputParametersGetterHasReturnBlock;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
@@ -35,8 +36,8 @@ import java.util.List;
  */
 public class OutputParametersGetterBlockServiceImpl implements OutputParametersGetterBlockService {
 
-  public IOutputParametersGetterBlock create(ParameterConverterService converterService,
-      Method daoMethod, StoredProcedureInfo procedureInfo) {
+  public IOutputParametersGetterBlock create(ParameterConverterService converterService, Method daoMethod, StoredProcedureInfo procedureInfo) {
+
     // List.getAll();
     if (BlockFactoryUtils.isGetAllMethod(daoMethod, procedureInfo)) {
       return null;
@@ -59,15 +60,14 @@ public class OutputParametersGetterBlockServiceImpl implements OutputParametersG
           IParameterConverter paramConverter = converterService
               .getConverter(argumentInfo.getDataType(), getterMethod.getReturnType());
           setters.add(new EntityPropertySetter(setterMethod, paramConverter
-              , argumentInfo.getColumnName(), argumentInfo.getDataType()));
+              , argumentInfo.getColumnName(), argumentInfo.getStatementArgument(), argumentInfo.getDataType()));
         }
       }
       return setters.size() > 0 ? new OutputParametersGetterBlockEntity(setters, entityParameterIndex) : null;
 
-      // return one output parameter
+      // RETURN ONE OUTPUT PARAMETER
     } else if (BlockFactoryUtils.isOneOutputHasReturn(daoMethod, procedureInfo)) {
-      // see ResultSetConverterBlockOutputParameterHasReturn
-      return null;
+        return createOutputParameterHasReturn(converterService, daoMethod, procedureInfo);
 
       // DEFAULT NO     
     } else {
@@ -96,4 +96,30 @@ public class OutputParametersGetterBlockServiceImpl implements OutputParametersG
         && daoMethod.getParameterTypes().length == 1
         && !BlockFactoryUtils.isSimpleType(daoMethod.getParameterTypes()[0]);
   }
+
+    private OutputParametersGetterHasReturnBlock createOutputParameterHasReturn(
+        ParameterConverterService converterService, Method daoMethod,
+        StoredProcedureInfo procedureInfo) {
+      Class methodReturnType = daoMethod.getReturnType();
+      StoredProcedureArgumentInfo procedureReturn = getOutputParameter(procedureInfo.getArguments());
+      return new OutputParametersGetterHasReturnBlock(
+          converterService.getConverter(procedureReturn.getDataType(), methodReturnType)
+          , procedureReturn.getStatementArgument());
+    }
+
+    private StoredProcedureArgumentInfo getOutputParameter(
+        List<StoredProcedureArgumentInfo> arguments) {
+      StoredProcedureArgumentInfo info = null;
+      for (StoredProcedureArgumentInfo argument : arguments) {
+        if (argument.isOutputParameter()) {
+          if (info == null) {
+            info = argument;
+          } else {
+            throw new IllegalStateException("Procedure must have only one output parameter");
+          }
+        }
+      }
+      return info;
+    }
+
 }

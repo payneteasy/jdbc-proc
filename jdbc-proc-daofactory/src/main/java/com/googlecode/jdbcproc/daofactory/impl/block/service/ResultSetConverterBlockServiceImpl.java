@@ -24,14 +24,12 @@ import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBloc
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockEntityList;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockEntityOneToMany2x;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockEntityOneToMany2xList;
-import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockOutputParameterHasReturn;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockSimpleType;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockSimpleTypeIterator;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockSimpleTypeList;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.ResultSetColumnInfo;
-import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
 
 import java.lang.reflect.Method;
@@ -74,7 +72,7 @@ public class ResultSetConverterBlockServiceImpl implements ResultSetConverterBlo
 
       // OUTPUT PARAMETER HAS RETURN
     } else if (BlockFactoryUtils.isOneOutputHasReturn(daoMethod, procedureInfo)) {
-      return createOutputParameterHasReturn(converterService, daoMethod, procedureInfo);
+      return null;
 
     } else if (BlockFactoryUtils.isSimpleType(returnType)) {
       // simple type from result set
@@ -131,31 +129,6 @@ public class ResultSetConverterBlockServiceImpl implements ResultSetConverterBlo
         return createEntityBlock(converterService, returnType, procedureInfo);
       }
     }
-  }
-
-  private IResultSetConverterBlock createOutputParameterHasReturn(
-      ParameterConverterService converterService, Method daoMethod,
-      StoredProcedureInfo procedureInfo) {
-    Class methodReturnType = daoMethod.getReturnType();
-    StoredProcedureArgumentInfo procedureReturn = getOutputParameter(procedureInfo.getArguments());
-    return new ResultSetConverterBlockOutputParameterHasReturn(
-        converterService.getConverter(procedureReturn.getDataType(), methodReturnType)
-        , procedureReturn.getColumnName());
-  }
-
-  private StoredProcedureArgumentInfo getOutputParameter(
-      List<StoredProcedureArgumentInfo> arguments) {
-    StoredProcedureArgumentInfo info = null;
-    for (StoredProcedureArgumentInfo argument : arguments) {
-      if (argument.isOutputParameter()) {
-        if (info == null) {
-          info = argument;
-        } else {
-          throw new IllegalStateException("Procedure must have only one output parameter");
-        }
-      }
-    }
-    return info;
   }
 
   private boolean isOneToManyPresent(Class clazz) {
@@ -344,7 +317,7 @@ public class ResultSetConverterBlockServiceImpl implements ResultSetConverterBlo
           IParameterConverter paramConverter = converterService
               .getConverter(resultSetColumnInfo.getDataType(), getterMethod.getReturnType());
           list.add(new EntityPropertySetter(setterMethod, paramConverter,
-              resultSetColumnInfo.getColumnName(), resultSetColumnInfo.getDataType()));
+              resultSetColumnInfo.getColumnName(), null, resultSetColumnInfo.getDataType()));
         } catch (IllegalStateException e) {
           throw new IllegalStateException(String.format(
               "Converter was not found for method %s.%s() [ column '%s' in procedure %s()]",

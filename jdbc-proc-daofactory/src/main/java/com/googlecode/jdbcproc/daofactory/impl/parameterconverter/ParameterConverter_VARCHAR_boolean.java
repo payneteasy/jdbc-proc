@@ -1,5 +1,8 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
+
 import java.sql.*;
 
 /**
@@ -22,9 +25,9 @@ public class ParameterConverter_VARCHAR_boolean
     stmt.setString(parameterName, strValue);
   }
 
-  public Boolean getOutputParameter(CallableStatement stmt, String parameterName)
+  public Boolean getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName)
       throws SQLException {
-    String strValue = stmt.getString(parameterName);
+    String strValue = aStmt.getString(aParameterName);
     return "Y".equals(strValue);
   }
 
