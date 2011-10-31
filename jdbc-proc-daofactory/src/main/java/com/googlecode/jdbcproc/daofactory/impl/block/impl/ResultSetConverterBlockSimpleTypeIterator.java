@@ -2,10 +2,10 @@ package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.CloseableIterator;
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
 import org.springframework.util.Assert;
 
-import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -19,7 +19,7 @@ public class ResultSetConverterBlockSimpleTypeIterator implements IResultSetConv
         theColumnName = aColumnName;
     }
 
-    public Object convertResultSet(final ResultSet aResultSet, final CallableStatement aStmt) throws SQLException {
+    public Object convertResultSet(final ResultSet aResultSet, final StatementCloser aStmt) throws SQLException {
 
         Assert.notNull(aResultSet, "ResultSet is null");
 
@@ -35,7 +35,7 @@ public class ResultSetConverterBlockSimpleTypeIterator implements IResultSetConv
                             try {
                                 aResultSet.close();
                             } finally {
-                                aStmt.close();
+                                aStmt.closeStatement();
                             }
                         }
                     } catch (SQLException e) {
@@ -64,7 +64,7 @@ public class ResultSetConverterBlockSimpleTypeIterator implements IResultSetConv
                         try {
                             aResultSet.close();
                         } finally {
-                            aStmt.close();
+                            aStmt.closeStatement();
                         }
                     } catch (Exception e) {
                         throw new IllegalStateException("Unable to close ResultSet or CallableStatement: "+e.getMessage(), e);

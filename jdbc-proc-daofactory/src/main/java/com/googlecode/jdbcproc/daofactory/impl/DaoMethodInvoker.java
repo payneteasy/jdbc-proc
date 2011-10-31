@@ -5,6 +5,7 @@ import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockO
 
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.CallableStatementStrategyNameImpl;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.CallableStatementCallback;
 import org.springframework.util.Assert;
@@ -156,7 +157,8 @@ public class DaoMethodInvoker {
                     } else {
                         // converts result set to return value
                         if(theResultSetConverterBlock!=null) {
-                            return theResultSetConverterBlock.convertResultSet(resultSet, aStmt);
+                            StatementCloser closer = new StatementCloser(aStmt);
+                            return theResultSetConverterBlock.convertResultSet(resultSet, closer);
                         } else {
                             return null;
                         }

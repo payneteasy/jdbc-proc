@@ -1,12 +1,12 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
 import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.LinkedList;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.CallableStatement;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
@@ -47,7 +47,7 @@ public class ResultSetConverterBlockEntityOneToMany implements IResultSetConvert
     }
 
 
-    public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
+    public Object convertResultSet(ResultSet aResultSet, StatementCloser aStmt) throws SQLException {
         Assert.notNull(aResultSet, "ResultSet is null");
 
         Object entity = null;

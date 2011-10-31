@@ -4,10 +4,10 @@ import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.CallableStatement;
 import java.util.LinkedList;
 import java.util.Collections;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
 import org.springframework.util.Assert;
 
 /**
@@ -19,7 +19,7 @@ public class ResultSetConverterBlockEntityList implements IResultSetConverterBlo
         theBlockEntity = aBlockEntity;
     }
 
-    public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
+    public Object convertResultSet(ResultSet aResultSet, StatementCloser aStmt) throws SQLException {
         Assert.notNull(aResultSet, "ResultSet is null");
         LinkedList list = new LinkedList();
         while(aResultSet.next()) {

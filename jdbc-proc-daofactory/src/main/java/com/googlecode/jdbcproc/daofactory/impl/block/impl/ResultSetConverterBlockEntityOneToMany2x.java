@@ -1,10 +1,10 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
 import org.springframework.util.Assert;
 
 import java.util.List;
 import java.sql.ResultSet;
-import java.sql.CallableStatement;
 import java.sql.SQLException;
 
 /**
@@ -16,7 +16,7 @@ public class ResultSetConverterBlockEntityOneToMany2x extends ResultSetConverter
     }
 
     @Override
-    public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
+    public Object convertResultSet(ResultSet aResultSet, StatementCloser aStmt) throws SQLException {
         List<Object> list = (List<Object>) super.convertResultSet(aResultSet, aStmt);
         if(list==null || list.isEmpty()) {
             return null;
