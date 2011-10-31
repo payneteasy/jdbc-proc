@@ -1,12 +1,11 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 
@@ -33,7 +32,7 @@ public class EntityPropertySetter {
         setProperty(aEntity, value);
     }
 
-    public void fillOutputParameter(Object aEntity, ICallableStatementStrategy aStmt) throws InvocationTargetException, IllegalAccessException, SQLException {
+    public void fillOutputParameter(Object aEntity, ICallableStatementGetStrategy aStmt) throws InvocationTargetException, IllegalAccessException, SQLException {
         Object value = theConverter.getOutputParameter(aStmt, theStatementArgument);
         setProperty(aEntity, value);
     }

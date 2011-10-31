@@ -1,6 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
 import java.sql.*;
@@ -19,13 +20,13 @@ public class ParameterConverter_VARCHAR_boolean
     stmt.setString(index, strValue);
   }
 
-  public void setValue(Boolean value, CallableStatement stmt, String parameterName)
+  public void setValue(Boolean value, ICallableStatementSetStrategy stmt, StatementArgument parameterName)
       throws SQLException {
     String strValue = value != null && value ? "Y" : "N";
     stmt.setString(parameterName, strValue);
   }
 
-  public Boolean getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName)
+  public Boolean getOutputParameter(ICallableStatementGetStrategy aStmt, StatementArgument aParameterName)
       throws SQLException {
     String strValue = aStmt.getString(aParameterName);
     return "Y".equals(strValue);

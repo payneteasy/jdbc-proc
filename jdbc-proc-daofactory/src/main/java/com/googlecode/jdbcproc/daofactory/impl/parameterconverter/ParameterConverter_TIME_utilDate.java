@@ -14,10 +14,10 @@
 
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
-import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,7 +43,7 @@ public class ParameterConverter_TIME_utilDate
         }
     }
 
-    public void setValue(java.util.Date value, CallableStatement stmt, String parameterName) 
+    public void setValue(Date value, ICallableStatementSetStrategy stmt, StatementArgument parameterName)
       throws SQLException {
         if(value!=null) {
             java.sql.Time time = new Time(value.getTime());
@@ -53,7 +53,7 @@ public class ParameterConverter_TIME_utilDate
         }
     }
 
-    public java.util.Date getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName)
+    public java.util.Date getOutputParameter(ICallableStatementGetStrategy aStmt, StatementArgument aParameterName)
       throws SQLException {
         return aStmt.getTime(aParameterName);
     }

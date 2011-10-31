@@ -1,6 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
 import java.sql.*;
@@ -22,15 +23,15 @@ public class ParameterConverter_BIGINT_langLong
         }
     }
 
-    public void setValue(Long aValue, CallableStatement aStmt, String aParameterName) throws SQLException {
+    public void setValue(Long aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
-            aStmt.setLong(aParameterName, aValue);
+            aStmt.setLong(aArgument, aValue);
         } else {
-            aStmt.setNull(aParameterName, Types.BIGINT);
+            aStmt.setNull(aArgument, Types.BIGINT);
         }
     }
 
-    public Long getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName) throws SQLException {
+    public Long getOutputParameter(ICallableStatementGetStrategy aStmt, StatementArgument aParameterName) throws SQLException {
         Long value = aStmt.getLong(aParameterName);
         return aStmt.wasNull() ? null : value;
     }

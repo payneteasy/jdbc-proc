@@ -1,7 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IOutputParametersGetterBlock;
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
@@ -18,7 +18,7 @@ public class OutputParametersGetterBlockEntity implements IOutputParametersGette
         theEntityParameterIndex = aEntityParameterIndex;
     }
 
-    public void fillOutputParameters(ICallableStatementStrategy aStmt, Object[] aArgs) throws DataAccessException {
+    public void fillOutputParameters(ICallableStatementGetStrategy aStmt, Object[] aArgs) throws DataAccessException {
         Assert.notNull(aArgs         , "Argument aArgs must not be null"   );
         Assert.isTrue(aArgs.length == 1 || aArgs.length == 2, "Count of arguments must be 1 or 2");
 
@@ -35,7 +35,7 @@ public class OutputParametersGetterBlockEntity implements IOutputParametersGette
 
     public boolean hasReturn() { return false; }
 
-    public Object getReturnValue(ICallableStatementStrategy aCallableStatementStrategy) {
+    public Object getReturnValue(ICallableStatementGetStrategy aCallableStatementStrategy) {
         throw new UnsupportedOperationException("getReturnValue() must never be invoked in OutputParametersGetterBlockEntity");
     }
 

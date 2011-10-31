@@ -1,8 +1,8 @@
 package com.googlecode.jdbcproc.daofactory.impl.block;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import org.springframework.dao.DataAccessException;
 
-import java.sql.CallableStatement;
 import java.sql.SQLException;
 
 /**
@@ -13,7 +13,7 @@ public interface IParametersSetterBlock extends ICleanable {
     /**
      * Sets paremeters
      * @param aStmt callable statement
-     * @param aArgs arguments
+     * @param aMethodParameters
      */
-    void setParameters(CallableStatement aStmt, Object[] aArgs) throws DataAccessException, SQLException;
+    void setParameters(ICallableStatementSetStrategy aStmt, Object[] aMethodParameters) throws DataAccessException, SQLException;
 }

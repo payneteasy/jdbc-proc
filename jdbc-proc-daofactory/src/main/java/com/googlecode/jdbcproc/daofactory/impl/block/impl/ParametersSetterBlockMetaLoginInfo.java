@@ -6,6 +6,8 @@ import com.googlecode.jdbcproc.daofactory.IMetaLoginInfoService;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
@@ -14,24 +16,23 @@ import org.springframework.util.Assert;
  */
 public class ParametersSetterBlockMetaLoginInfo implements IParametersSetterBlock {
 
-    public ParametersSetterBlockMetaLoginInfo(IMetaLoginInfoService aMetaLoginInfoService) {
-        Assert.notNull(aMetaLoginInfoService, "IMetaLoginInfoService is not setted to factory (DaoMethodInfoFactory.MetaLoginInfoService or DaoMethodInfoGuice.init)");
+    public ParametersSetterBlockMetaLoginInfo(IMetaLoginInfoService aMetaLoginInfoService, StatementArgument aUsernameArgument, StatementArgument aRoleArgument) {
+        Assert.notNull(aMetaLoginInfoService, "IMetaLoginInfoService is not set to factory (DaoMethodInfoFactory.MetaLoginInfoService or DaoMethodInfoGuice.init)");
 
         theMetaLoginInfoService = aMetaLoginInfoService;
-        theUsernameParameterName = aMetaLoginInfoService.getUsernameParameterName();
-        theRoleParameterName = aMetaLoginInfoService.getRoleParameterName();
+        theUsernameArgument = aUsernameArgument;
+        theRoleArgument = aRoleArgument;
     }
 
-    public void setParameters(CallableStatement aStmt, Object[] aArgs) throws DataAccessException, SQLException {
-        aStmt.setString(theUsernameParameterName, theMetaLoginInfoService.getUsername());
-        aStmt.setString(theRoleParameterName    , theMetaLoginInfoService.getRole());
+    public void setParameters(ICallableStatementSetStrategy aStmt, Object[] aMethodParameters) throws DataAccessException, SQLException {
+        aStmt.setString(theUsernameArgument, theMetaLoginInfoService.getUsername());
+        aStmt.setString(theRoleArgument    , theMetaLoginInfoService.getRole());
     }
     
-    public void cleanup(CallableStatement aStmt) throws DataAccessException,
-            SQLException {
+    public void cleanup(CallableStatement aStmt) throws DataAccessException, SQLException {
     }
 
     private final IMetaLoginInfoService theMetaLoginInfoService;
-    private final String theUsernameParameterName;
-    private final String theRoleParameterName;
+    private final StatementArgument theUsernameArgument;
+    private final StatementArgument theRoleArgument;
 }

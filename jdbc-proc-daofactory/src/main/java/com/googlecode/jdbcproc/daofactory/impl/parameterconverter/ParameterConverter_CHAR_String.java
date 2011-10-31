@@ -1,10 +1,10 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
 import java.sql.*;
-import java.math.BigDecimal;
 
 /**
  *  CHAR - String
@@ -19,12 +19,12 @@ public class ParameterConverter_CHAR_String
     stmt.setString(index, value);
   }
 
-  public void setValue(String value, CallableStatement stmt, String parameterName)
+  public void setValue(String value, ICallableStatementSetStrategy stmt, StatementArgument parameterName)
       throws SQLException {
     stmt.setString(parameterName, value);
   }
 
-  public String getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName)
+  public String getOutputParameter(ICallableStatementGetStrategy aStmt, StatementArgument aParameterName)
       throws SQLException {
     return aStmt.getString(aParameterName);
   }

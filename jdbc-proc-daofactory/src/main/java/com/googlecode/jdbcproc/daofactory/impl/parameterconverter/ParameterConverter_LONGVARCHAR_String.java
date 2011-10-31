@@ -1,10 +1,10 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
 import java.sql.*;
-import java.math.BigDecimal;
 
 /**
  *  LONGVARCHAR - String
@@ -19,11 +19,11 @@ public class ParameterConverter_LONGVARCHAR_String
         aStmt.setString(aIndex, aValue);
     }
 
-    public void setValue(String aValue, CallableStatement aStmt, String aParameterName) throws SQLException {
-        aStmt.setString(aParameterName, aValue);
+    public void setValue(String aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
+        aStmt.setString(aArgument, aValue);
     }
 
-    public String getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName) throws SQLException {
+    public String getOutputParameter(ICallableStatementGetStrategy aStmt, StatementArgument aParameterName) throws SQLException {
         return aStmt.getString(aParameterName);
     }
 

@@ -1,6 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
 import java.sql.*;
@@ -23,15 +24,15 @@ public class ParameterConverter_DECIMAL_double
         }
     }
 
-    public void setValue(Double aValue, CallableStatement aStmt, String aParameterName) throws SQLException {
+    public void setValue(Double aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
-            aStmt.setBigDecimal(aParameterName, new BigDecimal(aValue));
+            aStmt.setBigDecimal(aArgument, new BigDecimal(aValue));
         } else {
-            aStmt.setBigDecimal(aParameterName, null);
+            aStmt.setBigDecimal(aArgument, null);
         }
     }
 
-    public Double getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName) throws SQLException {
+    public Double getOutputParameter(ICallableStatementGetStrategy aStmt, StatementArgument aParameterName) throws SQLException {
         BigDecimal decValue = aStmt.getBigDecimal(aParameterName);
         return decValue!=null ? decValue.doubleValue() : 0;
     }

@@ -1,5 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
+
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
@@ -13,9 +15,9 @@ import java.lang.reflect.InvocationTargetException;
  * To change this template use File | Settings | File Templates.
  */
 public interface IEntityArgumentGetter {
-    void setParameter(Object aEntity, CallableStatement aStmt) throws InvocationTargetException, IllegalAccessException, SQLException;
+    void setParameter(Object aEntity, ICallableStatementSetStrategy aStmt) throws InvocationTargetException, IllegalAccessException, SQLException;
 
-    String getParameterName();
+    String getColumnNameForInsertQuery();
 
     void setParameterByIndex(Object aEntity, PreparedStatement aStmt, int aIndex) throws InvocationTargetException, IllegalAccessException, SQLException;
 }

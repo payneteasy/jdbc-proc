@@ -1,6 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
 import java.sql.*;
@@ -19,12 +20,12 @@ public class ParameterConverter_INTEGER_boolean
         aStmt.setInt(aIndex, intValue);
     }
 
-    public void setValue(Boolean aValue, CallableStatement aStmt, String aParameterName) throws SQLException {
+    public void setValue(Boolean aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         int intValue = aValue!=null && aValue ? 1 : 0;
-        aStmt.setInt(aParameterName, intValue);
+        aStmt.setInt(aArgument, intValue);
     }
 
-    public Boolean getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName) throws SQLException {
+    public Boolean getOutputParameter(ICallableStatementGetStrategy aStmt, StatementArgument aParameterName) throws SQLException {
         int intValue = aStmt.getInt(aParameterName);
         return intValue==1;
     }

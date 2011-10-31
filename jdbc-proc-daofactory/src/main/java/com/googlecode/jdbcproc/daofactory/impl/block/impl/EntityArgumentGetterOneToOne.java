@@ -1,5 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
+
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
@@ -16,7 +18,7 @@ public class EntityArgumentGetterOneToOne implements IEntityArgumentGetter {
         theEntityArgumentGetter = aEntityArgumentGetter;
     }
 
-    public void setParameter(Object aEntity, CallableStatement aStmt) throws InvocationTargetException, IllegalAccessException, SQLException {
+    public void setParameter(Object aEntity, ICallableStatementSetStrategy aStmt) throws InvocationTargetException, IllegalAccessException, SQLException {
         Object oneToOneEntity = getOneToOneEntity(aEntity);
         theEntityArgumentGetter.setParameter(oneToOneEntity, aStmt);
     }
@@ -33,8 +35,8 @@ public class EntityArgumentGetterOneToOne implements IEntityArgumentGetter {
         return oneToOneEntity;
     }
 
-    public String getParameterName() {
-        return theEntityArgumentGetter.getParameterName();
+    public String getColumnNameForInsertQuery() {
+        return theEntityArgumentGetter.getColumnNameForInsertQuery();
     }
 
     public void setParameterByIndex(Object aEntity, PreparedStatement aStmt, int aIndex) throws InvocationTargetException, IllegalAccessException, SQLException {

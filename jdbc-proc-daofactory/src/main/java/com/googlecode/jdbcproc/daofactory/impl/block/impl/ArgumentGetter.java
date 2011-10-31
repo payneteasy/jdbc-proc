@@ -1,5 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
 
 import java.sql.CallableStatement;
@@ -10,23 +12,23 @@ import java.sql.SQLException;
  */
 public class ArgumentGetter {
 
-    public ArgumentGetter(IParameterConverter aParameterConverter, String aParameterName) {
+    public ArgumentGetter(IParameterConverter aParameterConverter, StatementArgument aStatementArgument) {
         theParameterConverter = aParameterConverter;
-        theParameterName = aParameterName;
+        theStatementArgument = aStatementArgument;
     }
 
-    public void setParameter(Object aValue, CallableStatement aStmt) throws SQLException {
-        theParameterConverter.setValue(aValue, aStmt, theParameterName);
+    public void setParameter(Object aValue, ICallableStatementSetStrategy aStmt) throws SQLException {
+        theParameterConverter.setValue(aValue, aStmt, theStatementArgument);
     }
 
 
     public String toString() {
         return "ArgumentGetter{" +
                 "theParameterConverter=" + theParameterConverter +
-                ", theParameterName='" + theParameterName + '\'' +
+                ", theStatementArgument='" + theStatementArgument + '\'' +
                 '}';
     }
 
     private final IParameterConverter theParameterConverter;
-    private final String theParameterName ;
+    private final StatementArgument theStatementArgument;
 }

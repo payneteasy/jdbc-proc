@@ -3,7 +3,7 @@ package com.googlecode.jdbcproc.daofactory.impl.dbstrategy;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
-public interface ICallableStatementStrategy {
+public interface ICallableStatementGetStrategy {
 
     long getLong(StatementArgument aArgument) throws SQLException;
 

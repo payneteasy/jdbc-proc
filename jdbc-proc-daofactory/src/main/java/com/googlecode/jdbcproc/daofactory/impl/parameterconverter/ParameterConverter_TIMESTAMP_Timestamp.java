@@ -1,6 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
 import java.sql.*;
@@ -22,15 +23,15 @@ public class ParameterConverter_TIMESTAMP_Timestamp
         }
     }
 
-    public void setValue(Timestamp aValue, CallableStatement aStmt, String aParameterName) throws SQLException {
+    public void setValue(Timestamp aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
-            aStmt.setTimestamp(aParameterName, aValue);
+            aStmt.setTimestamp(aArgument, aValue);
         } else {
-            aStmt.setNull(aParameterName, Types.TIMESTAMP);
+            aStmt.setNull(aArgument, Types.TIMESTAMP);
         }
     }
 
-    public Timestamp getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName) throws SQLException {
+    public Timestamp getOutputParameter(ICallableStatementGetStrategy aStmt, StatementArgument aParameterName) throws SQLException {
         return aStmt.getTimestamp(aParameterName);
     }
 

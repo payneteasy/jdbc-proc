@@ -3,7 +3,7 @@ package com.googlecode.jdbcproc.daofactory.impl.dbstrategy;
 import java.math.BigDecimal;
 import java.sql.*;
 
-public class CallableStatementStrategyNameImpl implements ICallableStatementStrategy {
+public class CallableStatementStrategyNameImpl implements ICallableStatementGetStrategy {
 
     public CallableStatementStrategyNameImpl(CallableStatement aStmt) {
         theStmt = aStmt;

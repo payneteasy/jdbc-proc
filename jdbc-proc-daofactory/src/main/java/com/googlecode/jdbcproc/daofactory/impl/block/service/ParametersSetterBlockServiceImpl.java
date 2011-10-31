@@ -27,6 +27,7 @@ import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockL
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockListAggregator;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockMetaLoginInfo;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockNull1;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
@@ -105,7 +106,10 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             // METHOD no parameter
             // PROCEDURE 2 parameters
           } else if (method.getParameterTypes().length == 0 && procedureInfo.getInputArgumentsCount() == 2) {
-            return Arrays.asList((IParametersSetterBlock) new ParametersSetterBlockMetaLoginInfo(aMetaLoginInfoService));
+            return Arrays.asList((IParametersSetterBlock) new ParametersSetterBlockMetaLoginInfo(aMetaLoginInfoService
+                    , getArgument(procedureInfo, aMetaLoginInfoService.getUsernameParameterName())
+                    , getArgument(procedureInfo, aMetaLoginInfoService.getRoleParameterName()
+            )));
 
             // if AMetaLoginInfo and parameters is simple puted to procedure
           } else if (method.getParameterTypes().length + 2 == procedureInfo.getInputArgumentsCount()) {
@@ -144,7 +148,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
 
             // if all parameters is list and no arguments
           } else if (areAllParametersListAndNoArguments(method, procedureInfo)) {
-            return createAllList(jdbcTemplate, converterService, method);
+            return createAllList(jdbcTemplate, converterService, method, procedureInfo);
 
             // if both list and arguments parameters provides
           } else if (areListAndNonListParametersProvides(method, procedureInfo)) {
@@ -157,12 +161,22 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         }
     }
 
+    private StatementArgument getArgument(StoredProcedureInfo aProcedureInfo, String aArgumentName) {
+        if(aArgumentName.startsWith("i_")) {
+            aArgumentName = aArgumentName.substring(2);
+        }
+
+        StoredProcedureArgumentInfo info = aProcedureInfo.getArgumentInfo(aArgumentName);
+        if(info==null) throw new IllegalStateException("Argument "+aArgumentName+ " not found in "+aProcedureInfo.getProcedureName());
+        return info.getStatementArgument();
+    }
+
     protected List<IParametersSetterBlock> createListAndArgumentsWithMetaLoginInfo(
             JdbcTemplate jdbcTemplate,
             ParameterConverterService converterService, Method method,
             StoredProcedureInfo procedureInfo,
             IMetaLoginInfoService aMetaLoginInfoService) {
-        return createListAndArgumentsWithMetaLoginInfo(createListAndArguments(2, jdbcTemplate, converterService, method, procedureInfo), aMetaLoginInfoService);
+        return createListAndArgumentsWithMetaLoginInfo(createListAndArguments(2, jdbcTemplate, converterService, method, procedureInfo), aMetaLoginInfoService, procedureInfo);
     }
 
     /**
@@ -182,7 +196,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             Class clazz = parameters[i];
             if (BlockFactoryUtils.isCollectionAssignableFrom(clazz)) {
                 ParametersSetterBlockList block
-                        = createParametersSetterBlockList(jdbcTemplate, converterService, method, i);
+                        = createParametersSetterBlockList(jdbcTemplate, converterService, method, i, procedureInfo);
                 list.add(block);
                 tmpList[listArgumentsLength] = i;
                 listArgumentsLength++;
@@ -223,7 +237,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
                 IParameterConverter paramConverter = converterService
                     .getConverter(argumentInfo.getDataType(),
                         method.getParameterTypes()[nonListArgumentIndexes[index]]);
-                getters.add(new ArgumentGetter(paramConverter, argumentInfo.getColumnName()));
+                getters.add(new ArgumentGetter(paramConverter, argumentInfo.getStatementArgument()));
                 index++;
               }
             }
@@ -241,11 +255,14 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
      * if both list and arguments parameters provides with MetaLoginInfo
      */
     private List<IParametersSetterBlock> createListAndArgumentsWithMetaLoginInfo(List<IParametersSetterBlock> originalBlock, 
-      IMetaLoginInfoService aMetaLoginInfoService) {
+      IMetaLoginInfoService aMetaLoginInfoService, StoredProcedureInfo procedureInfo) {
         List<IParametersSetterBlock> list = new LinkedList<IParametersSetterBlock>();
 
         // add username and principal
-        list.add(new ParametersSetterBlockMetaLoginInfo(aMetaLoginInfoService));
+        list.add(new ParametersSetterBlockMetaLoginInfo(aMetaLoginInfoService
+                , getArgument(procedureInfo, aMetaLoginInfoService.getUsernameParameterName())
+                , getArgument(procedureInfo, aMetaLoginInfoService.getRoleParameterName())
+        ));
 
         // add simple parameters
         list.addAll(originalBlock);
@@ -255,19 +272,19 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
     /**
      * if all parameters is list and no arguments
      */
-    protected List<IParametersSetterBlock> createAllList(JdbcTemplate jdbcTemplate, ParameterConverterService converterService, Method method) {
+    protected List<IParametersSetterBlock> createAllList(JdbcTemplate jdbcTemplate, ParameterConverterService converterService, Method method, StoredProcedureInfo aProcedureInfo) {
         if (method.getParameterTypes().length == 1) {
             // only one argument
             return Collections.singletonList(
                     (IParametersSetterBlock) createParametersSetterBlockList(jdbcTemplate, converterService,
-                            method, 0));
+                            method, 0, aProcedureInfo));
         } else {
             // many arguments
             Class<?>[] parameters = method.getParameterTypes();
             List<IParametersSetterBlock> list = new LinkedList<IParametersSetterBlock>();
             for (int i = 0; i < parameters.length; i++) {
                 ParametersSetterBlockList block
-                        = createParametersSetterBlockList(jdbcTemplate, converterService, method, i);
+                        = createParametersSetterBlockList(jdbcTemplate, converterService, method, i, aProcedureInfo);
                 list.add(block);
             }
             return Collections
@@ -292,11 +309,15 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
 
     }
 
-    private List<IParametersSetterBlock> createMetaLoginList(IParametersSetterBlock aOriginalBlock, IMetaLoginInfoService aMetaLoginInfoService) {
+    private List<IParametersSetterBlock> createMetaLoginList(IParametersSetterBlock aOriginalBlock, IMetaLoginInfoService aMetaLoginInfoService, StoredProcedureInfo procedureInfo) {
         List<IParametersSetterBlock> list = new LinkedList<IParametersSetterBlock>();
 
         // add username and principal
-        list.add(new ParametersSetterBlockMetaLoginInfo(aMetaLoginInfoService));
+        list.add(new ParametersSetterBlockMetaLoginInfo(aMetaLoginInfoService
+                , getArgument(procedureInfo, aMetaLoginInfoService.getUsernameParameterName())
+                , getArgument(procedureInfo, aMetaLoginInfoService.getRoleParameterName())
+        ));
+
 
         // add simple parameters
         list.add(aOriginalBlock);
@@ -311,7 +332,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
      * @return list of setter blocks
      */
     private List<IParametersSetterBlock> createSimpleParametersWithMetaLoginInfo(IMetaLoginInfoService aMetaLoginInfoService, ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo) {
-       return createMetaLoginList(createSimpleParameters(2, converterService, method, procedureInfo), aMetaLoginInfoService);
+       return createMetaLoginList(createSimpleParameters(2, converterService, method, procedureInfo), aMetaLoginInfoService, procedureInfo);
     }
 
     /**
@@ -332,7 +353,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             StoredProcedureArgumentInfo argumentInfo = procedureInfo.getInputArguments().get(procedureIndex);
             if( argumentInfo.isInputParameter() ) {
                 IParameterConverter paramConverter = converterService.getConverter(argumentInfo.getDataType(), method.getParameterTypes()[methodIndex]);
-                getters.add(new ArgumentGetter(paramConverter, argumentInfo.getColumnName()));
+                getters.add(new ArgumentGetter(paramConverter, argumentInfo.getStatementArgument()));
             }
 
             methodIndex++;
@@ -356,7 +377,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         final IParametersSetterBlock block = createEntityBlock(converterService, procedureInfo, entityClass, null);
 
         if(isMetaLoginInfoPresented(method)) {
-            return createMetaLoginList(block, aMetaLoginInfoService);
+            return createMetaLoginList(block, aMetaLoginInfoService, procedureInfo);
         } else {
             return Collections.singletonList(block);
         }
@@ -370,7 +391,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
                 , "Method " + method.getName() + " parameters count must be equal to 2");
 
         List<IParametersSetterBlock> blocks = doCreateEntityBlocks(converterService, method, procedureInfo, aMetaLoginInfoService);
-        blocks.add(createParametersSetterBlockList(jdbcTemplate, converterService, method, 1));
+        blocks.add(createParametersSetterBlockList(jdbcTemplate, converterService, method, 1, procedureInfo));
         return blocks;
     }
 
@@ -388,8 +409,9 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
      * List getAll()
      */
     private List<IParametersSetterBlock> createGetAll(StoredProcedureInfo procedureInfo) {
+        StoredProcedureArgumentInfo argumentInfo = procedureInfo.getArguments().get(0);
         return Collections.singletonList((IParametersSetterBlock) new ParametersSetterBlockNull1(
-                procedureInfo.getArguments().get(0).getDataType()));
+                argumentInfo.getStatementArgument(), argumentInfo.getDataType()));
     }
 
     /**
@@ -416,7 +438,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
                     IParameterConverter paramConverter = converterService
                             .getConverter(argumentInfo.getDataType(), getterMethod.getReturnType());
                     getters.add(new EntityArgumentGetter(getterMethod, paramConverter
-                            , argumentInfo.getColumnName()));
+                            , argumentInfo.getStatementArgument()));
                 }
             } else if (getterMethod.isAnnotationPresent(OneToOne.class)
                     || getterMethod.isAnnotationPresent(ManyToOne.class)) {
@@ -431,7 +453,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
                             throw new IllegalStateException("Column " + joinColumn.name()
                                     + " was not found in " + procedureInfo.getProcedureName());
                         }
-                        getters.add(new EntityArgumentGetterOneToOneJoinColumn(getterMethod, argumentInfo.getColumnName()));
+                        getters.add(new EntityArgumentGetterOneToOneJoinColumn(getterMethod, argumentInfo.getStatementArgument()));
                     } else {
                         throw new IllegalStateException("@JoinColumn.name is empty for "+ entityClass.getSimpleName() + "." + getterMethod.getName() + "()");
                     }
@@ -445,15 +467,14 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
     }
 
     private ParametersSetterBlockList createParametersSetterBlockList(JdbcTemplate jdbcTemplate,
-                                                                      ParameterConverterService converterService, Method method, int parameterIndex) {
+                                                                      ParameterConverterService converterService, Method method, int parameterIndex, StoredProcedureInfo aStoredProcedureInfo) {
         Class entityClass = getListEntityClass(method.getGenericParameterTypes()[parameterIndex]);
         String tableName = getListTableName(entityClass);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting metadata for table {}...", tableName);
         }
         Map<String, Integer> types = createTypes(jdbcTemplate, tableName);
-        List<IEntityArgumentGetter> getters = createListGetters("", entityClass, types
-                , converterService);
+        List<IEntityArgumentGetter> getters = createListGetters("", entityClass, types, converterService, aStoredProcedureInfo);
         String insertQuery = createListInsertQuery(getters, tableName);
         if (LOG.isDebugEnabled()) {
             LOG.debug("insert query: {}", insertQuery);
@@ -484,38 +505,43 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         });
     }
 
-    private List<IEntityArgumentGetter> createListGetters(String columnPrefix, Class entityClass,
-                                                          Map<String, Integer> types, ParameterConverterService converterService) {
+    private List<IEntityArgumentGetter> createListGetters(String columnPrefix
+            , Class entityClass
+            , Map<String, Integer> types
+            , ParameterConverterService converterService
+            , StoredProcedureInfo aProcedureInfo
+    ) {
         List<IEntityArgumentGetter> getters = new LinkedList<IEntityArgumentGetter>();
         for (Method method : entityClass.getMethods()) {
             if (method.isAnnotationPresent(Column.class)) {
+
                 Column column = method.getAnnotation(Column.class);
                 Assert.notNull(column, "Method " + method + " has no Column annotation");
-                Assert
-                        .hasText(column.name(), "Column annotation has no name parameter in method " + method);
+                Assert.hasText(column.name(), "Column annotation has no name parameter in method " + method);
+
                 String columnName = columnPrefix + column.name();
+
                 Integer dataType = types.get(columnName);
-                Assert.notNull(dataType,
-                        "NO information abount column " + columnName + " in method " + method);
-                IParameterConverter paramConverter = converterService
-                        .getConverter(dataType, method.getReturnType());
-                getters.add(new EntityArgumentGetter(method, paramConverter, columnName));
-            } else if (method.isAnnotationPresent(OneToOne.class) || method
-                    .isAnnotationPresent(ManyToOne.class)) {
+                Assert.notNull(dataType, "No information about column " + columnName + " in method " + method);
+
+                IParameterConverter paramConverter = converterService.getConverter(dataType, method.getReturnType());
+
+
+                getters.add(new EntityArgumentGetter(method, paramConverter, getArgument(aProcedureInfo, columnName)));
+
+            } else if (method.isAnnotationPresent(OneToOne.class) || method.isAnnotationPresent(ManyToOne.class)) {
                 Class oneToOneClass = method.getReturnType();
                 if (method.isAnnotationPresent(JoinColumn.class)) {
+
                     // table name
                     JoinColumn joinColumn = method.getAnnotation(JoinColumn.class);
-                    Assert.hasText(joinColumn.table(),
-                            "JoinColumn annotation has no table parameter in method " + method);
+                    Assert.hasText(joinColumn.table(), "JoinColumn annotation has no table parameter in method " + method);
                     String tableName = joinColumn.table();
 
                     //
-                    List<IEntityArgumentGetter> oneToOneClassGetters = createListGetters(tableName + "_",
-                            oneToOneClass, types, converterService);
+                    List<IEntityArgumentGetter> oneToOneClassGetters = createListGetters(tableName + "_", oneToOneClass, types, converterService, aProcedureInfo);
                     for (IEntityArgumentGetter oneToOneClassGetter : oneToOneClassGetters) {
-                        EntityArgumentGetterOneToOne oneToOneConverter = new EntityArgumentGetterOneToOne(
-                                method, oneToOneClassGetter);
+                        EntityArgumentGetterOneToOne oneToOneConverter = new EntityArgumentGetterOneToOne(method, oneToOneClassGetter);
                         getters.add(oneToOneConverter);
                     }
                 }
@@ -549,7 +575,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             } else {
                 firstPassed = true;
             }
-            sb.append(getter.getParameterName());
+            sb.append(getter.getColumnNameForInsertQuery());
         }
         sb.append(" ) values ( ");
 

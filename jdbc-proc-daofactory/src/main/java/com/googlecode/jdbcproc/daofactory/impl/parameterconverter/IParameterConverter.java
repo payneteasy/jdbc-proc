@@ -1,6 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
 import java.sql.CallableStatement;
@@ -57,12 +58,13 @@ public interface IParameterConverter<T extends IParameterConverter, V> {
   
     /**
      * Sets parameter to statement
+     *
      * @param aValue         value
      * @param aStmt          statement
-     * @param aParameterName parameter name
+     * @param aArgument
      * @throws SQLException  on error
      */
-    void setValue(V aValue, CallableStatement aStmt, String aParameterName) throws SQLException ;
+    void setValue(V aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException ;
 
     /**
      * Sets parameter to statement
@@ -76,11 +78,11 @@ public interface IParameterConverter<T extends IParameterConverter, V> {
     /**
      * Returns output parameter, converted to disired java type
      * @param aStmt          callable statement
-     * @param aParameterName parameter name
+     * @param aStatementArgument parameter name
      * @return               converted value
      * @throws SQLException on error
      */
-    V getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aStatementArgument) throws SQLException;
+    V getOutputParameter(ICallableStatementGetStrategy aStmt, StatementArgument aStatementArgument) throws SQLException;
 
     /**
      * Gets value from result set

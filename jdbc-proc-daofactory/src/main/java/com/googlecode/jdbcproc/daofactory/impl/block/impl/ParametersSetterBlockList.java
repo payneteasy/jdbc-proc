@@ -2,6 +2,7 @@ package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 import org.slf4j.Logger;
@@ -26,12 +27,12 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
         theTruncateTableQuery = aTrancateTableQuery;
     }
 
-    public void setParameters(CallableStatement aStmt, Object[] aArgs) throws DataAccessException {
+    public void setParameters(ICallableStatementSetStrategy aStmt, Object[] aMethodParameters) throws DataAccessException {
         if(LOG.isDebugEnabled()) {
             LOG.debug("Executing insert: {}", theInsertQuery);
         }
-        Assert.notNull(aArgs         , "Argument aArgs must not be null"   );
-        Assert.isTrue(aArgs.length > 0, "Count of arguments must be positive");
+        Assert.notNull(aMethodParameters, "Argument aArgs must not be null"   );
+        Assert.isTrue(aMethodParameters.length > 0, "Count of arguments must be positive");
 
         try {
             Connection con = aStmt.getConnection();
@@ -39,7 +40,7 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
             truncateTable( con );
 
             // inserts current data to table
-            Collection collection = (Collection) aArgs[aArgs.length - 1];
+            Collection collection = (Collection) aMethodParameters[aMethodParameters.length - 1];
             
             for (Object entity : collection) {
                 PreparedStatement stmt = con.prepareStatement(theInsertQuery);
@@ -50,7 +51,7 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
                             index++;
                             getter.setParameterByIndex(entity, stmt, index);
                         } catch (Exception e) {
-                            throw new IllegalStateException("Error setting "+getter.getParameterName()+": "+e.getMessage(),e);
+                            throw new IllegalStateException("Error setting "+getter+": "+e.getMessage(),e);
                         }
                     }
                     stmt.executeUpdate();

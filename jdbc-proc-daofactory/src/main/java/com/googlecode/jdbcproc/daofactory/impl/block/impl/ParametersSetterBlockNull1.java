@@ -3,6 +3,8 @@ package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 import org.springframework.dao.DataAccessException;
 
 import com.googlecode.jdbcproc.daofactory.impl.TypeNameUtil;
@@ -13,12 +15,13 @@ import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
  */
 public class ParametersSetterBlockNull1 implements IParametersSetterBlock {
 
-    public ParametersSetterBlockNull1(int aDataType) {
+    public ParametersSetterBlockNull1(StatementArgument aStatementArgument, int aDataType) {
         theDataType = aDataType;
+        theStatementArgument = aStatementArgument;
     }
 
-    public void setParameters(CallableStatement aStmt, Object[] aArgs) throws DataAccessException, SQLException {
-        aStmt.setNull(1, theDataType);
+    public void setParameters(ICallableStatementSetStrategy aStmt, Object[] aMethodParameters) throws DataAccessException, SQLException {
+        aStmt.setNull(theStatementArgument, theDataType);
     }
 
     public void cleanup(CallableStatement aStmt) throws DataAccessException,
@@ -32,4 +35,6 @@ public class ParametersSetterBlockNull1 implements IParametersSetterBlock {
     }
 
     private final int theDataType;
+    private final StatementArgument theStatementArgument;
+
 }

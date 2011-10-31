@@ -1,10 +1,10 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
 import java.sql.*;
-import java.math.BigDecimal;
 
 /**
  *  DECIMAL - boolean
@@ -23,15 +23,15 @@ public class ParameterConverter_REAL_double
         }
     }
 
-    public void setValue(Double aValue, CallableStatement aStmt, String aParameterName) throws SQLException {
+    public void setValue(Double aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
-            aStmt.setDouble(aParameterName, aValue);
+            aStmt.setDouble(aArgument, aValue);
         } else {
-            aStmt.setNull(aParameterName, Types.REAL);
+            aStmt.setNull(aArgument, Types.REAL);
         }
     }
 
-    public Double getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName) throws SQLException {
+    public Double getOutputParameter(ICallableStatementGetStrategy aStmt, StatementArgument aParameterName) throws SQLException {
         Double value = aStmt.getDouble(aParameterName);
         return aStmt.wasNull() ? null : value;
     }

@@ -3,9 +3,7 @@ package com.googlecode.jdbcproc.daofactory.impl;
 import com.googlecode.jdbcproc.daofactory.impl.block.*;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockOrder;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.CallableStatementStrategyNameImpl;
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.CallableStatementCallback;
 import org.springframework.util.Assert;
@@ -77,7 +75,7 @@ public class DaoMethodInvoker {
         return theIsReturnIterator;
     }
 
-    public CallableStatementCallback createCallableStatementCallback(final Object[] aArgs) {
+    public CallableStatementCallback createCallableStatementCallback(final Object[] aMethodParameters) {
         if(LOG.isDebugEnabled()) {
             LOG.debug("Invoking "+theProcedureName+"...");
         }
@@ -118,8 +116,9 @@ public class DaoMethodInvoker {
                         // set parameters value
                         // eg. aStmt.setString(1, "hello");
                         if(theParametersSetterBlocks !=null) {
+                            ICallableStatementSetStrategy callableStatementSetStrategy = new CallableStatementSetStrategyNameImpl(aStmt);
                             for (IParametersSetterBlock block : theParametersSetterBlocks)
-                                block.setParameters(aStmt, aArgs);
+                                block.setParameters(callableStatementSetStrategy, aMethodParameters);
                         }
     
                         // callable statement executor
@@ -144,15 +143,15 @@ public class DaoMethodInvoker {
                     }
                 }
 
-                ICallableStatementStrategy callableStatementStrategy = new CallableStatementStrategyNameImpl(aStmt);
+                ICallableStatementGetStrategy callableStatementGetStrategy = new CallableStatementStrategyNameImpl(aStmt);
                 try {
                     // gets output parameters and sets it to arguments
                     if(theOutputParametersGetterBlock !=null) {
-                        theOutputParametersGetterBlock.fillOutputParameters(callableStatementStrategy, aArgs);
+                        theOutputParametersGetterBlock.fillOutputParameters(callableStatementGetStrategy, aMethodParameters);
                     }
 
                     if(theOutputParametersGetterBlock!=null && theOutputParametersGetterBlock.hasReturn()) {
-                        return theOutputParametersGetterBlock.getReturnValue(callableStatementStrategy);
+                        return theOutputParametersGetterBlock.getReturnValue(callableStatementGetStrategy);
 
                     } else {
                         // converts result set to return value

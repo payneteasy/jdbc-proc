@@ -55,7 +55,7 @@ public class ParametersSetterBlockServiceImplTest extends TestCase {
             @Override
             protected List<IParametersSetterBlock> createAllList(
                     JdbcTemplate jdbcTemplate,
-                    ParameterConverterService converterService, Method method) {
+                    ParameterConverterService converterService, Method method, StoredProcedureInfo aProcedureInfo) {
                 return createAllListMarker;
             }
         };

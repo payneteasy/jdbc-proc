@@ -1,6 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.parameterconverter;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
 import java.sql.*;
@@ -22,15 +23,15 @@ public class ParameterConverter_DATE_sqlDate
         }
     }
 
-    public void setValue(Date aValue, CallableStatement aStmt, String aParameterName) throws SQLException {
+    public void setValue(Date aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
-            aStmt.setDate(aParameterName, aValue);
+            aStmt.setDate(aArgument, aValue);
         } else {
-            aStmt.setNull(aParameterName, Types.DATE);
+            aStmt.setNull(aArgument, Types.DATE);
         }
     }
 
-    public Date getOutputParameter(ICallableStatementStrategy aStmt, StatementArgument aParameterName) throws SQLException {
+    public Date getOutputParameter(ICallableStatementGetStrategy aStmt, StatementArgument aParameterName) throws SQLException {
         return aStmt.getDate(aParameterName);
     }
 

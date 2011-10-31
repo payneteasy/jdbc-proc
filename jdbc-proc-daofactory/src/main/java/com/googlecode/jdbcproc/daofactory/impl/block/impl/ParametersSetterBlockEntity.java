@@ -2,6 +2,7 @@ package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
@@ -21,15 +22,15 @@ public class ParametersSetterBlockEntity implements IParametersSetterBlock {
         theNonListArgumentIndexes = aNonListArgumentIndexes;
     }
 
-    public void setParameters(CallableStatement aStmt, Object[] aArgs) throws DataAccessException {
-        Assert.notNull(aArgs, "Argument aArgs must not be null");
+    public void setParameters(ICallableStatementSetStrategy aStmt, Object[] aMethodParameters) throws DataAccessException {
+        Assert.notNull(aMethodParameters, "Argument aArgs must not be null");
 
         Object entity;      
         if (theNonListArgumentIndexes != null) {
           Assert.isTrue(theNonListArgumentIndexes.length == 1, "Count of argument must be equals 1");          
-          entity = aArgs[theNonListArgumentIndexes[0]];
+          entity = aMethodParameters[theNonListArgumentIndexes[0]];
         } else {
-          entity = aArgs[0];
+          entity = aMethodParameters[0];
         }
       
         for(EntityArgumentGetter getter : theArgumentsGetters) {

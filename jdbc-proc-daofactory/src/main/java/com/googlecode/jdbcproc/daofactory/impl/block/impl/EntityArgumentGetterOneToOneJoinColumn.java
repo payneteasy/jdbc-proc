@@ -1,5 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverter_INTEGER_long;
 
 import javax.persistence.Id;
@@ -14,8 +16,8 @@ import java.sql.PreparedStatement;
  */
 public class EntityArgumentGetterOneToOneJoinColumn extends EntityArgumentGetter {
 
-    public EntityArgumentGetterOneToOneJoinColumn(Method aOneToOneEntityGetterMethod, String aParameterName) {
-        super(aOneToOneEntityGetterMethod, new ParameterConverter_INTEGER_long(), aParameterName);
+    public EntityArgumentGetterOneToOneJoinColumn(Method aOneToOneEntityGetterMethod, StatementArgument aStatementArgument) {
+        super(aOneToOneEntityGetterMethod, new ParameterConverter_INTEGER_long(), aStatementArgument);
         theIdMethod = findIdMethod(aOneToOneEntityGetterMethod.getReturnType());
     }
 
@@ -32,10 +34,10 @@ public class EntityArgumentGetterOneToOneJoinColumn extends EntityArgumentGetter
         }
     }
 
-    public void setParameter(Object aEntity, CallableStatement aStmt) throws InvocationTargetException, IllegalAccessException, SQLException {
+    public void setParameter(Object aEntity, ICallableStatementSetStrategy aStmt) throws InvocationTargetException, IllegalAccessException, SQLException {
         Object oneToOneObject = theMethod.invoke(aEntity);
         Long   id = (Long) (oneToOneObject!=null ? theIdMethod.invoke(oneToOneObject) : null);
-        theParameterConverter.setValue(id, aStmt, theParameterName);
+        theParameterConverter.setValue(id, aStmt, theStatementArgument);
     }
 
     public void setParameterByIndex(Object aEntity, PreparedStatement aStmt, int aIndex) throws InvocationTargetException, IllegalAccessException, SQLException {
