@@ -27,6 +27,10 @@ import com.googlecode.jdbcproc.daofactory.impl.block.service.RegisterOutParamete
 import com.googlecode.jdbcproc.daofactory.impl.block.service.RegisterOutParametersBlockServiceImpl;
 import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterBlockService;
 import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterBlockServiceImpl;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategyFactory;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategyFactory;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementGetStrategyFactoryNameImpl;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementSetStrategyFactoryNameImpl;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterServiceImpl;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.IStoredProcedureInfoManager;
@@ -58,6 +62,8 @@ public class DaoMethodInfoFactory implements InitializingBean, DAOMethodInfo {
   private RegisterOutParametersBlockService registerOutParametersBlockService;
   private ResultSetConverterBlockService resultSetConverterBlockService;
   private IStoredProcedureInfoManager storedProcedureInfoManager;
+  private ICallableStatementSetStrategyFactory theSetStrategyFactory = new CallableStatementSetStrategyFactoryNameImpl();
+  private ICallableStatementGetStrategyFactory theGetStrategyFactory = new CallableStatementGetStrategyFactoryNameImpl();
   /** MetaLoginInfoService */
   private IMetaLoginInfoService theMetaLoginInfoService;
 
@@ -93,6 +99,8 @@ public class DaoMethodInfoFactory implements InitializingBean, DAOMethodInfo {
               , outputParametersGetterBlockService.create(parameterConverterService, daoMethod, procedureInfo)
               , resultSetConverterBlockService.create(daoMethod, procedureInfo, parameterConverterService)
               , isReturnIterator
+              , theSetStrategyFactory
+              , theGetStrategyFactory
       );
   }
 
@@ -160,6 +168,12 @@ public class DaoMethodInfoFactory implements InitializingBean, DAOMethodInfo {
   public void setStoredProcedureInfoManager(IStoredProcedureInfoManager storedProcedureInfoManager) {
     this.storedProcedureInfoManager = storedProcedureInfoManager;
   }
+
+    /** CallableStatementGetStrategyFactory */
+    public void setCallableStatementGetStrategyFactory(ICallableStatementGetStrategyFactory aCallableStatementGetStrategyFactory) { theGetStrategyFactory = aCallableStatementGetStrategyFactory; }
+
+    /** Set strategy factory */
+    public void setCallableStatementSetStrategyFactory(ICallableStatementSetStrategyFactory aCallableStatementSetStrategyFactory) { theSetStrategyFactory = aCallableStatementSetStrategyFactory; }
 
     /**
      * MetaLoginInfoService to use AMetaLoginInfo annotation in stored procedure

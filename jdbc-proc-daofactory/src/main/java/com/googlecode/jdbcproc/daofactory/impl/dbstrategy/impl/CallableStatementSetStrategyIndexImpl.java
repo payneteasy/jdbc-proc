@@ -1,4 +1,7 @@
-package com.googlecode.jdbcproc.daofactory.impl.dbstrategy;
+package com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl;
+
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
 import java.math.BigDecimal;
 import java.sql.*;

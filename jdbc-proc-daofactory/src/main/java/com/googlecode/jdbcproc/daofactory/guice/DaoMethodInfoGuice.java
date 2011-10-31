@@ -25,6 +25,8 @@ import com.googlecode.jdbcproc.daofactory.impl.block.service.OutputParametersGet
 import com.googlecode.jdbcproc.daofactory.impl.block.service.ParametersSetterBlockService;
 import com.googlecode.jdbcproc.daofactory.impl.block.service.RegisterOutParametersBlockService;
 import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterBlockService;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementGetStrategyFactoryNameImpl;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementSetStrategyFactoryNameImpl;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.IStoredProcedureInfoManager;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
@@ -106,6 +108,8 @@ public class DaoMethodInfoGuice implements DAOMethodInfo {
             , procedureInfo)
         , resultSetConverterBlockService.create(daoMethod, procedureInfo, parameterConverterService)
         , isReturnIterator
+        , new CallableStatementSetStrategyFactoryNameImpl()
+        , new CallableStatementGetStrategyFactoryNameImpl()
     );
   }
 

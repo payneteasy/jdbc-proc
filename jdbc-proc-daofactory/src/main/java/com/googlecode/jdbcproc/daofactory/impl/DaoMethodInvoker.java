@@ -4,6 +4,8 @@ import com.googlecode.jdbcproc.daofactory.impl.block.*;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockOrder;
 
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.*;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementSetStrategyNameImpl;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementStrategyNameImpl;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.CallableStatementCallback;
 import org.springframework.util.Assert;
@@ -35,6 +37,8 @@ public class DaoMethodInvoker {
             , IOutputParametersGetterBlock aOutputParametersGetterBlock
             , IResultSetConverterBlock aResultSetConverterBlock
             , boolean aIsReturnIterator
+            , ICallableStatementSetStrategyFactory aCallableStatementSetStrategy
+            , ICallableStatementGetStrategyFactory aPreparedStatementStrategy
     ) {
         Assert.notNull(aCallableStatementExecutorBlock, "aCallableStatementExecutorBlock must not be null");
 
@@ -46,6 +50,8 @@ public class DaoMethodInvoker {
         theOutputParametersGetterBlock  = aOutputParametersGetterBlock;
         theResultSetConverterBlock      = aResultSetConverterBlock;
         theIsReturnIterator             = aIsReturnIterator;
+        theSetStrategyFactory           = aCallableStatementSetStrategy;
+        theGetStrategyFactory           = aPreparedStatementStrategy;
         
         // We should sort parameters setter blocks for executing setters in proper order.
         // At first, 'List<?>' setters should be executed, second, other setters should be executed.
@@ -116,7 +122,7 @@ public class DaoMethodInvoker {
                         // set parameters value
                         // eg. aStmt.setString(1, "hello");
                         if(theParametersSetterBlocks !=null) {
-                            ICallableStatementSetStrategy callableStatementSetStrategy = new CallableStatementSetStrategyNameImpl(aStmt);
+                            ICallableStatementSetStrategy callableStatementSetStrategy = theSetStrategyFactory.create(aStmt);
                             for (IParametersSetterBlock block : theParametersSetterBlocks)
                                 block.setParameters(callableStatementSetStrategy, aMethodParameters);
                         }
@@ -143,7 +149,7 @@ public class DaoMethodInvoker {
                     }
                 }
 
-                ICallableStatementGetStrategy callableStatementGetStrategy = new CallableStatementStrategyNameImpl(aStmt);
+                ICallableStatementGetStrategy callableStatementGetStrategy = theGetStrategyFactory.create(aStmt);
                 try {
                     // gets output parameters and sets it to arguments
                     if(theOutputParametersGetterBlock !=null) {
@@ -200,4 +206,7 @@ public class DaoMethodInvoker {
     private final IOutputParametersGetterBlock theOutputParametersGetterBlock;
     private final IResultSetConverterBlock theResultSetConverterBlock;
     private final boolean theIsReturnIterator;
+    private final ICallableStatementSetStrategyFactory theSetStrategyFactory;
+    private final ICallableStatementGetStrategyFactory theGetStrategyFactory;
+
 }

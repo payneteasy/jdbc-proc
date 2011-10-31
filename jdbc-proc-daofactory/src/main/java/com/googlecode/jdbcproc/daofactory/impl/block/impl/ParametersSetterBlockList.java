@@ -2,8 +2,7 @@ package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.CallableStatementSetStrategyIndexImpl;
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.CallableStatementSetStrategyNameImpl;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementSetStrategyIndexImpl;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
