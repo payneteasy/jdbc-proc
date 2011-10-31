@@ -24,7 +24,9 @@ public class TxManagerTest extends DatabaseAwareTest {
     }
 
     @Override protected String[] getConfigLocations() {
-        return new String[] {"/spring/test-mysql-datasource.xml"
+        return new String[] {
+                getSpringConfig("datasource.xml")
+              , getSpringConfig("factory.xml")
           , "/spring/test-dao.xml"
         };
     }

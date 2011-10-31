@@ -10,7 +10,9 @@ public class StoredProcedureArgumentInfo {
 
     public static final int OUT = 4;
     public static final int IN  = 1;
-    private static final int FUNCTION_RETURN = 5;
+
+    public static final int FUNCTION_RETURN = 5;
+    public static final int FUNCTION_RESULT = 3;
 
 
     public StoredProcedureArgumentInfo(int aColumnIndex, String aColumnName, short aColumnType, short aDataType) throws IllegalStateException {
@@ -26,6 +28,7 @@ public class StoredProcedureArgumentInfo {
             case IN: theColumnTypeName = "IN"; break;
             case OUT: theColumnTypeName = "OUT"; break;
             case FUNCTION_RETURN: theColumnTypeName = "FUNCTION_RETURN"; break;
+            case FUNCTION_RESULT: theColumnTypeName = "RESULT"; break;
             default:
                 throw new IllegalStateException("Column type "+aColumnType+" is not supported for column '"+aColumnName+"'");
         }

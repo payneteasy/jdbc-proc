@@ -172,7 +172,15 @@
                 <version>5.1.6</version>
                 <scope>test</scope>
             </dependency>
-            
+
+            <!-- postgreSQL driver -->
+            <dependency>
+                <groupId>postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>9.0-801.jdbc4</version>
+                <scope>test</scope>
+            </dependency>
+
 			<dependency>
 			    <groupId>mockobjects</groupId>
 			    <artifactId>mockobjects</artifactId>

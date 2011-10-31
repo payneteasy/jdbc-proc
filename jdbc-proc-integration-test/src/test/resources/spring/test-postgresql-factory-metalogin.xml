@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean id="daoMethodInfoFactory" class="com.googlecode.jdbcproc.daofactory.DaoMethodInfoFactory">
+        <property name="jdbcTemplate"         ref="jdbcTemplate" />
+        <property name="callableStatementGetStrategyFactory" value="#{ new com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementGetStrategyFactoryIndexImpl() }" />
+        <property name="callableStatementSetStrategyFactory" value="#{ new com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementSetStrategyFactoryIndexImpl() }" />
+        <property name="metaLoginInfoService" ref="metaLoginInfoService" />
+    </bean>
+
+
+
+</beans>

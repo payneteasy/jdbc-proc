@@ -49,8 +49,10 @@ public class CompanyDaoMetaLoginTest extends CompanyDaoTest {
   
   
     @Override protected String[] getConfigLocations() {
-      return new String[] {"/spring/test-mysql-datasource.xml"
-        , "/spring/test-dao-metalogin.xml"
+      return new String[] {
+                  getSpringConfig("datasource.xml")
+                , getSpringConfig("factory-metalogin.xml")
+              , "/spring/test-dao-metalogin.xml"
       };
     }
 

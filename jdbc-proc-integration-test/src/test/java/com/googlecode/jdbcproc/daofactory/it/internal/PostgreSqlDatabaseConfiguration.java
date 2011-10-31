@@ -1,31 +1,31 @@
 package com.googlecode.jdbcproc.daofactory.it.internal;
 
-public class MysqlDatabaseConfiguration implements IDatabaseConfiguration {
+public class PostgreSqlDatabaseConfiguration implements IDatabaseConfiguration {
+
     public String getDataSourceSpringConfigLocation() {
-        return "/spring/test-mysql-datasource.xml";
+        return "/spring/test-postgresql-datasource.xml";
     }
 
     public String getSpringSuffix() {
-        return "mysql";
+        return "postgresql";
     }
 
     public String getSqlDirectory() {
-        return "sql_mysql";
+        return "sql_postgresql";
     }
 
     public String[] createEnvironment() {
-        return null;
+        return new String[]{"PGPASSWORD=jdbcproc"};
     }
 
     public String[] createExecParameters(String aDatabaseName, String aFilePath) {
         return new String[]{
-                "mysql"
-                , "-u"
+                  "psql"
+                , "-U"
                 , "jdbcproc"
-                , "-pjdbcproc"
                 , aDatabaseName
-                , "-e"
-                , "source " + aFilePath
+                , "-f"
+                , aFilePath
         };
     }
 }

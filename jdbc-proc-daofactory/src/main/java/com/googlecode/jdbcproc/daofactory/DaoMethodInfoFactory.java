@@ -34,6 +34,7 @@ import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatement
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterServiceImpl;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.IStoredProcedureInfoManager;
+import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfoManagerInitOnStartup;
 
@@ -197,14 +198,16 @@ public class DaoMethodInfoFactory implements InitializingBean, DAOMethodInfo {
     sb.append("{ call ");
     sb.append(procedureInfo.getProcedureName());
     sb.append("(");
-    for (int i = 0; i < procedureInfo.getArgumentsCounts(); i++) {
-      if (i > 0) {
-        sb.append(", ? ");
-      } else {
-        sb.append(" ? ");
+
+      boolean firstPassed = false;
+      for (StoredProcedureArgumentInfo argumentInfo : procedureInfo.getArguments()) {
+          if(argumentInfo.isInputParameter() || argumentInfo.isOutputParameter()) {
+              sb.append(firstPassed ? ", ?" : " ?");
+              firstPassed = true;
+          }
       }
-    }
-    sb.append(") }");
+
+    sb.append(" ) }");
     return sb.toString();
   }
 

@@ -26,11 +26,6 @@
         <constructor-arg ref="dataSource" />
     </bean>
         
-    <bean id="daoMethodInfoFactory" class="com.googlecode.jdbcproc.daofactory.DaoMethodInfoFactory">
-      <property name="jdbcTemplate"         ref="jdbcTemplate" />
-      <property name="metaLoginInfoService" ref="metaLoginInfoService" />  
-    </bean>
-
     <!-- Abstract dao -->
     <bean id="abstractDao" abstract="true" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean">
         <property name="jdbcTemplate" ref="jdbcTemplate"/>

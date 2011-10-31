@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+      <property name="driverClassName" value="org.postgresql.Driver"/>
+      <property name="url"
+                value="jdbc:postgresql://localhost/jdbcprocdb?charSet=utf8"/>
+      <!--&amp;profileSQL=true-->
+      <property name="username" value="jdbcproc"/>
+      <property name="password" value="jdbcproc"/>
+      <property name="maxActive" value="-1"/>
+      <property name="maxIdle" value="10"/>
+      <property name="maxWait" value="10000"/>
+      <property name="validationQuery" value="select * from create_collections()"/>
+  </bean>
+
+
+</beans>

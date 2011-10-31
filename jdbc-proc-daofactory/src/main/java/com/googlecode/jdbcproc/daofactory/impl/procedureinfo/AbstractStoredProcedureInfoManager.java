@@ -101,6 +101,7 @@ public abstract class AbstractStoredProcedureInfoManager implements IStoredProce
         map.put("char"       , Types.VARCHAR);
         map.put("bigint"     , Types.BIGINT);
         map.put("int"        , Types.INTEGER);
+        map.put("integer"    , Types.INTEGER);
         map.put("smallint"   , Types.INTEGER);
         map.put("datetime"   , Types.TIMESTAMP);
         map.put("date"       , Types.DATE);

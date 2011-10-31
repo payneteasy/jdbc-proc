@@ -2,6 +2,7 @@ package com.googlecode.jdbcproc.daofactory.it;
 
 import com.googlecode.jdbcproc.daofactory.it.internal.IDatabaseConfiguration;
 import com.googlecode.jdbcproc.daofactory.it.internal.MysqlDatabaseConfiguration;
+import com.googlecode.jdbcproc.daofactory.it.internal.PostgreSqlDatabaseConfiguration;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,8 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         String dialect = System.getProperty("dialect", "mysql");
         if(dialect.equals("mysql")) {
             theDatabaseConfiguration = new MysqlDatabaseConfiguration();
+        } else if (dialect.equals("postgresql")) {
+            theDatabaseConfiguration = new PostgreSqlDatabaseConfiguration();
         } else {
             throw new IllegalStateException("dialect " + dialect + " not supported for test");
         }
@@ -83,10 +86,10 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
 
     
     private void executeMysql(String aDatabase, String aSqlFilePath) throws IOException, InterruptedException {
-        String sqlFile = "src/test/resources/sql_mysql/"+aSqlFilePath;
-        
+        String sqlFile = "src/test/resources/"+theDatabaseConfiguration.getSqlDirectory()+"/" + aSqlFilePath;
+
         LOG.debug("Loading {}...", sqlFile);
-        final Process process = Runtime.getRuntime().exec( theDatabaseConfiguration.createExecParameters(aDatabase, sqlFile));
+        final Process process = Runtime.getRuntime().exec( theDatabaseConfiguration.createExecParameters(aDatabase, sqlFile), theDatabaseConfiguration.createEnvironment());
 
         Thread t = new Thread(new Runnable() {
             public void run() {
@@ -137,15 +140,20 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
 
     protected String[] getConfigLocations() {
         return new String[]{
-                theDatabaseConfiguration.getDataSourceSpringConfigLocation()
+                  getSpringConfig("datasource.xml")
+                , getSpringConfig("factory-metalogin.xml")
                 , "/spring/test-dao-metalogin.xml"
         };
+    }
+
+    protected String getSpringConfig(String aXmlName) {
+        return "/spring/test-"+theDatabaseConfiguration.getSpringSuffix()+"-"+aXmlName;
     }
 
     public void setDataSource(DataSource aDataSource) {
         theDataSource = aDataSource;
     }
 
-    private final IDatabaseConfiguration theDatabaseConfiguration;
+    protected final IDatabaseConfiguration theDatabaseConfiguration;
     protected DataSource theDataSource;
 }

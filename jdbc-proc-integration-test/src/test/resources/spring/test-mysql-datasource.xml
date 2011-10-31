@@ -5,6 +5,11 @@
                            http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
+    <bean id="daoMethodInfoFactory" class="com.googlecode.jdbcproc.daofactory.DaoMethodInfoFactory">
+      <property name="jdbcTemplate"         ref="jdbcTemplate" />
+    </bean>
+
+
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url"

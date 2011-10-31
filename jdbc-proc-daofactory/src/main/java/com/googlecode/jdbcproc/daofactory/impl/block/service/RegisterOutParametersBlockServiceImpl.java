@@ -32,12 +32,10 @@ public class RegisterOutParametersBlockServiceImpl implements RegisterOutParamet
 
   public IRegisterOutParametersBlock create(StoredProcedureInfo procedureInfo) {
     LinkedList<IndexDataTypePair> list = new LinkedList<IndexDataTypePair>();
-    int index = 1;
     for (StoredProcedureArgumentInfo argumentInfo : procedureInfo.getArguments()) {
       if (argumentInfo.getColumnType() == StoredProcedureArgumentInfo.OUT) {
-        list.add(new IndexDataTypePair(index, argumentInfo.getColumnType()));
+        list.add(new IndexDataTypePair(argumentInfo.getStatementArgument().getParameterIndex(), argumentInfo.getDataType()));
       }
-      index++;
     }
     return list.size() > 0 ? new RegisterOutParametersBlockImpl(list) : null;
   }

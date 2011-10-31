@@ -62,6 +62,11 @@ public class ParameterConverterServiceImpl implements ParameterConverterService 
     putSetters(settersMap, new ParameterConverter_DECIMAL_langDouble());
     putSetters(settersMap, new ParameterConverter_DECIMAL_BigDecimal());
 
+    // NUMERIC
+    putSetters(settersMap, new ParameterConverter_NUMERIC_double());
+    putSetters(settersMap, new ParameterConverter_NUMERIC_langDouble());
+    putSetters(settersMap, new ParameterConverter_NUMERIC_BigDecimal());
+
     // VARCHAR, CHAR and LONGVARCHAR
     putSetters(settersMap, new ParameterConverter_CHAR_String());
     putSetters(settersMap, new ParameterConverter_VARCHAR_String());

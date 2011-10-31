@@ -12,7 +12,8 @@ import java.sql.SQLException;
 public class CallableStatementExecutorBlockExecute implements ICallableStatementExecutorBlock {
 
     public ResultSet execute(CallableStatement aStmt) throws SQLException {
-        return aStmt.executeQuery();
+        aStmt.execute();
+        return aStmt.getResultSet();
     }
 
 
