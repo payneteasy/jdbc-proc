@@ -28,46 +28,46 @@ public abstract class AbstractDatabaseTest extends TestCase {
 
   @Override public void runBare() throws Throwable {
     // drops and creates database
-    executeMysql("", "src/test/resources/sql/create_database.sql");
+    executeMysql("", "src/test/resources/sql_mysql/create_database.sql");
 
     // creates database schema
-    executeMysql("jdbcprocdb", "src/test/resources/sql/resultset_info.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/get_procedures_resultset.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/resultset_info.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/get_procedures_resultset.sql");
 
-    executeMysql("jdbcprocdb", "src/test/resources/sql/company.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/employee.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/certificate.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/ancestry.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/carabiner.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/dynamic_rope.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/harness.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/chalk_bag.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/create_company.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/create_company_secured.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/create_employee.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/get_employee_by_id.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/get_company_employees.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies_names.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies_names_secured.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/get_company_2x.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/get_ancestry_2x_multi_level_grouping.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/create_certificate.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/create_entity_with_list.sql");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/update_entity_with_list.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/company.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/employee.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/certificate.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/ancestry.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/verticality/carabiner.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/verticality/dynamic_rope.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/verticality/harness.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/verticality/chalk_bag.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/create_company.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/create_company_secured.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/create_employee.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/get_employee_by_id.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/get_company_employees.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/get_companies.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/get_companies_names.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/get_companies_names_secured.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/get_company_2x.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/get_ancestry_2x_multi_level_grouping.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/create_certificate.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/create_entity_with_list.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/update_entity_with_list.sql");
 
-    executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/create_collections.prc");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_carabiners.prc");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_harnesses.prc");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_dynamic_ropes.prc");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_verticality.prc");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/create_chalk_bag.prc");
-    executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/get_chalk_bags.prc");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/verticality/create_collections.prc");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/verticality/upload_carabiners.prc");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/verticality/upload_harnesses.prc");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/verticality/upload_dynamic_ropes.prc");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/verticality/upload_verticality.prc");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/verticality/create_chalk_bag.prc");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/verticality/get_chalk_bags.prc");
 
       // tx manager
-      executeMysql("jdbcprocdb", "src/test/resources/sql/tx_table.sql");
-      executeMysql("jdbcprocdb", "src/test/resources/sql/tx_table_test.sql");
-      executeMysql("jdbcprocdb", "src/test/resources/sql/tx_table_test_success.sql");
+      executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/tx_table.sql");
+      executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/tx_table_test.sql");
+      executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/tx_table_test_success.sql");
 
     
     super.runBare();

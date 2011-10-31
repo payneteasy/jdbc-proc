@@ -1,5 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.it;
 
+import com.googlecode.jdbcproc.daofactory.it.internal.IDatabaseConfiguration;
+import com.googlecode.jdbcproc.daofactory.it.internal.MysqlDatabaseConfiguration;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,52 +17,63 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
+    public DatabaseAwareTest() {
+
+        String dialect = System.getProperty("dialect", "mysql");
+        if(dialect.equals("mysql")) {
+            theDatabaseConfiguration = new MysqlDatabaseConfiguration();
+        } else {
+            throw new IllegalStateException("dialect " + dialect + " not supported for test");
+        }
+
+    }
+
     public void runBare() throws Throwable {
         // drops and creates database
-        executeMysql("", "src/test/resources/sql/create_database.sql");
+        executeMysql("", "create_database.sql");
 
         // creates database schema
-        executeMysql("jdbcprocdb", "src/test/resources/sql/resultset_info.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/get_procedures_resultset.sql");
+        executeMysql("jdbcprocdb", "resultset_info.sql");
+        executeMysql("jdbcprocdb", "get_procedures_resultset.sql");
         
-        executeMysql("jdbcprocdb", "src/test/resources/sql/company.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/employee.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/certificate.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/ancestry.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/carabiner.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/dynamic_rope.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/harness.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/chalk_bag.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/create_company.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/create_company_secured.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/create_employee.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/get_employee_by_id.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/get_company_employees.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies_names.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/get_companies_names_secured.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/get_company_2x.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/get_ancestry_2x_multi_level_grouping.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/create_certificate.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/create_entity_with_list.sql");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/update_entity_with_list.sql");
+        executeMysql("jdbcprocdb", "company.sql");
+        executeMysql("jdbcprocdb", "employee.sql");
+        executeMysql("jdbcprocdb", "certificate.sql");
+        executeMysql("jdbcprocdb", "ancestry.sql");
+        executeMysql("jdbcprocdb", "verticality/carabiner.sql");
+        executeMysql("jdbcprocdb", "verticality/dynamic_rope.sql");
+        executeMysql("jdbcprocdb", "verticality/harness.sql");
+        executeMysql("jdbcprocdb", "verticality/chalk_bag.sql");
+        executeMysql("jdbcprocdb", "create_company.sql");
+        executeMysql("jdbcprocdb", "create_company_secured.sql");
+        executeMysql("jdbcprocdb", "create_employee.sql");
+        executeMysql("jdbcprocdb", "get_employee_by_id.sql");
+        executeMysql("jdbcprocdb", "get_company_employees.sql");
+        executeMysql("jdbcprocdb", "get_companies.sql");
+        executeMysql("jdbcprocdb", "get_companies_names.sql");
+        executeMysql("jdbcprocdb", "get_companies_names_secured.sql");
+        executeMysql("jdbcprocdb", "get_company_2x.sql");
+        executeMysql("jdbcprocdb", "get_ancestry_2x_multi_level_grouping.sql");
+        executeMysql("jdbcprocdb", "create_certificate.sql");
+        executeMysql("jdbcprocdb", "create_entity_with_list.sql");
+        executeMysql("jdbcprocdb", "update_entity_with_list.sql");
 
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/create_collections.prc");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_carabiners.prc");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_carabiners_2.prc");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_carabiners_with_meta_login_info.prc");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_dynamic_ropes.prc");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_dynamic_ropes_with_meta_login_info.prc");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_verticality.prc");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_verticality_with_meta_login_info.prc");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/upload_harnesses.prc");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/create_chalk_bag.prc");
-        executeMysql("jdbcprocdb", "src/test/resources/sql/verticality/get_chalk_bags.prc");
+        executeMysql("jdbcprocdb", "verticality/create_collections.prc");
+        executeMysql("jdbcprocdb", "verticality/upload_carabiners.prc");
+        executeMysql("jdbcprocdb", "verticality/upload_carabiners_2.prc");
+        executeMysql("jdbcprocdb", "verticality/upload_carabiners_with_meta_login_info.prc");
+        executeMysql("jdbcprocdb", "verticality/upload_dynamic_ropes.prc");
+        executeMysql("jdbcprocdb", "verticality/upload_dynamic_ropes_with_meta_login_info.prc");
+        executeMysql("jdbcprocdb", "verticality/upload_verticality.prc");
+        executeMysql("jdbcprocdb", "verticality/upload_verticality_with_meta_login_info.prc");
+        executeMysql("jdbcprocdb", "verticality/upload_harnesses.prc");
+        executeMysql("jdbcprocdb", "verticality/create_chalk_bag.prc");
+        executeMysql("jdbcprocdb", "verticality/get_chalk_bags.prc");
 
           // tx manager
-          executeMysql("jdbcprocdb", "src/test/resources/sql/tx_table.sql");
-          executeMysql("jdbcprocdb", "src/test/resources/sql/tx_table_test.sql");
-          executeMysql("jdbcprocdb", "src/test/resources/sql/tx_table_test_success.sql");
+          executeMysql("jdbcprocdb", "tx_table.sql");
+          executeMysql("jdbcprocdb", "tx_table_test.sql");
+          executeMysql("jdbcprocdb", "tx_table_test_success.sql");
 
         super.runBare();
     }
@@ -68,19 +81,12 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
     protected void onSetUp() throws Exception {
     }
 
-    private void executeMysql(String aDatabase, String aSqlFile) throws IOException, InterruptedException {
-        LOG.debug("Loading {}...", aSqlFile);
-        final Process process = Runtime.getRuntime().exec(
-                new String[]{
-                        "mysql"
-                        , "-u"
-                        , "jdbcproc"
-                        , "-pjdbcproc"
-                        , aDatabase
-                        , "-e"
-                        , "source " + aSqlFile
-                }
-        );
+    
+    private void executeMysql(String aDatabase, String aSqlFilePath) throws IOException, InterruptedException {
+        String sqlFile = "src/test/resources/sql_mysql/"+aSqlFilePath;
+        
+        LOG.debug("Loading {}...", sqlFile);
+        final Process process = Runtime.getRuntime().exec( theDatabaseConfiguration.createExecParameters(aDatabase, sqlFile));
 
         Thread t = new Thread(new Runnable() {
             public void run() {
@@ -131,7 +137,7 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
 
     protected String[] getConfigLocations() {
         return new String[]{
-                "/spring/test-datasource.xml"
+                theDatabaseConfiguration.getDataSourceSpringConfigLocation()
                 , "/spring/test-dao-metalogin.xml"
         };
     }
@@ -140,5 +146,6 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         theDataSource = aDataSource;
     }
 
+    private final IDatabaseConfiguration theDatabaseConfiguration;
     protected DataSource theDataSource;
 }
