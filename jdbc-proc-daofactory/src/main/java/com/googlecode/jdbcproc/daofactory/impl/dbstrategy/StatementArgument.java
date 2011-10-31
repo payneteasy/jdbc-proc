@@ -3,21 +3,21 @@ package com.googlecode.jdbcproc.daofactory.impl.dbstrategy;
 /**
  * For db strategy
  */
-public class StrategyParameter {
+public class StatementArgument {
 
-    public StrategyParameter(String aParameterName, String aParameterIndex) {
+    public StatementArgument(String aParameterName, int aParameterIndex) {
         theParameterName = aParameterName;
         theParameterIndex = aParameterIndex;
     }
 
     /** Parameter index */
-    public String getParameterIndex() { return theParameterIndex; }
-
-    /** Parameter index */
-    private final String theParameterIndex;
+    public int getParameterIndex() { return theParameterIndex; }
 
     /** parameter name */
     public String getParameterName() { return theParameterName; }
+
+    /** Parameter index */
+    private final int theParameterIndex;
     /** parameter name */
     private final String theParameterName;
 }

@@ -70,8 +70,8 @@ public class ParametersSetterBlockServiceImplTest extends TestCase {
         assertSame(createAllListMarker, blocks);
         
         procedureInfo = new StoredProcedureInfo("save_list_not_entity");
-        procedureInfo.addColumn(new StoredProcedureArgumentInfo("i_a", (short) StoredProcedureArgumentInfo.IN, (short) Types.INTEGER));
-        procedureInfo.addColumn(new StoredProcedureArgumentInfo("i_b", (short) StoredProcedureArgumentInfo.IN, (short) Types.VARCHAR));
+        procedureInfo.addColumn("i_a", (short) StoredProcedureArgumentInfo.IN, (short) Types.INTEGER);
+        procedureInfo.addColumn("i_b", (short) StoredProcedureArgumentInfo.IN, (short) Types.VARCHAR);
         try {
             blocks = setter.create(null, nullConverterService,
                     IMappingTestDao.class.getMethod("saveListNotEntity", new Class[]{List.class}),
@@ -83,7 +83,7 @@ public class ParametersSetterBlockServiceImplTest extends TestCase {
     }
 
     /**
-     * @see http://code.google.com/p/jdbc-proc/issues/detail?id=15
+     * see http://code.google.com/p/jdbc-proc/issues/detail?id=15
      */
     public void testSingleListParameterAndMetaLoginInfo() throws SecurityException, NoSuchMethodException {
         final List<IParametersSetterBlock> createListAndArgumentsWithMetaLoginInfo = new ArrayList<IParametersSetterBlock>();
@@ -101,8 +101,8 @@ public class ParametersSetterBlockServiceImplTest extends TestCase {
         List<IParametersSetterBlock> blocks;
         
         procedureInfo = new StoredProcedureInfo("call_with_list");
-        procedureInfo.addColumn(new StoredProcedureArgumentInfo("i_username", (short) StoredProcedureArgumentInfo.IN, (short) Types.VARCHAR));
-        procedureInfo.addColumn(new StoredProcedureArgumentInfo("i_role", (short) StoredProcedureArgumentInfo.IN, (short) Types.VARCHAR));
+        procedureInfo.addColumn("i_username", (short) StoredProcedureArgumentInfo.IN, (short) Types.VARCHAR);
+        procedureInfo.addColumn("i_role", (short) StoredProcedureArgumentInfo.IN, (short) Types.VARCHAR);
         blocks = setter.create(null, nullConverterService,
                 IMappingTestDao.class.getMethod("callWithList", new Class[]{List.class}),
                 procedureInfo, metaLoginInfoService);

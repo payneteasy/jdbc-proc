@@ -1,6 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.impl.procedureinfo;
 
 import com.googlecode.jdbcproc.daofactory.impl.TypeNameUtil;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
 /**
  * Stored procedure column info
@@ -12,10 +13,12 @@ public class StoredProcedureArgumentInfo {
     private static final int FUNCTION_RETURN = 5;
 
 
-    public StoredProcedureArgumentInfo(String aColumnName, short aColumnType, short aDataType) throws IllegalStateException {
+    public StoredProcedureArgumentInfo(int aColumnIndex, String aColumnName, short aColumnType, short aDataType) throws IllegalStateException {
         theColumnName = aColumnName;
         theColumnType = aColumnType;
         theDataType = aDataType;
+
+        theStatementArgument = new StatementArgument(aColumnName, aColumnIndex);
 
         theDataTypeName = TypeNameUtil.getName(theDataType);
 
@@ -84,6 +87,8 @@ public class StoredProcedureArgumentInfo {
         return theColumnType == FUNCTION_RETURN;
     }
 
+    public StatementArgument getStatementArgument() { return theStatementArgument; }
+
     public String toString() {
         return "StoredProcedureArgumentInfo{" +
                 "columnName='" + theColumnName + '\'' +
@@ -92,6 +97,7 @@ public class StoredProcedureArgumentInfo {
                 '}';
     }
 
+    private final StatementArgument theStatementArgument;
     private final String theColumnName;
     private final short  theColumnType ;
     private final short  theDataType;

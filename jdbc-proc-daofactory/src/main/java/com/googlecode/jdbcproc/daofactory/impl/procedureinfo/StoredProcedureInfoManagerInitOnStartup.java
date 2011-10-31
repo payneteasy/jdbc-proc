@@ -85,7 +85,7 @@ public class StoredProcedureInfoManagerInitOnStartup extends AbstractStoredProce
 
                 // adds column info
                 try {
-                    procedureInfo.addColumn(new StoredProcedureArgumentInfo(columnName, columnType, dataType));
+                    procedureInfo.addColumn(columnName, columnType, dataType);
                 } catch (Exception e) {
                     throw new IllegalStateException("Cannot create column info for procedure "+procedureName+": "+e.getMessage(), e);
                 }

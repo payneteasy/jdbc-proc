@@ -11,13 +11,16 @@ public class StoredProcedureInfo {
         theName = aName;
     }
 
-    public void addColumn(StoredProcedureArgumentInfo aArgumentInfo) {
-        theArguments.add(aArgumentInfo);
-        String name = aArgumentInfo.getColumnName();
+    public void addColumn(String aColumnName, short aColumnType, short aDataType) {
+        StoredProcedureArgumentInfo argumentInfo = new StoredProcedureArgumentInfo(theCurrentColumnIndex, aColumnName, aColumnType, aDataType);
+        theCurrentColumnIndex++;
+
+        theArguments.add(argumentInfo);
+        String name = argumentInfo.getColumnName();
         if(name.startsWith("i_") || name.startsWith("o_")) {
             name = name.substring(2);
         }
-        theArgumentsByNameMap.put(name, aArgumentInfo);
+        theArgumentsByNameMap.put(name, argumentInfo);
     }
 
     public void addResultSetColumn(ResultSetColumnInfo aColumnInfo) {
@@ -90,4 +93,5 @@ public class StoredProcedureInfo {
     private final List<ResultSetColumnInfo> theResultSetColumnInfos = new LinkedList<ResultSetColumnInfo>();
     private final Map<String, StoredProcedureArgumentInfo> theArgumentsByNameMap = new HashMap<String, StoredProcedureArgumentInfo>();
     private final Map<String, ResultSetColumnInfo> theRsColumnByNameMap = new HashMap<String, ResultSetColumnInfo>();
+    private int theCurrentColumnIndex = 1;
 }
