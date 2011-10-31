@@ -15,14 +15,6 @@ public class ParameterConverter_REAL_double
   public static final Type<ParameterConverter_REAL_double> TYPE 
       = new Type<ParameterConverter_REAL_double>(Types.REAL, double.class);
   
-    public void setValue(Double aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        if(aValue!=null) {
-            aStmt.setDouble(aIndex, aValue);
-        } else {
-            aStmt.setNull(aIndex, Types.REAL);
-        }
-    }
-
     public void setValue(Double aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
             aStmt.setDouble(aArgument, aValue);

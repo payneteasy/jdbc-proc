@@ -15,10 +15,6 @@ public class ParameterConverter_CHAR_String
   public static final Type<ParameterConverter_CHAR_String> TYPE
       = new Type<ParameterConverter_CHAR_String>(Types.CHAR, String.class);
 
-  public void setValue(String value, PreparedStatement stmt, int index) throws SQLException {
-    stmt.setString(index, value);
-  }
-
   public void setValue(String value, ICallableStatementSetStrategy stmt, StatementArgument parameterName)
       throws SQLException {
     stmt.setString(parameterName, value);

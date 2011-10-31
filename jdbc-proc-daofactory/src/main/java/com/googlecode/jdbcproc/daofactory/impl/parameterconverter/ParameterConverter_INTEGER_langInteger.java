@@ -15,14 +15,6 @@ public class ParameterConverter_INTEGER_langInteger
   public static final Type<ParameterConverter_INTEGER_langInteger> TYPE 
       = new Type<ParameterConverter_INTEGER_langInteger>(Types.INTEGER, Integer.class);
   
-    public void setValue(Integer aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        if(aValue!=null) {
-            aStmt.setInt(aIndex, aValue);
-        } else {
-            aStmt.setNull(aIndex, Types.INTEGER);
-        }
-    }
-
     public void setValue(Integer aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
             aStmt.setInt(aArgument, aValue);

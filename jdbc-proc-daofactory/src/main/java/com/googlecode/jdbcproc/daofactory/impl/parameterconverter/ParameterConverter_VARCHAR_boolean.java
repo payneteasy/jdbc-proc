@@ -15,11 +15,6 @@ public class ParameterConverter_VARCHAR_boolean
   public static final Type<ParameterConverter_VARCHAR_boolean> TYPE
       = new Type<ParameterConverter_VARCHAR_boolean>(Types.VARCHAR, boolean.class);
 
-  public void setValue(Boolean value, PreparedStatement stmt, int index) throws SQLException {
-    String strValue = value != null && value ? "Y" : "N";
-    stmt.setString(index, strValue);
-  }
-
   public void setValue(Boolean value, ICallableStatementSetStrategy stmt, StatementArgument parameterName)
       throws SQLException {
     String strValue = value != null && value ? "Y" : "N";

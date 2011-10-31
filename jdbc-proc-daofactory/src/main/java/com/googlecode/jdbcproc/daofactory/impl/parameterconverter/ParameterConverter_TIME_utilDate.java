@@ -34,15 +34,6 @@ public class ParameterConverter_TIME_utilDate
   public static final Type<ParameterConverter_TIME_utilDate> TYPE 
       = new Type<ParameterConverter_TIME_utilDate>(Types.TIME, java.util.Date.class);
   
-    public void setValue(Date value, PreparedStatement stmt, int index) throws SQLException {
-        if(value!=null) {
-            java.sql.Time time = new Time(value.getTime());
-            stmt.setTime(index, time);
-        } else {
-            stmt.setNull(index, Types.TIME);
-        }
-    }
-
     public void setValue(Date value, ICallableStatementSetStrategy stmt, StatementArgument parameterName)
       throws SQLException {
         if(value!=null) {

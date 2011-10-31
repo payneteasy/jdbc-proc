@@ -474,7 +474,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             LOG.debug("Getting metadata for table {}...", tableName);
         }
         Map<String, Integer> types = createTypes(jdbcTemplate, tableName);
-        List<IEntityArgumentGetter> getters = createListGetters("", entityClass, types, converterService, aStoredProcedureInfo);
+        List<IEntityArgumentGetter> getters = createListGetters("", entityClass, types, converterService, 0 /* FROM FIRST PARAMETER */);
         String insertQuery = createListInsertQuery(getters, tableName);
         if (LOG.isDebugEnabled()) {
             LOG.debug("insert query: {}", insertQuery);
@@ -509,7 +509,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             , Class entityClass
             , Map<String, Integer> types
             , ParameterConverterService converterService
-            , StoredProcedureInfo aProcedureInfo
+            , int aParameterIndex
     ) {
         List<IEntityArgumentGetter> getters = new LinkedList<IEntityArgumentGetter>();
         for (Method method : entityClass.getMethods()) {
@@ -522,12 +522,12 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
                 String columnName = columnPrefix + column.name();
 
                 Integer dataType = types.get(columnName);
-                Assert.notNull(dataType, "No information about column " + columnName + " in method " + method);
+                Assert.notNull(dataType, "No information about cPreparedSolumn " + columnName + " in method " + method);
 
                 IParameterConverter paramConverter = converterService.getConverter(dataType, method.getReturnType());
 
-
-                getters.add(new EntityArgumentGetter(method, paramConverter, getArgument(aProcedureInfo, columnName)));
+                aParameterIndex++;
+                getters.add(new EntityArgumentGetter(method, paramConverter, new StatementArgument(columnName, aParameterIndex)));
 
             } else if (method.isAnnotationPresent(OneToOne.class) || method.isAnnotationPresent(ManyToOne.class)) {
                 Class oneToOneClass = method.getReturnType();
@@ -539,7 +539,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
                     String tableName = joinColumn.table();
 
                     //
-                    List<IEntityArgumentGetter> oneToOneClassGetters = createListGetters(tableName + "_", oneToOneClass, types, converterService, aProcedureInfo);
+                    List<IEntityArgumentGetter> oneToOneClassGetters = createListGetters(tableName + "_", oneToOneClass, types, converterService, aParameterIndex);
                     for (IEntityArgumentGetter oneToOneClassGetter : oneToOneClassGetters) {
                         EntityArgumentGetterOneToOne oneToOneConverter = new EntityArgumentGetterOneToOne(method, oneToOneClassGetter);
                         getters.add(oneToOneConverter);

@@ -15,11 +15,6 @@ public class ParameterConverter_INTEGER_boolean
   public static final Type<ParameterConverter_INTEGER_boolean> TYPE 
       = new Type<ParameterConverter_INTEGER_boolean>(Types.INTEGER, boolean.class);
   
-    public void setValue(Boolean aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        int intValue = aValue!=null && aValue ? 1 : 0;
-        aStmt.setInt(aIndex, intValue);
-    }
-
     public void setValue(Boolean aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         int intValue = aValue!=null && aValue ? 1 : 0;
         aStmt.setInt(aArgument, intValue);

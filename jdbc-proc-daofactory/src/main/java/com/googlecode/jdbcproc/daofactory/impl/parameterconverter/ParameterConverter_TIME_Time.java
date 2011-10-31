@@ -33,15 +33,6 @@ public class ParameterConverter_TIME_Time
   public static final Type<ParameterConverter_TIME_Time> TYPE 
       = new Type<ParameterConverter_TIME_Time>(Types.TIME, Time.class);
   
-    public void setValue(Time value, PreparedStatement stmt, int index) throws
-      SQLException {
-        if(value!=null) {
-            stmt.setTime(index, value);
-        } else {
-            stmt.setNull(index, Types.TIME);
-        }
-    }
-
     public void setValue(Time value, ICallableStatementSetStrategy stmt, StatementArgument parameterName)
       throws SQLException {
         if(value!=null) {

@@ -15,14 +15,6 @@ public class ParameterConverter_BIGINT_long
   public static final Type<ParameterConverter_BIGINT_long> TYPE 
       = new Type<ParameterConverter_BIGINT_long>(Types.BIGINT, long.class);
   
-    public void setValue(Long aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        if(aValue!=null) {
-            aStmt.setLong(aIndex, aValue);
-        } else {
-            aStmt.setNull(aIndex, Types.BIGINT);
-        }
-    }
-
     public void setValue(Long aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
             aStmt.setLong(aArgument, aValue);

@@ -15,14 +15,6 @@ public class ParameterConverter_VARCHAR_langBoolean
   public static final Type<ParameterConverter_VARCHAR_langBoolean> TYPE
       = new Type<ParameterConverter_VARCHAR_langBoolean>(Types.VARCHAR, Boolean.class);
 
-    public void setValue(Boolean aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        if( aValue != null ) {
-            aStmt.setString(aIndex, aValue ? "Y" : "N");
-        } else {
-            aStmt.setString(aIndex, null);
-        }
-    }
-
     public void setValue(Boolean aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if( aValue != null ) {
             aStmt.setString(aArgument, aValue ? "Y" : "N");

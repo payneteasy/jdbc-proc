@@ -15,10 +15,6 @@ public class ParameterConverter_LONGVARBINARY_byteArray
   public static final Type<ParameterConverter_LONGVARBINARY_byteArray> TYPE 
       = new Type<ParameterConverter_LONGVARBINARY_byteArray>(Types.LONGVARBINARY, byte[].class);
   
-    public void setValue(byte[] aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        aStmt.setBytes(aIndex, aValue);
-    }
-
     public void setValue(byte[] aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         aStmt.setBytes(aArgument, aValue);
     }

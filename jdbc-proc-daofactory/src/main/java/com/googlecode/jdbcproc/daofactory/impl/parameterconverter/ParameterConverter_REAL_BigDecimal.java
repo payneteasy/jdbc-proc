@@ -16,14 +16,6 @@ public class ParameterConverter_REAL_BigDecimal
   public static final Type<ParameterConverter_REAL_BigDecimal> TYPE 
       = new Type<ParameterConverter_REAL_BigDecimal>(Types.REAL, BigDecimal.class);
   
-    public void setValue(BigDecimal aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        if(aValue!=null) {
-            aStmt.setBigDecimal(aIndex, aValue);
-        } else {
-            aStmt.setNull(aIndex, Types.REAL);
-        }
-    }
-
     public void setValue(BigDecimal aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
             aStmt.setBigDecimal(aArgument, aValue);

@@ -67,15 +67,6 @@ public interface IParameterConverter<T extends IParameterConverter, V> {
     void setValue(V aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException ;
 
     /**
-     * Sets parameter to statement
-     * @param aValue         value
-     * @param aStmt          statement
-     * @param aIndex         parameter index
-     * @throws SQLException  on error
-     */
-    void setValue(V aValue, PreparedStatement aStmt, int aIndex) throws SQLException ;
-
-    /**
      * Returns output parameter, converted to disired java type
      * @param aStmt          callable statement
      * @param aStatementArgument parameter name

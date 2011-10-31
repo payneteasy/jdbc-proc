@@ -15,14 +15,6 @@ public class ParameterConverter_TIMESTAMP_Timestamp
   public static final Type<ParameterConverter_TIMESTAMP_Timestamp> TYPE 
       = new Type<ParameterConverter_TIMESTAMP_Timestamp>(Types.TIMESTAMP, Timestamp.class);
   
-    public void setValue(Timestamp aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        if(aValue!=null) {
-            aStmt.setTimestamp(aIndex, aValue);
-        } else {
-            aStmt.setNull(aIndex, Types.TIMESTAMP);
-        }
-    }
-
     public void setValue(Timestamp aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
             aStmt.setTimestamp(aArgument, aValue);

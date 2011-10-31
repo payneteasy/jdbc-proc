@@ -15,9 +15,12 @@ import java.lang.reflect.InvocationTargetException;
  * To change this template use File | Settings | File Templates.
  */
 public interface IEntityArgumentGetter {
+
     void setParameter(Object aEntity, ICallableStatementSetStrategy aStmt) throws InvocationTargetException, IllegalAccessException, SQLException;
 
+    /**
+     * for Collection insert query
+     * @return  column name in tmp table
+     */
     String getColumnNameForInsertQuery();
-
-    void setParameterByIndex(Object aEntity, PreparedStatement aStmt, int aIndex) throws InvocationTargetException, IllegalAccessException, SQLException;
 }

@@ -15,14 +15,6 @@ public class ParameterConverter_DATE_sqlDate
   public static final Type<ParameterConverter_DATE_sqlDate> TYPE 
       = new Type<ParameterConverter_DATE_sqlDate>(Types.DATE, Date.class);
   
-    public void setValue(Date aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        if(aValue!=null) {
-            aStmt.setDate(aIndex, aValue);
-        } else {
-            aStmt.setNull(aIndex, Types.DATE);
-        }
-    }
-
     public void setValue(Date aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
             aStmt.setDate(aArgument, aValue);

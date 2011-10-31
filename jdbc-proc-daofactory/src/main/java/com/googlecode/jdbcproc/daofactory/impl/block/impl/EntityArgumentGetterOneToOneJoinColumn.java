@@ -40,12 +40,6 @@ public class EntityArgumentGetterOneToOneJoinColumn extends EntityArgumentGetter
         theParameterConverter.setValue(id, aStmt, theStatementArgument);
     }
 
-    public void setParameterByIndex(Object aEntity, PreparedStatement aStmt, int aIndex) throws InvocationTargetException, IllegalAccessException, SQLException {
-        Object oneToOneObject = theMethod.invoke(aEntity);
-        Long   id = (Long) (oneToOneObject!=null ? theIdMethod.invoke(oneToOneObject) : null);
-        theParameterConverter.setValue(id, aStmt, aIndex);
-    }
-
     public String toString() {
         return "EntityArgumentGetterOneToOneJoinColumn{" +
                 "theIdMethod=" + theIdMethod +

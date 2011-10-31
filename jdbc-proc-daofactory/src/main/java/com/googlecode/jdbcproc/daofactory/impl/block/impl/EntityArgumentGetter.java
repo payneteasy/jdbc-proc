@@ -27,15 +27,10 @@ public class EntityArgumentGetter implements IEntityArgumentGetter {
     }
 
     public String getColumnNameForInsertQuery() {
-        // todo insert column name
-        throw new UnsupportedOperationException("insert column name");
+        return theStatementArgument.getName();
+//        todo insert column name
     }
     
-    public void setParameterByIndex(Object aEntity, PreparedStatement aStmt, int aIndex) throws InvocationTargetException, IllegalAccessException, SQLException {
-        Object value = theMethod.invoke(aEntity);
-        theParameterConverter.setValue(value, aStmt, aIndex);
-    }
-
     public String toString() {
         return "IEntityArgumentGetter{" +
                 "theMethod=" + theMethod +

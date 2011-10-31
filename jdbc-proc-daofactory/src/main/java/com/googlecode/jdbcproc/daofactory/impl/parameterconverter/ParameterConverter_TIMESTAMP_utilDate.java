@@ -16,15 +16,6 @@ public class ParameterConverter_TIMESTAMP_utilDate
   public static final Type<ParameterConverter_TIMESTAMP_utilDate> TYPE 
       = new Type<ParameterConverter_TIMESTAMP_utilDate>(Types.TIMESTAMP, java.util.Date.class);
   
-    public void setValue(Date aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        if(aValue!=null) {
-            java.sql.Timestamp timestamp = new Timestamp(aValue.getTime());
-            aStmt.setTimestamp(aIndex, timestamp);
-        } else {
-            aStmt.setNull(aIndex, Types.TIMESTAMP);
-        }
-    }
-
     public void setValue(Date aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
             java.sql.Timestamp timestamp = new Timestamp(aValue.getTime());

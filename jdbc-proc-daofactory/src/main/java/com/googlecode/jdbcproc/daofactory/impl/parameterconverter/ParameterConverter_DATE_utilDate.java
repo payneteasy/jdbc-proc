@@ -15,15 +15,6 @@ public class ParameterConverter_DATE_utilDate
   public static final Type<ParameterConverter_DATE_utilDate> TYPE 
       = new Type<ParameterConverter_DATE_utilDate>(Types.DATE, java.util.Date.class);
   
-    public void setValue(java.util.Date aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        if(aValue!=null) {
-            java.sql.Date sqlDate = new java.sql.Date(aValue.getTime());
-            aStmt.setDate(aIndex, sqlDate);
-        } else {
-            aStmt.setNull(aIndex, Types.DATE);
-        }
-    }
-
     public void setValue(java.util.Date aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
             java.sql.Date sqlDate = new java.sql.Date(aValue.getTime());

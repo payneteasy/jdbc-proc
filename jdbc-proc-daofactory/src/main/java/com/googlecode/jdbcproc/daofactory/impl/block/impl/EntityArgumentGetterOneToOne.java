@@ -39,11 +39,6 @@ public class EntityArgumentGetterOneToOne implements IEntityArgumentGetter {
         return theEntityArgumentGetter.getColumnNameForInsertQuery();
     }
 
-    public void setParameterByIndex(Object aEntity, PreparedStatement aStmt, int aIndex) throws InvocationTargetException, IllegalAccessException, SQLException {
-        Object oneToOneEntity = getOneToOneEntity(aEntity);
-        theEntityArgumentGetter.setParameterByIndex(oneToOneEntity, aStmt, aIndex);
-    }
-
     private Method theOneToOneEntityMethodGetter;
     private IEntityArgumentGetter theEntityArgumentGetter;
 }

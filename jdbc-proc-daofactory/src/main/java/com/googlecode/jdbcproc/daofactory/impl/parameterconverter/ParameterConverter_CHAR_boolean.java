@@ -15,11 +15,6 @@ public class ParameterConverter_CHAR_boolean
   public static final Type<ParameterConverter_CHAR_boolean> TYPE 
       = new Type<ParameterConverter_CHAR_boolean>(Types.CHAR, boolean.class);
   
-    public void setValue(Boolean aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        String strValue = aValue!=null && aValue ? "Y" : "N";
-        aStmt.setString(aIndex, strValue);
-    }
-
     public void setValue(Boolean aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         String strValue = aValue!=null && aValue ? "Y" : "N";
         aStmt.setString(aArgument, strValue);

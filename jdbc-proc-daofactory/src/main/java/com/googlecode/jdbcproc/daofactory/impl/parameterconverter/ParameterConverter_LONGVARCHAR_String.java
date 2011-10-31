@@ -15,10 +15,6 @@ public class ParameterConverter_LONGVARCHAR_String
   public static final Type<ParameterConverter_LONGVARCHAR_String> TYPE 
       = new Type<ParameterConverter_LONGVARCHAR_String>(Types.LONGVARCHAR, String.class);
 
-    public void setValue(String aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        aStmt.setString(aIndex, aValue);
-    }
-
     public void setValue(String aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         aStmt.setString(aArgument, aValue);
     }

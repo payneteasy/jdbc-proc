@@ -16,10 +16,6 @@ public class ParameterConverter_DECIMAL_BigDecimal
   public static final Type<ParameterConverter_DECIMAL_BigDecimal> TYPE 
       = new Type<ParameterConverter_DECIMAL_BigDecimal>(Types.DECIMAL, BigDecimal.class);
   
-    public void setValue(BigDecimal aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        aStmt.setBigDecimal(aIndex, aValue);
-    }
-
     public void setValue(BigDecimal aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         aStmt.setBigDecimal(aArgument, aValue);
     }

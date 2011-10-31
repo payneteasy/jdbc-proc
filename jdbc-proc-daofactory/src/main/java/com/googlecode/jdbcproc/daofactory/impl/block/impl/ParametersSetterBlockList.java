@@ -2,6 +2,8 @@ package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
 
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.CallableStatementSetStrategyIndexImpl;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.CallableStatementSetStrategyNameImpl;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
@@ -44,12 +46,13 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
             
             for (Object entity : collection) {
                 PreparedStatement stmt = con.prepareStatement(theInsertQuery);
+                ICallableStatementSetStrategy stmtStrategy = new CallableStatementSetStrategyIndexImpl(stmt);
                 try {
-                    int index = 0;
+                    //int index = 0;
                     for (IEntityArgumentGetter getter : theArgumentsGetters) {
                         try {
-                            index++;
-                            getter.setParameterByIndex(entity, stmt, index);
+                            //index++;
+                            getter.setParameter(entity, stmtStrategy);
                         } catch (Exception e) {
                             throw new IllegalStateException("Error setting "+getter+": "+e.getMessage(),e);
                         }

@@ -15,10 +15,6 @@ public class ParameterConverter_INTEGER_int
   public static final Type<ParameterConverter_INTEGER_int> TYPE 
       = new Type<ParameterConverter_INTEGER_int>(Types.INTEGER, int.class);
   
-    public void setValue(Integer aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        aStmt.setInt(aIndex, aValue);
-    }
-
     public void setValue(Integer aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         aStmt.setInt(aArgument, aValue);
     }

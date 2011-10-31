@@ -16,14 +16,6 @@ public class ParameterConverter_DECIMAL_langDouble
   public static final Type<ParameterConverter_DECIMAL_langDouble> TYPE 
       = new Type<ParameterConverter_DECIMAL_langDouble>(Types.DECIMAL, Double.class);  
   
-    public void setValue(Double aValue, PreparedStatement aStmt, int aIndex) throws SQLException {
-        if(aValue!=null) {
-            aStmt.setBigDecimal(aIndex, new BigDecimal(aValue));
-        } else {
-            aStmt.setBigDecimal(aIndex, null);
-        }
-    }
-
     public void setValue(Double aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
             aStmt.setBigDecimal(aArgument, new BigDecimal(aValue));
