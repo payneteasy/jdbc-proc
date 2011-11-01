@@ -97,6 +97,7 @@ public class StoredProcedureArgumentInfo {
                 "columnName='" + theColumnName + '\'' +
                 ", columnType=" + theColumnTypeName  +
                 ", dataType=" + theDataTypeName +
+                ", argumentIndex =" + theStatementArgument.getParameterIndex()+
                 '}';
     }
 

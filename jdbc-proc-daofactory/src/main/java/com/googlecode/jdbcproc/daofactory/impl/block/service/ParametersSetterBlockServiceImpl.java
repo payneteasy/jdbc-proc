@@ -234,11 +234,21 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             for (int i = numSkipArguments; i < procedureInfo.getArgumentsCounts(); i++) {
               StoredProcedureArgumentInfo argumentInfo = procedureInfo.getArguments().get(i);
               if (argumentInfo.isInputParameter()) {
-                IParameterConverter paramConverter = converterService
-                    .getConverter(argumentInfo.getDataType(),
-                        method.getParameterTypes()[nonListArgumentIndexes[index]]);
-                getters.add(new ArgumentGetter(paramConverter, argumentInfo.getStatementArgument()));
-                index++;
+
+                  IParameterConverter paramConverter;
+                  try {
+                      paramConverter = converterService.getConverter(
+                              argumentInfo.getDataType()
+                              , method.getParameterTypes()[nonListArgumentIndexes[index]]
+                      );
+
+                  } catch (IllegalArgumentException e) {
+                      throw new IllegalStateException("Can't find converter for "+argumentInfo+" and "+method.getParameterTypes()[nonListArgumentIndexes[index]], e  );
+                  }
+
+                  getters.add(new ArgumentGetter(paramConverter, argumentInfo.getStatementArgument()));
+
+                  index++;
               }
             }
             parametersSetterBlocks.add(new ParametersSetterBlockArguments(getters, nonListArgumentIndexes));

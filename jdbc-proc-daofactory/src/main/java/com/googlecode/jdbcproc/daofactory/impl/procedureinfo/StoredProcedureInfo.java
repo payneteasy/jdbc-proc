@@ -13,22 +13,22 @@ public class StoredProcedureInfo {
 
     public void addColumn(String aColumnName, short aColumnType, short aDataType) {
 
-        int columnIndex;
         if(aColumnType==StoredProcedureArgumentInfo.IN || aColumnType==StoredProcedureArgumentInfo.OUT) {
-            columnIndex = theCurrentColumnIndex;
+
+            StoredProcedureArgumentInfo argumentInfo = new StoredProcedureArgumentInfo(theCurrentColumnIndex, aColumnName, aColumnType, aDataType);
+
+            theArguments.add(argumentInfo);
+            String name = argumentInfo.getColumnName();
+            if(name.startsWith("i_") || name.startsWith("o_")) {
+                name = name.substring(2);
+            }
+            theArgumentsByNameMap.put(name, argumentInfo);
+
+            // increments for new column
             theCurrentColumnIndex++;
-        } else {
-            columnIndex = 0;
+
         }
 
-        StoredProcedureArgumentInfo argumentInfo = new StoredProcedureArgumentInfo(columnIndex, aColumnName, aColumnType, aDataType);
-
-        theArguments.add(argumentInfo);
-        String name = argumentInfo.getColumnName();
-        if(name.startsWith("i_") || name.startsWith("o_")) {
-            name = name.substring(2);
-        }
-        theArgumentsByNameMap.put(name, argumentInfo);
     }
 
     public void addResultSetColumn(ResultSetColumnInfo aColumnInfo) {
