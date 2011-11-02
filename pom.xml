@@ -18,8 +18,8 @@
     </modules>
 
     <scm>
-        <connection>scm:svn:http://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc</connection>
-        <developerConnection>scm:svn:https://jdbc-proc.googlecode.com/svn/trunk/jdbc-proc</developerConnection>
+        <connection>scm:git:https://code.google.com/p/jdbc-proc/</connection>
+        <developerConnection>scm:git:https://code.google.com/p/jdbc-proc/</developerConnection>
         <url>http://code.google.com/p/jdbc-proc/source/browse/</url>
     </scm>
 
