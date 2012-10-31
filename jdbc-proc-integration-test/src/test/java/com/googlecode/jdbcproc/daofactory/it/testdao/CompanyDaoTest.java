@@ -17,6 +17,12 @@ import com.googlecode.jdbcproc.daofactory.it.testdao.domain.EmployeeOnly;
  */
 public class CompanyDaoTest extends DatabaseAwareTest {
 
+    public void testCacheDuplicate() {
+        for(int i=0; i<10; i++) {
+            testCreateCompany();
+        }
+    }
+
     public void testCreateCompany() {
         Company company = new Company();
         company.setName("first");

@@ -8,6 +8,9 @@
     <bean id="daoMethodInfoFactory" class="com.googlecode.jdbcproc.daofactory.DaoMethodInfoFactory">
       <property name="jdbcTemplate"         ref="jdbcTemplate" />
       <property name="metaLoginInfoService" ref="metaLoginInfoService" />
+      <property name="callableStatementGetStrategyFactory" value="#{ new com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementGetStrategyFactoryIndexImpl() }" />
+      <property name="callableStatementSetStrategyFactory" value="#{ new com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementSetStrategyFactoryIndexImpl() }" />
+
     </bean>
 
 </beans>

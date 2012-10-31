@@ -17,3 +17,7 @@ GRANT ALL PRIVILEGES ON DATABASE jdbcproc TO jdbcproc WITH GRANT OPTION;
 ALTER DATABASE jdbcprocdb OWNER to jdbcproc;
 ALTER USER jdbcproc CREATEDB;
 
+
+// revoke select on mysql.proc from 'jdbcproc'@'localhost';
+// grant  select on mysql.proc to 'jdbcproc'@'localhost';
+// set global event_scheduler='off';

@@ -6,4 +6,5 @@ target/
 *.ipr
 *.iws
 *~
+/.idea
 

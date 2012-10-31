@@ -75,7 +75,7 @@ public class StoredProcedureInfoManagerOnDemand extends AbstractStoredProcedureI
                   aCatalog        // catalog
                 , null            // schema
                 , aProcedureName  // procedure name
-                , null            // all columns
+                , "%"              // all columns
         );
         try {
             while (rs.next()) {

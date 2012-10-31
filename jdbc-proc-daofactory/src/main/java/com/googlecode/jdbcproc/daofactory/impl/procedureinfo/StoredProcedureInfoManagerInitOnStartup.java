@@ -71,7 +71,7 @@ public class StoredProcedureInfoManagerInitOnStartup extends AbstractStoredProce
                   aCatalog        // catalog
                 , null            // schema
                 , "%"             // all procedures
-                , null            // all columns
+                , "%"             // all columns
         );
         try {
             while (rs.next()) {
