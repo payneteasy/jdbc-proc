@@ -4,11 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-import java.util.StringTokenizer;
 import java.sql.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * 
@@ -110,6 +110,17 @@ public abstract class AbstractStoredProcedureInfoManager implements IStoredProce
         map.put("mediumblob" , Types.LONGVARBINARY);
         map.put("longblob"   , Types.LONGVARBINARY);
         return map;
+    }
+
+    protected void commitAndCloseForFinally(Connection con) throws SQLException {
+        try {
+            con.commit();
+        } catch (SQLException e) {
+            // ignoring, just logging
+            LOG.error("Error while committing connection (before closing)", e);
+        } finally {
+            con.close();
+        }
     }
 
     private final Map<String, Integer> theNameTypeMap;
