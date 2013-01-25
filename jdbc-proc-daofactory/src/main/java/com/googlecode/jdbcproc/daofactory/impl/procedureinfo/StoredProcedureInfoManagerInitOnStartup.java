@@ -43,7 +43,7 @@ public class StoredProcedureInfoManagerInitOnStartup extends AbstractStoredProce
             }
             theProceduresMap = Collections.unmodifiableMap(map);
         } finally {
-            commitAndCloseForFinally(con);
+            commitIfNeededAndCloseForFinally(con);
         }
 
     }

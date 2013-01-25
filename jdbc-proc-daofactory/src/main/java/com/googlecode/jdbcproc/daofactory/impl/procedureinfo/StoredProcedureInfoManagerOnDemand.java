@@ -28,7 +28,7 @@ public class StoredProcedureInfoManagerOnDemand extends AbstractStoredProcedureI
             putResultSetColumnsInfo(map, con);
             theProceduresMap = Collections.unmodifiableMap(map);
         } finally {
-            commitAndCloseForFinally(con);
+            commitIfNeededAndCloseForFinally(con);
         }
     }
 
@@ -60,7 +60,7 @@ public class StoredProcedureInfoManagerOnDemand extends AbstractStoredProcedureI
 
                 return procedureInfo;
             } finally {
-                commitAndCloseForFinally(con);
+                commitIfNeededAndCloseForFinally(con);
             }
 
         } catch (SQLException e) {

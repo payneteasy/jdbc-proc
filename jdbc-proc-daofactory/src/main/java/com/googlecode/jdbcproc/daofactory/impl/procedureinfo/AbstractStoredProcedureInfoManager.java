@@ -112,9 +112,12 @@ public abstract class AbstractStoredProcedureInfoManager implements IStoredProce
         return map;
     }
 
-    protected void commitAndCloseForFinally(Connection con) throws SQLException {
+    protected void commitIfNeededAndCloseForFinally(Connection con) throws SQLException {
         try {
-            con.commit();
+            if (!con.getAutoCommit()) {
+                // only committing if autocommit=OFF as otherwise it's not needed and causes an exception
+                con.commit();
+            }
         } catch (SQLException e) {
             // ignoring, just logging
             LOG.error("Error while committing connection (before closing)", e);
