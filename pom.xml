@@ -4,7 +4,7 @@
 
     <artifactId>jdbc-proc</artifactId>
     <groupId>com.googlecode.jdbc-proc</groupId>
-    <version>1.1-5-SNAPSHOT</version>
+    <version>1.1-5</version>
 
     <name>jdbc-proc                              ${version}</name>
 
@@ -73,7 +73,7 @@
             <dependency>
                 <groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
                 <artifactId>jdbc-proc-daofactory</artifactId>
-                <version>1.1-5-SNAPSHOT</version>
+                <version>1.1-5</version>
             </dependency>
 
             <!-- SPRING -->
