@@ -11,7 +11,7 @@ create procedure update_entity_with_list(
     declare v_count int(10);
 
     select count(*) from list_elements into v_count;
-    if v_count <> 1 then
+    if v_count <> 2 then
         call raise_application_error();
     end if;
   end

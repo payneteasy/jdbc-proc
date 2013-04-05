@@ -6,7 +6,7 @@ import com.googlecode.jdbcproc.daofactory.it.testdao.domain.lists.EntityWithList
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.lists.ListElement;
 import junit.framework.Assert;
 
-import java.util.Collections;
+import java.util.Arrays;
 
 /**
  *
@@ -25,7 +25,7 @@ public class ListsDaoTest extends DatabaseAwareTest {
         ListElement elem = new ListElement();
         elem.setName("name");
         elem.setValue("value");
-        listsDao.createEntityWithList(entity, Collections.singletonList(elem));
+        listsDao.createEntityWithList(entity, Arrays.asList(elem, elem));
 
         Assert.assertNotNull(entity.getId());
         Assert.assertEquals(999, (long) entity.getId());
@@ -38,7 +38,7 @@ public class ListsDaoTest extends DatabaseAwareTest {
         ListElement elem = new ListElement();
         elem.setName("name");
         elem.setValue("value");
-        listsDao.updateEntityWithList(entity, Collections.singletonList(elem));
+        listsDao.updateEntityWithList(entity, Arrays.asList(elem, elem));
 
         Assert.assertNotNull(entity.getId());
         Assert.assertEquals(999, (long) entity.getId());

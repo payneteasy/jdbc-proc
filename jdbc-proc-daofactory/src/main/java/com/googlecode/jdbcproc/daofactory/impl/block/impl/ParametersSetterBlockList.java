@@ -22,10 +22,10 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
     private final Logger LOG = LoggerFactory.getLogger(getClass());
     
     public ParametersSetterBlockList(String aInsertQuery, List<IEntityArgumentGetter> aArgumentsGetters,
-      String aTrancateTableQuery) {
+      String aTruncateTableQuery) {
         theInsertQuery = aInsertQuery;
         theArgumentsGetters = Collections.unmodifiableList(aArgumentsGetters);
-        theTruncateTableQuery = aTrancateTableQuery;
+        theTruncateTableQuery = aTruncateTableQuery;
     }
 
     public void setParameters(ICallableStatementSetStrategy aStmt, Object[] aMethodParameters) throws DataAccessException {
@@ -42,11 +42,11 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
 
             // inserts current data to table
             Collection collection = (Collection) aMethodParameters[aMethodParameters.length - 1];
-            
-            for (Object entity : collection) {
-                PreparedStatement stmt = con.prepareStatement(theInsertQuery);
-                ICallableStatementSetStrategy stmtStrategy = new CallableStatementSetStrategyIndexImpl(stmt);
-                try {
+
+            PreparedStatement stmt = con.prepareStatement(theInsertQuery);
+            ICallableStatementSetStrategy stmtStrategy = new CallableStatementSetStrategyIndexImpl(stmt);
+            try {
+                for (Object entity : collection) {
                     //int index = 0;
                     for (IEntityArgumentGetter getter : theArgumentsGetters) {
                         try {
@@ -56,12 +56,13 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
                             throw new IllegalStateException("Error setting "+getter+": "+e.getMessage(),e);
                         }
                     }
-                    stmt.executeUpdate();
-                } catch (Exception e) {
-                    throw new IllegalStateException(e);
-                } finally {
-                    stmt.close();
+                    stmt.addBatch();
                 }
+                stmt.executeBatch();
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            } finally {
+                stmt.close();
             }
         } catch(SQLException e) {
             throw new IllegalStateException(e);
