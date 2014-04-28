@@ -25,6 +25,12 @@ import com.googlecode.jdbcproc.daofactory.impl.block.service.RegisterOutParamete
 import com.googlecode.jdbcproc.daofactory.impl.block.service.RegisterOutParametersBlockServiceImpl;
 import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterBlockService;
 import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterBlockServiceImpl;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategyFactory;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategyFactory;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementGetStrategyFactoryIndexImpl;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementGetStrategyFactoryNameImpl;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementSetStrategyFactoryIndexImpl;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementSetStrategyFactoryNameImpl;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterServiceImpl;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.IStoredProcedureInfoManager;
@@ -37,16 +43,28 @@ import com.google.inject.binder.AnnotatedBindingBuilder;
 public class InitJdbcProcModule extends AbstractModule {
   
   @Override protected void configure() {
-    bindDaoMethodInfo(bind(DAOMethodInfo.class));
-    bindParameterConverterService(bind(ParameterConverterService.class));
-    bindCallableStatementExecutorBlockService(bind(CallableStatementExecutorBlockService.class));
-    bindOutputParametersGetterBlockService(bind(OutputParametersGetterBlockService.class));
-    bindParametersSetterBlockService(bind(ParametersSetterBlockService.class));
-    bindRegisterOutParametersBlockService(bind(RegisterOutParametersBlockService.class));
-    bindResultSetConverterBlockService(bind(ResultSetConverterBlockService.class));
-    bindStoredProcedureInfoManager(bind(IStoredProcedureInfoManager.class));
+    bindDaoMethodInfo                         ( bind( DAOMethodInfo.class                           ));
+    bindParameterConverterService             ( bind( ParameterConverterService.class               ));
+    bindCallableStatementExecutorBlockService ( bind( CallableStatementExecutorBlockService.class   ));
+    bindOutputParametersGetterBlockService    ( bind( OutputParametersGetterBlockService.class      ));
+    bindParametersSetterBlockService          ( bind( ParametersSetterBlockService.class            ));
+    bindRegisterOutParametersBlockService     ( bind( RegisterOutParametersBlockService.class       ));
+    bindResultSetConverterBlockService        ( bind( ResultSetConverterBlockService.class          ));
+    bindStoredProcedureInfoManager            ( bind( IStoredProcedureInfoManager.class             ));
+    bindCallableStatementGetStrategyFactory   ( bind( ICallableStatementGetStrategyFactory.class    ));
+    bindCallableStatementSetStrategyFactory   ( bind( ICallableStatementSetStrategyFactory.class    ));
+  }
+
+  protected void bindCallableStatementGetStrategyFactory(
+          AnnotatedBindingBuilder<ICallableStatementGetStrategyFactory> aBuilder) {
+    aBuilder.to(CallableStatementGetStrategyFactoryNameImpl.class);
   }
   
+  protected void bindCallableStatementSetStrategyFactory(
+          AnnotatedBindingBuilder<ICallableStatementSetStrategyFactory> aBuilder) {
+    aBuilder.to(CallableStatementSetStrategyFactoryNameImpl.class);
+  }
+
   protected void bindDaoMethodInfo(AnnotatedBindingBuilder<DAOMethodInfo> builder) {
     builder.to(DaoMethodInfoGuice.class).in(Singleton.class);
   }

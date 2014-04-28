@@ -25,8 +25,8 @@ import com.googlecode.jdbcproc.daofactory.impl.block.service.OutputParametersGet
 import com.googlecode.jdbcproc.daofactory.impl.block.service.ParametersSetterBlockService;
 import com.googlecode.jdbcproc.daofactory.impl.block.service.RegisterOutParametersBlockService;
 import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterBlockService;
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementGetStrategyFactoryNameImpl;
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementSetStrategyFactoryNameImpl;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategyFactory;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategyFactory;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.IStoredProcedureInfoManager;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
@@ -51,8 +51,11 @@ public class DaoMethodInfoGuice implements DAOMethodInfo {
   private final ResultSetConverterBlockService resultSetConverterBlockService;
   private final IStoredProcedureInfoManager storedProcedureInfoManager;
   private IMetaLoginInfoService metaLoginInfoService;
+  private final ICallableStatementSetStrategyFactory callableStatementSetStrategy;
+  private final ICallableStatementGetStrategyFactory preparedStatementStrategy;
 
-  @Inject
+
+    @Inject
   public DaoMethodInfoGuice(JdbcTemplate jdbcTemplate,
       ParameterConverterService parameterConverterService,
       CallableStatementExecutorBlockService callableStatementExecutorBlockService,
@@ -60,7 +63,10 @@ public class DaoMethodInfoGuice implements DAOMethodInfo {
       ParametersSetterBlockService parametersSetterBlockService,
       RegisterOutParametersBlockService registerOutParametersBlockService,
       ResultSetConverterBlockService resultSetConverterBlockService,
-      IStoredProcedureInfoManager storedProcedureInfoManager) throws Exception {
+      IStoredProcedureInfoManager storedProcedureInfoManager,
+      ICallableStatementSetStrategyFactory aCallableStatementSetStrategy,
+      ICallableStatementGetStrategyFactory aPreparedStatementStrategy
+    ) throws Exception {
     this.jdbcTemplate = jdbcTemplate;
     this.parameterConverterService = parameterConverterService;
     this.callableStatementExecutorBlockService = callableStatementExecutorBlockService;
@@ -69,6 +75,8 @@ public class DaoMethodInfoGuice implements DAOMethodInfo {
     this.registerOutParametersBlockService = registerOutParametersBlockService;
     this.resultSetConverterBlockService = resultSetConverterBlockService;
     this.storedProcedureInfoManager = storedProcedureInfoManager;
+    callableStatementSetStrategy = aCallableStatementSetStrategy;
+    preparedStatementStrategy = aPreparedStatementStrategy;
   }
 
   @Inject(optional = true)
@@ -99,7 +107,7 @@ public class DaoMethodInfoGuice implements DAOMethodInfo {
 
     boolean isReturnIterator = BlockFactoryUtils.isReturnIterator(daoMethod);
 
-    return new DaoMethodInvoker(procedureInfo.getProcedureName(), callString
+      return new DaoMethodInvoker(procedureInfo.getProcedureName(), callString
         , registerOutParametersBlockService.create(procedureInfo)
         , parametersSetterBlockService.create(jdbcTemplate, parameterConverterService, daoMethod
             , procedureInfo, metaLoginInfoService)
@@ -108,8 +116,8 @@ public class DaoMethodInfoGuice implements DAOMethodInfo {
             , procedureInfo)
         , resultSetConverterBlockService.create(daoMethod, procedureInfo, parameterConverterService)
         , isReturnIterator
-        , new CallableStatementSetStrategyFactoryNameImpl()
-        , new CallableStatementGetStrategyFactoryNameImpl()
+        , callableStatementSetStrategy
+        , preparedStatementStrategy
     );
   }
 
@@ -140,16 +148,20 @@ public class DaoMethodInfoGuice implements DAOMethodInfo {
     return sb.toString();
   }
 
-  public String toString() {
-    return "DaoMethodInfoFactory{" +
-        "jdbcTemplate=" + jdbcTemplate +
-        ", parameterConverterService=" + parameterConverterService +
-        ", storedProcedureInfoManager=" + storedProcedureInfoManager +
-        ", callableStatementExecutorBlockService=" + callableStatementExecutorBlockService +
-        ", outputParametersGetterBlockService=" + outputParametersGetterBlockService +
-        ", parametersSetterBlockService=" + parametersSetterBlockService +
-        ", registerOutParametersBlockService=" + registerOutParametersBlockService +
-        ", resultSetConverterBlockService=" + resultSetConverterBlockService +
-        '}';
-  }
+    @Override
+    public String toString() {
+        return "DaoMethodInfoGuice{" +
+                "jdbcTemplate=" + jdbcTemplate +
+                ", parameterConverterService=" + parameterConverterService +
+                ", callableStatementExecutorBlockService=" + callableStatementExecutorBlockService +
+                ", outputParametersGetterBlockService=" + outputParametersGetterBlockService +
+                ", parametersSetterBlockService=" + parametersSetterBlockService +
+                ", registerOutParametersBlockService=" + registerOutParametersBlockService +
+                ", resultSetConverterBlockService=" + resultSetConverterBlockService +
+                ", storedProcedureInfoManager=" + storedProcedureInfoManager +
+                ", metaLoginInfoService=" + metaLoginInfoService +
+                ", callableStatementSetStrategy=" + callableStatementSetStrategy +
+                ", preparedStatementStrategy=" + preparedStatementStrategy +
+                '}';
+    }
 }
