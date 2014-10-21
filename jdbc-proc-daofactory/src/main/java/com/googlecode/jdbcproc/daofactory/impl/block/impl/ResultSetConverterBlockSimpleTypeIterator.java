@@ -1,6 +1,5 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
-import com.googlecode.jdbcproc.daofactory.CloseableIterator;
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
@@ -26,26 +25,7 @@ public class ResultSetConverterBlockSimpleTypeIterator implements IResultSetConv
         aResultSet.setFetchDirection(ResultSet.FETCH_FORWARD);
         aResultSet.setFetchSize(1);
 
-        return new CloseableIterator() {
-            public boolean hasNext() {
-                if(theHasNext) {
-                    try {
-                        theHasNext = aResultSet.next();
-                        if(!theHasNext) {
-                            try {
-                                aResultSet.close();
-                            } finally {
-                                aStmt.closeStatement();
-                            }
-                        }
-                    } catch (SQLException e) {
-                        throw new RuntimeException("Error while Iterator.hasNext(): "+e.getMessage(), e);
-                    }
-                }
-
-                return theHasNext;
-            }
-
+        return new CloseableIteratorImpl(aResultSet, aStmt) {
             public Object next() {
                 try {
                     return theConverter.getFromResultSet(aResultSet, theColumnName);
@@ -54,31 +34,10 @@ public class ResultSetConverterBlockSimpleTypeIterator implements IResultSetConv
                 }
             }
 
-            public void remove() {
-                throw new UnsupportedOperationException("remove method is unsupported");
-            }
-
-            public void close() {
-                if(theHasNext) {
-                    try {
-                        try {
-                            aResultSet.close();
-                        } finally {
-                            aStmt.closeStatement();
-                        }
-                    } catch (Exception e) {
-                        throw new IllegalStateException("Unable to close ResultSet or CallableStatement: "+e.getMessage(), e);
-                    }
-                }
-            }
-
             public String toString() {
-                return "ResultSetConverterBlockSimpleTypeIterator$CloseableIterator[hasNext="+theHasNext+", converter="+theConverter+", columnName="+theColumnName+"]";
+                return "ResultSetConverterBlockSimpleTypeIterator$CloseableIterator[hasNext="+isHasNext()+", converter="+theConverter+", columnName="+theColumnName+"]";
             }
-
-            private boolean theHasNext = true;
         };
-
     }
 
     public String toString() {
