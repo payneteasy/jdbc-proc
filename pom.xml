@@ -264,6 +264,8 @@
     </profiles>
 
     <properties>
+        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+
         <spring.version>3.0.0.RELEASE</spring.version>
         <slf4j.version>1.5.10</slf4j.version>
     </properties>
