@@ -55,12 +55,12 @@
         <repository>
             <id>jdbc-proc-release</id>
             <name>sonatype oss RELEASE repository</name>
-            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
         </repository>
         <snapshotRepository>
             <id>jdbc-proc-snapshot</id>
             <name>sonatype oss SNAPSHOT repository</name>
-            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
