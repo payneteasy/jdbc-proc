@@ -80,6 +80,26 @@ public class CompanyDaoTest extends DatabaseAwareTest {
         }
     }
 
+    public void testGetCompaniesNamesIteratorRobustToMultipleHasNextCalls() {
+        // creates companies
+        for(int i=0; i<10; i++) {
+            Company company = new Company();
+            company.setName("company-"+i);
+            theCompanyDao.createCompany(company);
+        }
+
+        CloseableIterator<String> names = theCompanyDao.getCompaniesNamesIterator();
+
+        // calling hasNext() multiple times
+        names.hasNext();
+        names.hasNext();
+        names.hasNext();
+
+        // asserting that first element is returned
+        String name = names.next();
+        assertEquals("hasNext() seems to rewind a result set, but it shouldn't", "company-"+0, name);
+    }
+
     /**
      * Test for @OneToMany annotation
      */
