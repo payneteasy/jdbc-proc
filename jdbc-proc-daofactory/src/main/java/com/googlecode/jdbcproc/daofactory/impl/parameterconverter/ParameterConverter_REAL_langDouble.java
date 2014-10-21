@@ -4,16 +4,18 @@ import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetS
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 
 /**
- *  REAL - double
+ *  REAL - Double
  */
-public class ParameterConverter_REAL_double 
-    implements IParameterConverter<ParameterConverter_REAL_double, Double> {
+public class ParameterConverter_REAL_langDouble
+    implements IParameterConverter<ParameterConverter_REAL_langDouble, Double> {
 
-  public static final Type<ParameterConverter_REAL_double> TYPE 
-      = new Type<ParameterConverter_REAL_double>(Types.REAL, double.class);
+  public static final Type<ParameterConverter_REAL_langDouble> TYPE
+      = new Type<ParameterConverter_REAL_langDouble>(Types.REAL, Double.class);
   
     public void setValue(Double aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if(aValue!=null) {
@@ -33,11 +35,11 @@ public class ParameterConverter_REAL_double
         return aResultSet.wasNull() ? null : value;
     }
 
-  public Type<ParameterConverter_REAL_double> getType() {
+  public Type<ParameterConverter_REAL_langDouble> getType() {
     return TYPE;
   }
 
     public String toString() {
-        return "ParameterConverter_REAL_double{}";
+        return "ParameterConverter_REAL_langDouble{}";
     }
 }

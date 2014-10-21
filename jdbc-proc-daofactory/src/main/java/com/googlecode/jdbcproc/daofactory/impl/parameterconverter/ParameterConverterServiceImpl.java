@@ -77,7 +77,12 @@ public class ParameterConverterServiceImpl implements ParameterConverterService 
 
     // REAL
     putSetters(settersMap, new ParameterConverter_REAL_double());
+    putSetters(settersMap, new ParameterConverter_REAL_langDouble());
     putSetters(settersMap, new ParameterConverter_REAL_BigDecimal());
+
+    // DOUBLE
+    putSetters(settersMap, new ParameterConverter_DOUBLE_double());
+    putSetters(settersMap, new ParameterConverter_DOUBLE_langDouble());
 
     parameterSetters = Collections.unmodifiableMap(settersMap);
   }
