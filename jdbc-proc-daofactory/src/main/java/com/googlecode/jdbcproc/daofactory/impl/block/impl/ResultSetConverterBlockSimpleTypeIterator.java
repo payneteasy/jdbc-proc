@@ -26,7 +26,8 @@ public class ResultSetConverterBlockSimpleTypeIterator implements IResultSetConv
         aResultSet.setFetchSize(1);
 
         return new CloseableIteratorImpl(aResultSet, aStmt) {
-            public Object next() {
+            @Override
+            protected Object readCurrentRow(ResultSet resultSet) {
                 try {
                     return theConverter.getFromResultSet(aResultSet, theColumnName);
                 } catch (SQLException e) {
@@ -35,7 +36,7 @@ public class ResultSetConverterBlockSimpleTypeIterator implements IResultSetConv
             }
 
             public String toString() {
-                return "ResultSetConverterBlockSimpleTypeIterator$CloseableIterator[hasNext="+isHasNext()+", converter="+theConverter+", columnName="+theColumnName+"]";
+                return "ResultSetConverterBlockSimpleTypeIterator$CloseableIterator[converter="+theConverter+", columnName="+theColumnName+"]";
             }
         };
     }

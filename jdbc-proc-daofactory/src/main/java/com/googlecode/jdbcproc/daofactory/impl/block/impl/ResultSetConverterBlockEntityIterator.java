@@ -24,7 +24,8 @@ public class ResultSetConverterBlockEntityIterator implements IResultSetConverte
         aResultSet.setFetchSize(1);
         
         return new CloseableIteratorImpl(aResultSet, aStmt) {
-            public Object next() {
+            @Override
+            protected Object readCurrentRow(ResultSet resultSet) {
                 return theBlock.createEntity(aResultSet);
             }
         };

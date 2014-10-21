@@ -7,6 +7,7 @@ import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CloseableIteratorImplTest {
@@ -15,27 +16,33 @@ public class CloseableIteratorImplTest {
         TestResultSet resultSet = new TestResultSet();
         StatementCloser closer = new StatementCloser(new CallableStatementAdapter());
         CloseableIterator iterator = new CloseableIteratorImpl(resultSet, closer) {
-            public Object next() {
+            @Override
+            protected Object readCurrentRow(ResultSet resultSet) {
                 return "abc";
             }
         };
 
         iterator.hasNext();
-        Assert.assertFalse("hasNext() should not call result set's next(), but it seems to do it", resultSet.isNextCalled());
+        iterator.hasNext();
+        Assert.assertEquals("hasNext() should not call result set's next() multiple times, but it seems to do it", 1,
+                resultSet.getNextCalledTimes());
         Assert.assertEquals("abc", iterator.next());
+
+        iterator.hasNext();
+        Assert.assertEquals(2, resultSet.getNextCalledTimes());
     }
 
     private static class TestResultSet extends ResultSetAdapter {
-        private boolean nextCalled = false;
+        private int nextCalledTimes = 0;
 
-        public boolean isNextCalled() {
-            return nextCalled;
+        public int getNextCalledTimes() {
+            return nextCalledTimes;
         }
 
         @Override
         public boolean next() throws SQLException {
-            nextCalled = true;
-            return true;
+            nextCalledTimes++;
+            return nextCalledTimes <= 2;
         }
     }
 }

@@ -5,37 +5,61 @@ import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.NoSuchElementException;
 
 /**
-* @author rpuch
+* CloseableIterator framework.
 */
 abstract class CloseableIteratorImpl implements CloseableIterator {
-    private final ResultSet aResultSet;
-    private final StatementCloser aStmt;
+    private final ResultSet resultSet;
+    private final StatementCloser stmt;
 
-    public CloseableIteratorImpl(ResultSet aResultSet, StatementCloser aStmt) {
-        this.aResultSet = aResultSet;
-        this.aStmt = aStmt;
-        theHasNext = true;
+    private boolean positionedToRow = false;
+    private boolean reachedEnd = false;
+    private boolean closed = false;
+
+
+    CloseableIteratorImpl(ResultSet resultSet, StatementCloser stmt) {
+        this.resultSet = resultSet;
+        this.stmt = stmt;
     }
 
     public final boolean hasNext() {
-        if(theHasNext) {
+        return positionIfNeeded();
+    }
+
+    private boolean positionIfNeeded() {
+        if (reachedEnd || closed) {
+            return false;
+        } else if (positionedToRow) {
+            return true;
+        } else {
             try {
-                theHasNext = aResultSet.next();
-                if(!theHasNext) {
-                    try {
-                        aResultSet.close();
-                    } finally {
-                        aStmt.closeStatement();
-                    }
+                boolean currentPositionIsValid = resultSet.next();
+                if (currentPositionIsValid) {
+                    positionedToRow = true;
+                } else {
+                    reachedEnd = true;
+                    positionedToRow = false;
+                    doClose();
                 }
+
+                return currentPositionIsValid;
             } catch (SQLException e) {
-                throw new RuntimeException("Error while Iterator.hasNext(): "+e.getMessage(), e);
+                throw new RuntimeException("Error while Iterator.hasNext(): " + e.getMessage(), e);
             }
         }
+    }
 
-        return theHasNext;
+    public final Object next() {
+        boolean hasNext = positionIfNeeded();
+        if (hasNext) {
+            // flag reset to force next record to be probed
+            positionedToRow = false;
+            return readCurrentRow(resultSet);
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 
     public final void remove() {
@@ -43,22 +67,24 @@ abstract class CloseableIteratorImpl implements CloseableIterator {
     }
 
     public final void close() {
-        if(theHasNext) {
+        if (!closed) {
             try {
-                try {
-                    aResultSet.close();
-                } finally {
-                    aStmt.closeStatement();
-                }
+                doClose();
             } catch (Exception e) {
                 throw new IllegalStateException("Unable to close ResultSet or CallableStatement: "+e.getMessage(), e);
             }
         }
     }
 
-    protected boolean isHasNext() {
-        return theHasNext;
+    private void doClose() throws SQLException {
+        closed = true;
+
+        try {
+            resultSet.close();
+        } finally {
+            stmt.closeStatement();
+        }
     }
 
-    private boolean theHasNext;
+    protected abstract Object readCurrentRow(ResultSet resultSet);
 }
