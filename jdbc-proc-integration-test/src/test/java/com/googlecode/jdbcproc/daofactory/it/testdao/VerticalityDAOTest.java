@@ -103,24 +103,19 @@ public class VerticalityDAOTest  extends DatabaseAwareTest {
         verticalityDao.uploadDynamicRopesWithMetaLoginInfo(dynamicRopes, uploadDate);
         verticalityDao.uploadVerticality(uploadDate, carabiners,  dynamicRopes);
         verticalityDao.uploadVerticalityWithMetaLoginInfo(uploadDate, carabiners,  dynamicRopes);
-      
+
         Collection<Carabiner> carabinersCollection = Collections.unmodifiableCollection(carabiners);
-        Collection<DynamicRope> dynamicRopeCollection 
-            = Collections.unmodifiableCollection(dynamicRopes);
-      
+        Collection<DynamicRope> dynamicRopeCollection = Collections.unmodifiableCollection(dynamicRopes);
+
         verticalityDao.uploadCarabinersCollection(uploadDate, carabinersCollection);
-        entityId = verticalityDao
-            .uploadCarabinersCollection(uploadDate, carabinersCollection, uploadDate);
+        entityId = verticalityDao.uploadCarabinersCollection(uploadDate, carabinersCollection, uploadDate);
         assertEquals(1, entityId);
-        entityId = verticalityDao
-            .uploadCarabinersCollection(null, carabinersCollection, uploadDate);
+        entityId = verticalityDao.uploadCarabinersCollection(null, carabinersCollection, uploadDate);
         assertEquals(1, entityId);
         verticalityDao.uploadCarabinersWithMetaLoginInfoCollection(uploadDate, carabinersCollection);
         verticalityDao.uploadDynamicRopesCollection(dynamicRopeCollection, uploadDate);
-        verticalityDao
-            .uploadDynamicRopesWithMetaLoginInfoCollection(dynamicRopeCollection, uploadDate);
-        verticalityDao
-            .uploadVerticalityCollection(uploadDate, carabinersCollection, dynamicRopeCollection);
+        verticalityDao.uploadDynamicRopesWithMetaLoginInfoCollection(dynamicRopeCollection, uploadDate);
+        verticalityDao.uploadVerticalityCollection(uploadDate, carabinersCollection, dynamicRopeCollection);
         verticalityDao.uploadVerticalityWithMetaLoginInfoCollection(uploadDate, carabinersCollection
             , dynamicRopeCollection);
     }

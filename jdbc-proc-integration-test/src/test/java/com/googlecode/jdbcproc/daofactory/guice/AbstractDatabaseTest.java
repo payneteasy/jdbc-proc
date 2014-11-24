@@ -44,6 +44,7 @@ public abstract class AbstractDatabaseTest extends TestCase {
     executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/verticality/chalk_bag.sql");
     executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/create_company.sql");
     executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/create_company_secured.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/create_company_secured_consumer_key.sql");
     executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/create_employee.sql");
     executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/get_employee_by_id.sql");
     executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/get_company_employees.sql");

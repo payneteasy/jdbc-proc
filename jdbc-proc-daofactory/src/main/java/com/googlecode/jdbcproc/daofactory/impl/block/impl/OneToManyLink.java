@@ -28,7 +28,7 @@ public class OneToManyLink {
 
     public Object loadEntity(ResultSet aResultSet) {
         Object entity = ResultSetConverterBlockUtil.createEntity(aResultSet, theEntityClass, theEntityPropertySetters, theOneToOneLinks);
-        setChildren(entity, Collections.EMPTY_LIST);
+        setChildren(entity, Collections.emptyList());
         return entity;
     }
 

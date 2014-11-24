@@ -8,6 +8,7 @@ import java.util.HashMap;
 public enum ParametersSetterBlockOrder {
     
     PSB_META_LOGIN_INFO(ParametersSetterBlockMetaLoginInfo.class, 0),
+    PSB_CONSUMER_KEY(ParametersSetterBlockArgument.class, 0),
     PSB_LIST_AGGREGATOR(ParametersSetterBlockListAggregator.class, 1),
     PSB_LIST(ParametersSetterBlockList.class, 2),
     PSB_ENTITY(ParametersSetterBlockEntity.class, 3),

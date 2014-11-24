@@ -42,6 +42,11 @@
         <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyMetaLoginDao"/>
     </bean>
 
+    <!-- Company data access -->
+    <bean id="companyConsumerKeyDao" parent="abstractDao">
+        <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyConsumerKeyDao"/>
+    </bean>
+
     <!-- Employee data access -->
     <bean id="employeeDao" parent="abstractDao">
         <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeeDao"/>

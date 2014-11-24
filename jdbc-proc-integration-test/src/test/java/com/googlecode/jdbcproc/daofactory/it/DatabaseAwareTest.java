@@ -49,6 +49,7 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         executeMysql("jdbcprocdb", "verticality/chalk_bag.sql");
         executeMysql("jdbcprocdb", "create_company.sql");
         executeMysql("jdbcprocdb", "create_company_secured.sql");
+        executeMysql("jdbcprocdb", "create_company_secured_consumer_key.sql");
         executeMysql("jdbcprocdb", "create_employee.sql");
         executeMysql("jdbcprocdb", "get_employee_by_id.sql");
         executeMysql("jdbcprocdb", "get_company_employees.sql");

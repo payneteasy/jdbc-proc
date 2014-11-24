@@ -14,6 +14,7 @@
 
 package com.googlecode.jdbcproc.daofactory.impl.block.service;
 
+import com.googlecode.jdbcproc.daofactory.annotation.AConsumerKey;
 import com.googlecode.jdbcproc.daofactory.impl.block.BlockFactoryUtils;
 import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ArgumentGetter;
@@ -21,6 +22,7 @@ import com.googlecode.jdbcproc.daofactory.impl.block.impl.EntityArgumentGetter;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.EntityArgumentGetterOneToOne;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.EntityArgumentGetterOneToOneJoinColumn;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.IEntityArgumentGetter;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockArgument;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockArguments;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockEntity;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockList;
@@ -126,6 +128,26 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             throw new IllegalStateException(method + " is Unsupported");
           }
 
+        } else if (method.isAnnotationPresent(AConsumerKey.class)) {
+          if (!String.class.equals(method.getParameterTypes()[0])) {
+            throw new IllegalStateException(AConsumerKey.class.getName()  + " annotation is present but first argument is not String type");
+          }
+          // is entity, e.g. void saveProcessor(consumerKey, TransactionProcessor) (meta login not supported)
+          if (procedureInfo.getArgumentsCounts() > method.getParameterTypes().length
+              && method.getParameterTypes().length == 2
+              && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[1])
+              && !BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[1])) {
+            return createSaveMethodConsumer(converterService, method, procedureInfo);
+
+            // if parameters is simple putted to procedure
+//          } else if (method.getParameterTypes().length == procedureInfo.getInputArgumentsCount()) {
+//            return createSimpleParameters(converterService, method, procedureInfo);
+             // if both list and arguments parameters provides with ConsumerKey 
+//          } else if (areListAndNonListParametersProvidesWithConsumer(method, procedureInfo)) {
+//              return createListAndArgumentsWithConsumer(jdbcTemplate, converterService, method, procedureInfo);
+          } else {
+            throw new IllegalStateException(method + " is Unsupported");
+          }
         } else {
           // List getAll()
           if (BlockFactoryUtils.isGetAllMethod(method, procedureInfo)) {
@@ -161,6 +183,12 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         }
     }
 
+    private StatementArgument getArgumentConsumerKey(StoredProcedureInfo aProcedureInfo) {
+        StoredProcedureArgumentInfo info = aProcedureInfo.getArgumentInfo("consumer_key");
+        if(info==null) throw new IllegalStateException("Argument consumer_key not found in "+aProcedureInfo.getProcedureName());
+        return info.getStatementArgument();
+    }
+  
     private StatementArgument getArgument(StoredProcedureInfo aProcedureInfo, String aArgumentName) {
         if(aArgumentName.startsWith("i_")) {
             aArgumentName = aArgumentName.substring(2);
@@ -178,6 +206,14 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             IMetaLoginInfoService aMetaLoginInfoService) {
         return createListAndArgumentsWithMetaLoginInfo(createListAndArguments(2, jdbcTemplate, converterService, method, procedureInfo), aMetaLoginInfoService, procedureInfo);
     }
+
+//    protected List<IParametersSetterBlock> createListAndArgumentsWithConsumer(
+//        JdbcTemplate jdbcTemplate,
+//        ParameterConverterService converterService,
+//        Method method,
+//        StoredProcedureInfo procedureInfo) {
+//      return createListAndArgumentsWithConsumer(createListAndArguments(1, jdbcTemplate, converterService, method, procedureInfo), converterService, method, procedureInfo);
+//    }
 
     /**
      * if both list and arguments parameters provides
@@ -278,7 +314,21 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         list.addAll(originalBlock);
         return list;
     }
-  
+
+//  private List<IParametersSetterBlock> createListAndArgumentsWithConsumer(List<IParametersSetterBlock> originalBlock,
+//      ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo) {
+//    List<IParametersSetterBlock> list = new LinkedList<IParametersSetterBlock>();
+//
+//    StoredProcedureArgumentInfo argumentInfo = procedureInfo.getInputArguments().get(0);
+//    IParameterConverter paramConverter = converterService.getConverter(argumentInfo.getDataType(), method.getParameterTypes()[0]);
+//
+//    ArgumentGetter consumerGetter = new ArgumentGetter(paramConverter, getArgumentConsumerKey(procedureInfo));
+//
+//    list.add(new ParametersSetterBlockArgument(consumerGetter)); // add consumer key
+//    list.addAll(originalBlock); // add other parameters
+//    return list;
+//  }
+
     /**
      * if all parameters is list and no arguments
      */
@@ -306,6 +356,10 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         return aMethod.isAnnotationPresent(AMetaLoginInfo.class);
     }
 
+    private boolean isConsumerKeyPresented(Method aMethod) {
+        return aMethod.isAnnotationPresent(AConsumerKey.class);
+    }
+
     /**
      * if parameters is simple puted to procedure
      * @param converterService converter
@@ -316,7 +370,19 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
     private List<IParametersSetterBlock> createSimpleParameters(ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo) {
         IParametersSetterBlock block = createSimpleParameters(0, converterService, method, procedureInfo);
         return Collections.singletonList(block);
+    }
 
+    private List<IParametersSetterBlock> createConsumerList(IParametersSetterBlock aOriginalBlock, StoredProcedureInfo procedureInfo, ParameterConverterService converterService, Method method) {
+        List<IParametersSetterBlock> list = new LinkedList<IParametersSetterBlock>();
+
+        StoredProcedureArgumentInfo argumentInfo = procedureInfo.getInputArguments().get(0);
+        IParameterConverter paramConverter = converterService.getConverter(argumentInfo.getDataType(), method.getParameterTypes()[0]);
+
+        ArgumentGetter consumerGetter = new ArgumentGetter(paramConverter, getArgumentConsumerKey(procedureInfo));
+
+        list.add(new ParametersSetterBlockArgument(consumerGetter)); // add consumer key
+        list.add(aOriginalBlock); // add other parameters
+        return list;
     }
 
     private List<IParametersSetterBlock> createMetaLoginList(IParametersSetterBlock aOriginalBlock, IMetaLoginInfoService aMetaLoginInfoService, StoredProcedureInfo procedureInfo) {
@@ -354,7 +420,6 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
      * @return list of setter blocks
      */
     private IParametersSetterBlock createSimpleParameters(int aFromProcedureArgument, ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo) {
-
         final LinkedList<ArgumentGetter> getters = new LinkedList<ArgumentGetter>();
 
         int methodIndex = 0;
@@ -381,9 +446,24 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         return doCreateEntityBlocks(converterService, method, procedureInfo, aMetaLoginInfoService);
     }
 
-    private List<IParametersSetterBlock> doCreateEntityBlocks(ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo, IMetaLoginInfoService aMetaLoginInfoService) {
-        Class entityClass = method.getParameterTypes()[0];
+    private List<IParametersSetterBlock> createSaveMethodConsumer(ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo) {
+        Assert.isTrue(method.getParameterTypes().length == 2, "Method " + method.getName() + " parameters count must be equal to 2");
+        return doCreateEntityBlocksConsumer(converterService, method, procedureInfo);
+    }
 
+    private List<IParametersSetterBlock> doCreateEntityBlocksConsumer(ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo) {
+        Class entityClass = method.getParameterTypes()[1];
+        final IParametersSetterBlock block = createEntityBlock(converterService, procedureInfo, entityClass, new int[] {1});
+
+        if(isConsumerKeyPresented(method)) {
+            return createConsumerList(block, procedureInfo, converterService, method);
+        } else {
+            return Collections.singletonList(block);
+        }
+    }
+
+  private List<IParametersSetterBlock> doCreateEntityBlocks(ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo, IMetaLoginInfoService aMetaLoginInfoService) {
+        Class entityClass = method.getParameterTypes()[0];
         final IParametersSetterBlock block = createEntityBlock(converterService, procedureInfo, entityClass, null);
 
         if(isMetaLoginInfoPresented(method)) {
@@ -632,8 +712,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         }
     }
 
-    private boolean areListAndNonListParametersProvidesWithMetaLoginInfo(Method method,
-                                                        StoredProcedureInfo procedureInfo) {
+    private boolean areListAndNonListParametersProvidesWithMetaLoginInfo(Method method, StoredProcedureInfo procedureInfo) {
         if (method.getParameterTypes().length + 2 >= procedureInfo.getInputArgumentsCount()) {
             int argumentsCount = 0;
             for (Class<?> parameterClass : method.getParameterTypes()) {
@@ -646,4 +725,18 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             return false;
         }
     }
+
+//    private boolean areListAndNonListParametersProvidesWithConsumer(Method method, StoredProcedureInfo procedureInfo) {
+//        if (method.getParameterTypes().length >= procedureInfo.getInputArgumentsCount()) {
+//            int argumentsCount = 0;
+//            for (Class<?> parameterClass : method.getParameterTypes()) {
+//                if (!BlockFactoryUtils.isCollectionAssignableFrom(parameterClass)) {
+//                    argumentsCount++;
+//                }
+//            }
+//            return procedureInfo.getInputArgumentsCount() == argumentsCount && argumentsCount > 1;
+//        } else {
+//            return false;
+//        }
+//    }
 }
