@@ -1,24 +1,29 @@
 package com.googlecode.jdbcproc.daofactory.impl;
 
-import com.googlecode.jdbcproc.daofactory.impl.block.*;
+import com.googlecode.jdbcproc.daofactory.impl.block.ICallableStatementExecutorBlock;
+import com.googlecode.jdbcproc.daofactory.impl.block.IOutputParametersGetterBlock;
+import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
+import com.googlecode.jdbcproc.daofactory.impl.block.IRegisterOutParametersBlock;
+import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockOrder;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategyFactory;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
+import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategyFactory;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.*;
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementSetStrategyNameImpl;
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementStrategyNameImpl;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.CallableStatementCallback;
-import org.springframework.util.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.lang.reflect.Proxy;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.lang.reflect.Proxy;
-import java.util.List;
-import java.util.Comparator;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.CallableStatementCallback;
+import org.springframework.util.Assert;
 
 /**
  * Dao method information
@@ -162,8 +167,7 @@ public class DaoMethodInvoker {
                     } else {
                         // converts result set to return value
                         if(theResultSetConverterBlock!=null) {
-                            StatementCloser closer = new StatementCloser(aStmt);
-                            return theResultSetConverterBlock.convertResultSet(resultSet, closer);
+                            return theResultSetConverterBlock.convertResultSet(resultSet, aStmt);
                         } else {
                             return null;
                         }

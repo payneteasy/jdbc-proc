@@ -2,12 +2,15 @@ package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
 
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
-
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
-import org.springframework.util.Assert;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * For list entity with @OneToMany annotation
@@ -18,9 +21,9 @@ public class ResultSetConverterBlockEntityOneToManyList implements IResultSetCon
         theBlock = aBlock;
     }
 
-    public Object convertResultSet(ResultSet aResultSet, StatementCloser aStmt) throws SQLException {
-        Assert.notNull(aResultSet, "ResultSet is null");
-        LinkedList list = new LinkedList();
+    public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
+        Objects.requireNonNull(aResultSet, "ResultSet is null");
+        List list = new ArrayList();
         Map<Object, List<Object>> map = new HashMap<Object, List<Object>>();
         while(aResultSet.next()) {
             Object parent = theBlock.createParentEntity(aResultSet);
@@ -30,7 +33,7 @@ public class ResultSetConverterBlockEntityOneToManyList implements IResultSetCon
             if(map.containsKey(parent)) {
                 childsList = map.get(parent);
             } else {
-                childsList = new LinkedList<Object>();
+                childsList = new ArrayList<Object>();
                 theBlock.setOneToManyList(parent, childsList);
                 map.put(parent, childsList);
                 list.add(parent);

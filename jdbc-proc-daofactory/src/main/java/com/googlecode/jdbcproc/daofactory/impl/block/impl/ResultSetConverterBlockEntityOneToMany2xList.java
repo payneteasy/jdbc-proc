@@ -2,12 +2,13 @@ package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
 
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
-
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
-import org.springframework.util.Assert;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * For list entity with @OneToMany 2x annotation
@@ -18,10 +19,10 @@ public class ResultSetConverterBlockEntityOneToMany2xList implements IResultSetC
         theOneToManyLinks = aOneToManyLinks;
     }
 
-    public Object convertResultSet(ResultSet aResultSet, StatementCloser aStmt) throws SQLException {
-        Assert.notNull(aResultSet, "ResultSet is null");
+    public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
+        Objects.requireNonNull(aResultSet, "ResultSet is null");
 
-        List<Object> ret = new LinkedList<Object>();
+        List<Object> ret = new ArrayList<Object>();
 
         List<Holder> holders = createHolders();
 
@@ -118,7 +119,7 @@ public class ResultSetConverterBlockEntityOneToMany2xList implements IResultSetC
         }
 
         public void clearChildren() {
-            theList = new LinkedList<Object>();
+            theList = new ArrayList<Object>();
         }
         
         public void forceNew() {
@@ -129,7 +130,7 @@ public class ResultSetConverterBlockEntityOneToMany2xList implements IResultSetC
         private Object theLoadedEntity = null;
         private final OneToManyLink theLink;
         private final Object theEmptyEntity;
-        private List<Object> theList = new LinkedList<Object>();
+        private List<Object> theList = new ArrayList<Object>();
 
 
     }

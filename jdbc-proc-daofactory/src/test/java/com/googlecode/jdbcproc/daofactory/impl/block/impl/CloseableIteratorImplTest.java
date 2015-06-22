@@ -3,7 +3,6 @@ package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 import com.googlecode.jdbcproc.daofactory.CallableStatementAdapter;
 import com.googlecode.jdbcproc.daofactory.CloseableIterator;
 import com.googlecode.jdbcproc.daofactory.ResultSetAdapter;
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,8 +13,7 @@ public class CloseableIteratorImplTest {
     @Test
     public void testHasNextDoesNotMoveResultSetPointer() {
         TestResultSet resultSet = new TestResultSet();
-        StatementCloser closer = new StatementCloser(new CallableStatementAdapter());
-        CloseableIterator iterator = new CloseableIteratorImpl(resultSet, closer) {
+        CloseableIterator iterator = new CloseableIteratorImpl(resultSet, new CallableStatementAdapter()) {
             @Override
             protected Object readCurrentRow(ResultSet resultSet) {
                 return "abc";

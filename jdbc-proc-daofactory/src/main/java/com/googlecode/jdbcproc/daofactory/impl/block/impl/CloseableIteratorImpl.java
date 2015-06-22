@@ -1,8 +1,8 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.CloseableIterator;
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
 
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
@@ -12,14 +12,14 @@ import java.util.NoSuchElementException;
 */
 abstract class CloseableIteratorImpl implements CloseableIterator {
     private final ResultSet resultSet;
-    private final StatementCloser stmt;
+    private final CallableStatement stmt;
 
     private boolean positionedToRow = false;
     private boolean reachedEnd = false;
     private boolean closed = false;
 
 
-    CloseableIteratorImpl(ResultSet resultSet, StatementCloser stmt) {
+    CloseableIteratorImpl(ResultSet resultSet, CallableStatement stmt) {
         this.resultSet = resultSet;
         this.stmt = stmt;
     }
@@ -82,7 +82,7 @@ abstract class CloseableIteratorImpl implements CloseableIterator {
         try {
             resultSet.close();
         } finally {
-            stmt.closeStatement();
+            stmt.close();
         }
     }
 

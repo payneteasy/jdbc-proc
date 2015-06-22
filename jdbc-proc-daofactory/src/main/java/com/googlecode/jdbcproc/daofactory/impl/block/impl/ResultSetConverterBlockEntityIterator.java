@@ -2,11 +2,10 @@ package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
 
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
-import org.springframework.util.Assert;
+import java.util.Objects;
 
 /**
  * Returns Iterator
@@ -17,8 +16,8 @@ public class ResultSetConverterBlockEntityIterator implements IResultSetConverte
         theBlock = aBlock;
     }
 
-    public Object convertResultSet(final ResultSet aResultSet, final StatementCloser aStmt) throws SQLException {
-        Assert.notNull(aResultSet, "ResultSet is null");
+    public Object convertResultSet(final ResultSet aResultSet, final CallableStatement aStmt) throws SQLException {
+        Objects.requireNonNull(aResultSet, "ResultSet is null");
 
         aResultSet.setFetchDirection(ResultSet.FETCH_FORWARD);
         aResultSet.setFetchSize(1);

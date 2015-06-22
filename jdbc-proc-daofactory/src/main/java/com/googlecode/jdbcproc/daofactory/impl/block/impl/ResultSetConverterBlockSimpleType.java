@@ -1,9 +1,9 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
 
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -17,7 +17,7 @@ public class ResultSetConverterBlockSimpleType implements IResultSetConverterBlo
         theColumnName = aColumnName;
     }
 
-    public Object convertResultSet(ResultSet aResultSet, StatementCloser aStmt) throws SQLException {
+    public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
         if(aResultSet.next()) {
             Object value = theConverter.getFromResultSet(aResultSet, theColumnName);
             if(aResultSet.next()) {

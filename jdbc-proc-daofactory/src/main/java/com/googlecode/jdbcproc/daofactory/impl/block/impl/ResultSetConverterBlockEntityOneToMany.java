@@ -1,16 +1,15 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
-import org.springframework.util.Assert;
+import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
 
-import java.util.List;
-import java.util.LinkedList;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-
-import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Fill entity with @OneToMany annotations
@@ -46,12 +45,11 @@ public class ResultSetConverterBlockEntityOneToMany implements IResultSetConvert
         theChildOneToOneLinks = aChileOneToOneLinks;
     }
 
-
-    public Object convertResultSet(ResultSet aResultSet, StatementCloser aStmt) throws SQLException {
-        Assert.notNull(aResultSet, "ResultSet is null");
+    public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
+        Objects.requireNonNull(aResultSet, "ResultSet is null");
 
         Object entity = null;
-        List<Object> oneToManyList = new LinkedList<Object>();
+        List<Object> oneToManyList = new ArrayList<Object>();
         while(aResultSet.next()) {
             // create only once base entity
             if(entity==null) {

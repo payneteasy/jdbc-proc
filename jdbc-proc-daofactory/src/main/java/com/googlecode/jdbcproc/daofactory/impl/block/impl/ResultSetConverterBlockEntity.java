@@ -1,12 +1,12 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementCloser;
-import org.springframework.util.Assert;
 
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Converts to Entity
@@ -20,8 +20,8 @@ public class ResultSetConverterBlockEntity implements IResultSetConverterBlock {
         theOneToOneLinks = aOneToOneLinks;
     }
 
-    public Object convertResultSet(ResultSet aResultSet, StatementCloser aStmt) throws SQLException {
-        Assert.notNull(aResultSet, "ResultSet is null");
+    public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
+        Objects.requireNonNull(aResultSet, "ResultSet is null");
         if(aResultSet.next()) {
             Object entity = createEntity(aResultSet);
             if(aResultSet.next()) {
