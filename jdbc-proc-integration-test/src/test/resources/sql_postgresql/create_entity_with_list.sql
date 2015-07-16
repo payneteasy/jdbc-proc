@@ -11,7 +11,7 @@ BEGIN
   o_id:=999;
 
   select count(*) from list_elements into v_count;
-  if v_count <> 1 then
+  if v_count <> 2 then
     RAISE EXCEPTION''raise exception'';
   end if;
 
