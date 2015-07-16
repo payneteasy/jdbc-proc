@@ -101,7 +101,7 @@ public class DaoMethodInfoGuice implements DAOMethodInfo {
     if(LOG.isDebugEnabled()) {
       LOG.debug("      Found procedure info: "+procedureInfo);
     }
-    Assert.notNull(procedureInfo, "There are no procedure '" + procedureName + "' in database");
+    Assert.notNull(procedureInfo, "There is no procedure '" + procedureName + "' in database");
 
     String callString = createCallString(procedureInfo);
 
