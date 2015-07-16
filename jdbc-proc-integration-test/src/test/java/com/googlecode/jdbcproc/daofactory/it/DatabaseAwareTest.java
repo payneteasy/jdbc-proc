@@ -33,51 +33,51 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
 
     public void runBare() throws Throwable {
         // drops and creates database
-        executeMysql("", "create_database.sql");
+        executeSql("", "create_database.sql");
 
         // creates database schema
-        executeMysql("jdbcprocdb", "resultset_info.sql");
-        executeMysql("jdbcprocdb", "get_procedures_resultset.sql");
+        executeSql("jdbcprocdb", "resultset_info.sql");
+        executeSql("jdbcprocdb", "get_procedures_resultset.sql");
         
-        executeMysql("jdbcprocdb", "company.sql");
-        executeMysql("jdbcprocdb", "employee.sql");
-        executeMysql("jdbcprocdb", "certificate.sql");
-        executeMysql("jdbcprocdb", "ancestry.sql");
-        executeMysql("jdbcprocdb", "verticality/carabiner.sql");
-        executeMysql("jdbcprocdb", "verticality/dynamic_rope.sql");
-        executeMysql("jdbcprocdb", "verticality/harness.sql");
-        executeMysql("jdbcprocdb", "verticality/chalk_bag.sql");
-        executeMysql("jdbcprocdb", "create_company.sql");
-        executeMysql("jdbcprocdb", "create_company_secured.sql");
-        executeMysql("jdbcprocdb", "create_company_secured_consumer_key.sql");
-        executeMysql("jdbcprocdb", "create_employee.sql");
-        executeMysql("jdbcprocdb", "get_employee_by_id.sql");
-        executeMysql("jdbcprocdb", "get_company_employees.sql");
-        executeMysql("jdbcprocdb", "get_companies.sql");
-        executeMysql("jdbcprocdb", "get_companies_names.sql");
-        executeMysql("jdbcprocdb", "get_companies_names_secured.sql");
-        executeMysql("jdbcprocdb", "get_company_2x.sql");
-        executeMysql("jdbcprocdb", "get_ancestry_2x_multi_level_grouping.sql");
-        executeMysql("jdbcprocdb", "create_certificate.sql");
-        executeMysql("jdbcprocdb", "create_entity_with_list.sql");
-        executeMysql("jdbcprocdb", "update_entity_with_list.sql");
+        executeSql("jdbcprocdb", "company.sql");
+        executeSql("jdbcprocdb", "employee.sql");
+        executeSql("jdbcprocdb", "certificate.sql");
+        executeSql("jdbcprocdb", "ancestry.sql");
+        executeSql("jdbcprocdb", "verticality/carabiner.sql");
+        executeSql("jdbcprocdb", "verticality/dynamic_rope.sql");
+        executeSql("jdbcprocdb", "verticality/harness.sql");
+        executeSql("jdbcprocdb", "verticality/chalk_bag.sql");
+        executeSql("jdbcprocdb", "create_company.sql");
+        executeSql("jdbcprocdb", "create_company_secured.sql");
+        executeSql("jdbcprocdb", "create_company_secured_consumer_key.sql");
+        executeSql("jdbcprocdb", "create_employee.sql");
+        executeSql("jdbcprocdb", "get_employee_by_id.sql");
+        executeSql("jdbcprocdb", "get_company_employees.sql");
+        executeSql("jdbcprocdb", "get_companies.sql");
+        executeSql("jdbcprocdb", "get_companies_names.sql");
+        executeSql("jdbcprocdb", "get_companies_names_secured.sql");
+        executeSql("jdbcprocdb", "get_company_2x.sql");
+        executeSql("jdbcprocdb", "get_ancestry_2x_multi_level_grouping.sql");
+        executeSql("jdbcprocdb", "create_certificate.sql");
+        executeSql("jdbcprocdb", "create_entity_with_list.sql");
+        executeSql("jdbcprocdb", "update_entity_with_list.sql");
 
-        executeMysql("jdbcprocdb", "verticality/create_collections.prc");
-        executeMysql("jdbcprocdb", "verticality/upload_carabiners.prc");
-        executeMysql("jdbcprocdb", "verticality/upload_carabiners_2.prc");
-        executeMysql("jdbcprocdb", "verticality/upload_carabiners_with_meta_login_info.prc");
-        executeMysql("jdbcprocdb", "verticality/upload_dynamic_ropes.prc");
-        executeMysql("jdbcprocdb", "verticality/upload_dynamic_ropes_with_meta_login_info.prc");
-        executeMysql("jdbcprocdb", "verticality/upload_verticality.prc");
-        executeMysql("jdbcprocdb", "verticality/upload_verticality_with_meta_login_info.prc");
-        executeMysql("jdbcprocdb", "verticality/upload_harnesses.prc");
-        executeMysql("jdbcprocdb", "verticality/create_chalk_bag.prc");
-        executeMysql("jdbcprocdb", "verticality/get_chalk_bags.prc");
+        executeSql("jdbcprocdb", "verticality/create_collections.prc");
+        executeSql("jdbcprocdb", "verticality/upload_carabiners.prc");
+        executeSql("jdbcprocdb", "verticality/upload_carabiners_2.prc");
+        executeSql("jdbcprocdb", "verticality/upload_carabiners_with_meta_login_info.prc");
+        executeSql("jdbcprocdb", "verticality/upload_dynamic_ropes.prc");
+        executeSql("jdbcprocdb", "verticality/upload_dynamic_ropes_with_meta_login_info.prc");
+        executeSql("jdbcprocdb", "verticality/upload_verticality.prc");
+        executeSql("jdbcprocdb", "verticality/upload_verticality_with_meta_login_info.prc");
+        executeSql("jdbcprocdb", "verticality/upload_harnesses.prc");
+        executeSql("jdbcprocdb", "verticality/create_chalk_bag.prc");
+        executeSql("jdbcprocdb", "verticality/get_chalk_bags.prc");
 
           // tx manager
-          executeMysql("jdbcprocdb", "tx_table.sql");
-          executeMysql("jdbcprocdb", "tx_table_test.sql");
-          executeMysql("jdbcprocdb", "tx_table_test_success.sql");
+        executeSql("jdbcprocdb", "tx_table.sql");
+        executeSql("jdbcprocdb", "tx_table_test.sql");
+        executeSql("jdbcprocdb", "tx_table_test_success.sql");
 
         super.runBare();
     }
@@ -86,7 +86,7 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
     }
 
     
-    private void executeMysql(String aDatabase, String aSqlFilePath) throws IOException, InterruptedException {
+    private void executeSql(String aDatabase, String aSqlFilePath) throws IOException, InterruptedException {
         String sqlFile = "src/test/resources/"+theDatabaseConfiguration.getSqlDirectory()+"/" + aSqlFilePath;
 
         LOG.debug("Loading {}...", sqlFile);
