@@ -51,6 +51,17 @@ RETURNS void as'
           );
     end if;      
 
+    if not exists(select * from information_schema.tables where
+            table_catalog = CURRENT_CATALOG and table_schema = CURRENT_SCHEMA
+            and table_name = ''list_elements2'')
+      then
+        CREATE TEMPORARY TABLE list_elements2(
+          id        bigint,
+          name      varchar(32),
+          value     varchar(32)
+          );
+    end if;
+
     RETURN;
   END;'
   language 'plpgsql';

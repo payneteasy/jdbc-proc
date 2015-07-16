@@ -60,6 +60,7 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         executeSql("jdbcprocdb", "get_ancestry_2x_multi_level_grouping.sql");
         executeSql("jdbcprocdb", "create_certificate.sql");
         executeSql("jdbcprocdb", "create_entity_with_list.sql");
+        executeSql("jdbcprocdb", "create_entity_with_two_lists.sql");
         executeSql("jdbcprocdb", "update_entity_with_list.sql");
 
         executeSql("jdbcprocdb", "verticality/create_collections.prc");

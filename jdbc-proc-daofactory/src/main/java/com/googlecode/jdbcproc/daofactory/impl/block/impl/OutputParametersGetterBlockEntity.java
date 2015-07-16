@@ -20,7 +20,7 @@ public class OutputParametersGetterBlockEntity implements IOutputParametersGette
 
     public void fillOutputParameters(ICallableStatementGetStrategy aStmt, Object[] aArgs) throws DataAccessException {
         Assert.notNull(aArgs         , "Argument aArgs must not be null"   );
-        Assert.isTrue(aArgs.length == 1 || aArgs.length == 2, "Count of arguments must be 1 or 2");
+        Assert.isTrue(aArgs.length >= 1, "Count of arguments must be at least 1");
 
         Object entity = aArgs[theEntityParameterIndex];
 

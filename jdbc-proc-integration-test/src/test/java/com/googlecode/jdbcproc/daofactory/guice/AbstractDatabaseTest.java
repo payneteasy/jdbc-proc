@@ -55,6 +55,7 @@ public abstract class AbstractDatabaseTest extends TestCase {
     executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/get_ancestry_2x_multi_level_grouping.sql");
     executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/create_certificate.sql");
     executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/create_entity_with_list.sql");
+    executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/create_entity_with_two_lists.sql");
     executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/update_entity_with_list.sql");
 
     executeMysql("jdbcprocdb", "src/test/resources/sql_mysql/verticality/create_collections.prc");

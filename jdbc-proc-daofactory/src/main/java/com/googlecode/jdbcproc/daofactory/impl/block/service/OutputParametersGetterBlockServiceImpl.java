@@ -23,6 +23,7 @@ import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConv
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
+import org.springframework.util.Assert;
 
 import java.lang.reflect.Method;
 import java.util.LinkedList;
@@ -44,14 +45,8 @@ public class OutputParametersGetterBlockServiceImpl implements OutputParametersG
 
       // CREATE ENTITY
     } else if (isCreateEntityMethod(daoMethod, procedureInfo)) {
-      int entityParameterIndex;
-      if (!BlockFactoryUtils.isSimpleOrListType(daoMethod.getParameterTypes()[0])) {
-        entityParameterIndex = 0;
-      } else {
-        // first argument must be a list, so second (and no more parameters are allowed) is entity
-        entityParameterIndex = 1;
-      }
-      List<EntityPropertySetter> setters = new LinkedList<EntityPropertySetter>();
+      int entityParameterIndex = findEntityParameterIndex(daoMethod);
+      List<EntityPropertySetter> setters = new LinkedList<>();
       Class entityClass = daoMethod.getParameterTypes()[entityParameterIndex];
       for (StoredProcedureArgumentInfo argumentInfo : procedureInfo.getArguments()) {
         if (argumentInfo.isOutputParameter()) {
@@ -75,16 +70,37 @@ public class OutputParametersGetterBlockServiceImpl implements OutputParametersG
     }
   }
 
+  private int findEntityParameterIndex(Method daoMethod) {
+    int entityParameterIndex = -1;
+    for (int i = 0; i < daoMethod.getParameterCount(); i++) {
+      if (!BlockFactoryUtils.isSimpleOrListType(daoMethod.getParameterTypes()[i])) {
+        entityParameterIndex = i;
+        break;
+      }
+    }
+    Assert.isTrue(entityParameterIndex >= 0, "Did not find an entity parameter, although this is an entity (probably with lists)");
+    return entityParameterIndex;
+  }
+
   private boolean isCreateEntityMethod(Method daoMethod, StoredProcedureInfo procedureInfo) {
     boolean ok = false;
     if (procedureInfo.getArgumentsCounts() > 1) {
       if (daoMethod.getParameterTypes().length == 1 && !BlockFactoryUtils.isSimpleOrListType(daoMethod.getParameterTypes()[0])) {
         ok = true;
       } else {
-        if (daoMethod.getParameterTypes().length == 2) {
-          // maybe it's entity + list
-          if (BlockFactoryUtils.isListType(daoMethod.getParameterTypes()[0]) && !BlockFactoryUtils.isSimpleOrListType(daoMethod.getParameterTypes()[1])
-                  || BlockFactoryUtils.isListType(daoMethod.getParameterTypes()[1]) && !BlockFactoryUtils.isSimpleOrListType(daoMethod.getParameterTypes()[0])) {
+        if (daoMethod.getParameterTypes().length > 1) {
+          // maybe it's entity + lists
+          int entities = 0;
+          int lists = 0;
+          for (int i = 0; i < daoMethod.getParameterTypes().length; i++) {
+            if (!BlockFactoryUtils.isSimpleOrListType(daoMethod.getParameterTypes()[i])) {
+              entities++;
+            }
+            if (BlockFactoryUtils.isListType(daoMethod.getParameterTypes()[i])) {
+              lists++;
+            }
+          }
+          if (entities == 1 && lists > 0) {
             // yes, it is
             ok = true;
           }
