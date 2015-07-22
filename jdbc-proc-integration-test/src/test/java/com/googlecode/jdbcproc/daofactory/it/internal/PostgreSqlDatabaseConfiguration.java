@@ -1,5 +1,7 @@
 package com.googlecode.jdbcproc.daofactory.it.internal;
 
+import org.springframework.util.StringUtils;
+
 public class PostgreSqlDatabaseConfiguration implements IDatabaseConfiguration {
 
     public String getDataSourceSpringConfigLocation() {
@@ -19,13 +21,21 @@ public class PostgreSqlDatabaseConfiguration implements IDatabaseConfiguration {
     }
 
     public String[] createExecParameters(String aDatabaseName, String aFilePath) {
-        return new String[]{
-                  "psql"
-                , "-U"
-                , "jdbcproc"
-                , aDatabaseName
-                , "-f"
-                , aFilePath
-        };
+        if (StringUtils.hasText(aDatabaseName)) {
+            return new String[]{
+                    "psql"
+                    , "-U"
+                    , "jdbcproc"
+                    , aDatabaseName
+                    , "-f"
+                    , aFilePath
+            };
+        } else {
+            return new String[]{
+                    "psql"
+                    , "-f"
+                    , aFilePath
+            };
+        }
     }
 }
