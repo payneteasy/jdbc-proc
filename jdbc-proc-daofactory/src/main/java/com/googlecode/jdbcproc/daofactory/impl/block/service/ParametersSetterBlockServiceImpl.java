@@ -44,7 +44,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -57,6 +57,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import jdk.nashorn.internal.runtime.arrays.ArrayLikeIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -95,25 +96,22 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
               && !BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[0])) {
             return createSaveMethod(converterService, method, procedureInfo, aMetaLoginInfoService);
 
-            // is entity with list after it (meta login supported)
-          } else if (procedureInfo.getArgumentsCounts() > method.getParameterTypes().length - 1 + 2
-              && method.getParameterTypes().length == 2
-              && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])
-              && !BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[0])
-              && BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[1])) {
+            // is entity with lists after it (meta login supported)
+          } else if (isEntityWithListsAndMetaLogin(method, procedureInfo)) {
 
-            return createSaveMethodWithList(jdbcTemplate, converterService, method, procedureInfo, aMetaLoginInfoService);
+            return createSaveMethodWithLists(jdbcTemplate, converterService, method, procedureInfo,
+                    aMetaLoginInfoService);
 
             // METHOD @AMetaLoginInfo
             // METHOD no parameter
             // PROCEDURE 2 parameters
           } else if (method.getParameterTypes().length == 0 && procedureInfo.getInputArgumentsCount() == 2) {
-            return Arrays.asList((IParametersSetterBlock) new ParametersSetterBlockMetaLoginInfo(aMetaLoginInfoService
+            return Collections.singletonList((IParametersSetterBlock) new ParametersSetterBlockMetaLoginInfo(aMetaLoginInfoService
                     , getArgument(procedureInfo, aMetaLoginInfoService.getUsernameParameterName())
                     , getArgument(procedureInfo, aMetaLoginInfoService.getRoleParameterName()
             )));
 
-            // if AMetaLoginInfo and parameters is simple puted to procedure
+            // if AMetaLoginInfo and parameters are simply put to procedure
           } else if (method.getParameterTypes().length + 2 == procedureInfo.getInputArgumentsCount()) {
             return createSimpleParametersWithMetaLoginInfo(aMetaLoginInfoService, converterService, method, procedureInfo);
 
@@ -160,11 +158,16 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
               && !BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[0])) {
             return createSaveMethod(converterService, method, procedureInfo);
 
+            // is entity with lists after it (meta login not supported)
+          } else if (isEntityWithLists(method, procedureInfo)) {
+
+            return createSaveMethodWithLists(jdbcTemplate, converterService, method, procedureInfo);
+
             // if no parameters
           } else if (method.getParameterTypes().length == 0 && procedureInfo.getInputArgumentsCount() == 0) {
             return Collections.emptyList();
 
-            // if parameters is simple puted to procedure
+            // if parameters are simply put to procedure
           } else if (method.getParameterTypes().length == procedureInfo.getInputArgumentsCount()) {
             return createSimpleParameters(converterService, method, procedureInfo);
 
@@ -181,6 +184,32 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             throw new IllegalStateException(method + " is Unsupported");
           }
         }
+    }
+
+    private boolean isEntityWithListsAndMetaLogin(Method method, StoredProcedureInfo procedureInfo) {
+        // method parameter 0: entity
+        // method parameters [1..N]: lists
+        boolean ok = procedureInfo.getArgumentsCounts() - 2 > method.getParameterTypes().length - 1
+                && method.getParameterTypes().length > 1
+                && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])
+                && !BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[0]);
+        for (int i = 1; i < method.getParameterCount(); i++) {
+            ok &= BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[i]);
+        }
+        return ok;
+    }
+
+    private boolean isEntityWithLists(Method method, StoredProcedureInfo procedureInfo) {
+        // method parameter 0: entity
+        // method parameters [1..N]: lists
+        boolean ok = procedureInfo.getArgumentsCounts() > method.getParameterTypes().length - 1
+                && method.getParameterTypes().length > 1
+                && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])
+                && !BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[0]);
+        for (int i = 1; i < method.getParameterCount(); i++) {
+            ok &= BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[i]);
+        }
+        return ok;
     }
 
     private StatementArgument getArgumentConsumerKey(StoredProcedureInfo aProcedureInfo) {
@@ -476,19 +505,49 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
     /**
      * is entity with a list, e.g. saveProcessor(TransactionProcessor, List properties)
      */
-    private List<IParametersSetterBlock> createSaveMethodWithList(JdbcTemplate jdbcTemplate, ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo, IMetaLoginInfoService aMetaLoginInfoService) {
-        Assert.isTrue(method.getParameterTypes().length == 2
-                , "Method " + method.getName() + " parameters count must be equal to 2");
+    private List<IParametersSetterBlock> createSaveMethodWithLists(JdbcTemplate jdbcTemplate,
+            ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo,
+            IMetaLoginInfoService aMetaLoginInfoService) {
+        Assert.isTrue(method.getParameterTypes().length > 1
+                , "Method " + method.getName() + " parameters count must be at least 2");
 
-        List<IParametersSetterBlock> blocks = doCreateEntityBlocks(converterService, method, procedureInfo, aMetaLoginInfoService);
-        blocks.add(createParametersSetterBlockList(jdbcTemplate, converterService, method, 1, procedureInfo));
-        return blocks;
+        List<IParametersSetterBlock> blocks = doCreateEntityBlocks(converterService, method, procedureInfo,
+                aMetaLoginInfoService);
+        return addListBlocks(jdbcTemplate, converterService, method, procedureInfo, blocks);
     }
 
-    protected List<IParametersSetterBlock> createSaveMethod(ParameterConverterService converterService, 
+    /**
+     * is entity with a list, e.g. saveProcessor(TransactionProcessor, List properties)
+     */
+    private List<IParametersSetterBlock> createSaveMethodWithLists(JdbcTemplate jdbcTemplate,
+            ParameterConverterService converterService, Method method, StoredProcedureInfo procedureInfo) {
+        Assert.isTrue(method.getParameterTypes().length > 1
+                , "Method " + method.getName() + " parameters count must be at least 2");
+
+
+        List<IParametersSetterBlock> blocks = doCreateSaveMethod(converterService, method, procedureInfo);
+        return addListBlocks(jdbcTemplate, converterService, method, procedureInfo, blocks);
+    }
+
+    private List<IParametersSetterBlock> addListBlocks(JdbcTemplate jdbcTemplate, ParameterConverterService converterService, Method method,
+            StoredProcedureInfo procedureInfo, List<IParametersSetterBlock> blocks) {
+        List<IParametersSetterBlock> result = new ArrayList<>(blocks);
+        for (int i = 1; i < method.getParameterCount(); i++) {
+            result.add(createParametersSetterBlockList(jdbcTemplate, converterService, method, i, procedureInfo));
+        }
+//        return Collections.unmodifiableList(result);
+        return result;
+    }
+
+    protected List<IParametersSetterBlock> createSaveMethod(ParameterConverterService converterService,
         Method method, StoredProcedureInfo procedureInfo) {
         Assert.isTrue(method.getParameterTypes().length == 1
                 , "Method " + method.getName() + " parameters count must be equals to 1");
+        return doCreateSaveMethod(converterService, method, procedureInfo);
+    }
+
+    private List<IParametersSetterBlock> doCreateSaveMethod(ParameterConverterService converterService, Method method,
+            StoredProcedureInfo procedureInfo) {
         Class entityClass = method.getParameterTypes()[0];
 
         final IParametersSetterBlock block = createEntityBlock(converterService, procedureInfo, entityClass, null);
@@ -556,9 +615,10 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         return new ParametersSetterBlockEntity(getters, nonListArgumentIndexes);
     }
 
-    private ParametersSetterBlockList createParametersSetterBlockList(JdbcTemplate jdbcTemplate,
-                                                                      ParameterConverterService converterService, Method method, int parameterIndex, StoredProcedureInfo aStoredProcedureInfo) {
-        Class entityClass = getListEntityClass(method.getGenericParameterTypes()[parameterIndex]);
+    private ParametersSetterBlockList createParametersSetterBlockList(
+            JdbcTemplate jdbcTemplate, ParameterConverterService converterService,
+            Method method, int listParameterIndex, StoredProcedureInfo aStoredProcedureInfo) {
+        Class entityClass = getListEntityClass(method.getGenericParameterTypes()[listParameterIndex]);
         String tableName = getListTableName(entityClass);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting metadata for table {}...", tableName);
@@ -570,7 +630,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             LOG.debug("insert query: {}", insertQuery);
         }
         String truncateTableQuery = "truncate table " + tableName;
-        return new ParametersSetterBlockList(insertQuery, getters, truncateTableQuery);
+        return new ParametersSetterBlockList(insertQuery, getters, truncateTableQuery, listParameterIndex);
     }
 
     private Map<String, Integer> createTypes(JdbcTemplate jdbcTemplate, final String tableName) {

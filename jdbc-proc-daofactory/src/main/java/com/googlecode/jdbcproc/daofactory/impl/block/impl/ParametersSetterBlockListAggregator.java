@@ -32,13 +32,13 @@ public class ParametersSetterBlockListAggregator implements IParametersSetterBlo
             for(int i = 0; i < theListArgumentIndexes.length; i++) {
                 Object argument = aMethodParameters[theListArgumentIndexes[i]];
                 IParametersSetterBlock block = theList.get(i);
-                block.setParameters(aStmt, new Object[] {argument});
+                block.setParameters(aStmt, aMethodParameters);
             }
         } else {
             for(int i = 0; i < aMethodParameters.length; i++) {
                 Object argument = aMethodParameters[i];
                 IParametersSetterBlock block = theList.get(i);
-                block.setParameters(aStmt, new Object[] {argument});
+                block.setParameters(aStmt, aMethodParameters);
             }
         }
     }

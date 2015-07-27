@@ -17,8 +17,12 @@ public interface IListsDao {
     void createEntityWithList(EntityWithList entity, List<ListElement> list);
 
     @AStoredProcedure(name = "create_entity_with_two_lists")
-    @AMetaLoginInfo
     void createEntityWithTwoLists(EntityWithList entity, List<ListElement> list,
+            List<ListElement2> list2);
+
+    @AStoredProcedure(name = "create_entity_with_two_lists_and_metalogin_info")
+    @AMetaLoginInfo
+    void createEntityWithTwoListsAndMetaLoginInfo(EntityWithList entity, List<ListElement> list,
             List<ListElement2> list2);
 
     @AStoredProcedure(name = "update_entity_with_list")

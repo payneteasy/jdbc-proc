@@ -1,10 +1,11 @@
 DROP FUNCTION if exists create_entity_with_two_lists();
 
 CREATE OR REPLACE FUNCTION create_entity_with_two_lists(
-    i_username   varchar(32),
-    i_principal  varchar(32),
     out o_id     bigint,
-    i_name       varchar(255)
+    i_name       varchar(255),
+    i_prop3      varchar(255),
+    i_prop4      varchar(255),
+    i_prop5      varchar(255)
 ) AS'
 DECLARE v_count bigint;
 BEGIN
