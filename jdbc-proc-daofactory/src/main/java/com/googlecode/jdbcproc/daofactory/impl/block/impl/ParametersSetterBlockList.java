@@ -22,10 +22,11 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
     private final Logger LOG = LoggerFactory.getLogger(getClass());
     
     public ParametersSetterBlockList(String aInsertQuery, List<IEntityArgumentGetter> aArgumentsGetters,
-      String aTruncateTableQuery) {
+            String aTruncateTableQuery, int aListParameterIndex) {
         theInsertQuery = aInsertQuery;
         theArgumentsGetters = Collections.unmodifiableList(aArgumentsGetters);
         theTruncateTableQuery = aTruncateTableQuery;
+        theListParameterIndex = aListParameterIndex;
     }
 
     public void setParameters(ICallableStatementSetStrategy aStmt, Object[] aMethodParameters) throws DataAccessException {
@@ -41,7 +42,7 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
             truncateTable( con );
 
             // inserts current data to table
-            Collection collection = (Collection) aMethodParameters[aMethodParameters.length - 1];
+            Collection collection = (Collection) aMethodParameters[theListParameterIndex];
 
             PreparedStatement stmt = con.prepareStatement(theInsertQuery);
             ICallableStatementSetStrategy stmtStrategy = new CallableStatementSetStrategyIndexImpl(stmt);
@@ -93,6 +94,7 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
                 '}';
     }
 
+    private final int theListParameterIndex;
     private final String theInsertQuery;
     private final String theTruncateTableQuery;
     private final List<IEntityArgumentGetter> theArgumentsGetters ;

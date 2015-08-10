@@ -2,9 +2,10 @@ drop procedure if exists create_entity_with_two_lists;
 delimiter $$
 create procedure create_entity_with_two_lists(
                                        out o_id     int(10),
-                                       i_username   varchar(32),
-                                       i_principal  varchar(32),
-                                       i_name       varchar(255)
+                                       i_name       varchar(255),
+                                       i_prop3      varchar(255),
+                                       i_prop4      varchar(255),
+                                       i_prop5      varchar(255)
                                       )
  main_sql:
   begin

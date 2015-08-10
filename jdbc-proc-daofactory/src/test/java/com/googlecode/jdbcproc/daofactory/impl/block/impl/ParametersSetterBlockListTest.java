@@ -66,7 +66,7 @@ public class ParametersSetterBlockListTest {
             }
         };
         ParametersSetterBlockList setter = new ParametersSetterBlockList(insertQuery,
-                Collections.singletonList(argumentGetter), truncateTableQuery);
+                Collections.singletonList(argumentGetter), truncateTableQuery, 0);
 
         setter.setParameters(setStrategy, new Object[]{Arrays.asList("abc", "def")});
 

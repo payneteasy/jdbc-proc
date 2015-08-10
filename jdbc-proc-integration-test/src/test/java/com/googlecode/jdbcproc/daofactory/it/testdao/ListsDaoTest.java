@@ -32,7 +32,7 @@ public class ListsDaoTest extends DatabaseAwareTest {
         Assert.assertEquals(999, (long) entity.getId());
     }
 
-    public void testCreateEntityWithTwoListsAndMetaLoginInfoAndOutputParam() {
+    public void testCreateEntityWithTwoListsAndOutputParam() {
         EntityWithList entity = new EntityWithList();
         entity.setName("entity");
         ListElement elem = new ListElement();
@@ -42,6 +42,22 @@ public class ListsDaoTest extends DatabaseAwareTest {
         elem.setName("name");
         elem.setValue("value");
         listsDao.createEntityWithTwoLists(entity,
+                Arrays.asList(elem, elem), Arrays.asList(elem2, elem2));
+
+        Assert.assertNotNull(entity.getId());
+        Assert.assertEquals(999, (long) entity.getId());
+    }
+
+    public void testCreateEntityWithTwoListsAndMetaLoginInfoAndOutputParam() {
+        EntityWithList entity = new EntityWithList();
+        entity.setName("entity");
+        ListElement elem = new ListElement();
+        elem.setName("name");
+        elem.setValue("value");
+        ListElement2 elem2 = new ListElement2();
+        elem.setName("name");
+        elem.setValue("value");
+        listsDao.createEntityWithTwoListsAndMetaLoginInfo(entity,
                 Arrays.asList(elem, elem), Arrays.asList(elem2, elem2));
 
         Assert.assertNotNull(entity.getId());

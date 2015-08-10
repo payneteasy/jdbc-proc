@@ -1,6 +1,6 @@
-DROP FUNCTION if exists create_entity_with_list();
+DROP FUNCTION if exists create_entity_with_two_lists_and_metalogin_info();
 
-CREATE OR REPLACE FUNCTION create_entity_with_list(
+CREATE OR REPLACE FUNCTION create_entity_with_two_lists_and_metalogin_info(
     i_username   varchar(32),
     i_principal  varchar(32),
     out o_id     bigint,
@@ -14,6 +14,11 @@ BEGIN
   o_id:=999;
 
   select count(*) from list_elements into v_count;
+  if v_count <> 2 then
+    RAISE EXCEPTION''raise exception'';
+  end if;
+
+  select count(*) from list_elements2 into v_count;
   if v_count <> 2 then
     RAISE EXCEPTION''raise exception'';
   end if;
