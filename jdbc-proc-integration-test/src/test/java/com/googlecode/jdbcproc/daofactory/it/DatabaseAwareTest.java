@@ -75,10 +75,14 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         executeSql("jdbcprocdb", "verticality/create_chalk_bag.prc");
         executeSql("jdbcprocdb", "verticality/get_chalk_bags.prc");
 
-          // tx manager
+        // tx manager
         executeSql("jdbcprocdb", "tx_table.sql");
         executeSql("jdbcprocdb", "tx_table_test.sql");
         executeSql("jdbcprocdb", "tx_table_test_success.sql");
+
+        // RowIterator
+        executeSql("jdbcprocdb", "report_table.sql");
+        executeSql("jdbcprocdb", "report.sql");
 
         super.runBare();
     }

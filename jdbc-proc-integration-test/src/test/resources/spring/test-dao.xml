@@ -54,6 +54,10 @@
         <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.VerticalityDao"/>
     </bean>
 
+    <bean id="rowIteratorDao" parent="abstractDao">
+        <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.RowIteratorDao"/>
+    </bean>
+
     <bean id="listsDao" parent="abstractDao">
         <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.IListsDao"/>
     </bean>

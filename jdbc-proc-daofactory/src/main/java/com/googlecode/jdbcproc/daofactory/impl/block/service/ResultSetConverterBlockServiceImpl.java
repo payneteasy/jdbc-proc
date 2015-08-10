@@ -27,6 +27,7 @@ import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBloc
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockSimpleType;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockSimpleTypeIterator;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterBlockSimpleTypeList;
+import com.googlecode.jdbcproc.daofactory.internal.ResultSetConverterRowIterator;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.ResultSetColumnInfo;
@@ -67,8 +68,11 @@ public class ResultSetConverterBlockServiceImpl implements ResultSetConverterBlo
       ParameterConverterService converterService) {
     Class returnType = daoMethod.getReturnType();
     if (returnType.equals(void.class)) {
-      // void
-      return null;
+        // void
+        return null;
+
+    } else if (BlockFactoryUtils.isReturnRowIterator(daoMethod)) { // returns RowIterator FIXME think about input columns (dynamic)
+        return new ResultSetConverterRowIterator();
 
       // OUTPUT PARAMETER HAS RETURN
     } else if (BlockFactoryUtils.isOneOutputHasReturn(daoMethod, procedureInfo)) {

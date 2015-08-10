@@ -14,6 +14,7 @@ import javax.persistence.OneToMany;
 import com.googlecode.jdbcproc.daofactory.annotation.AMetaLoginInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
+import com.googlecode.jdbcproc.daofactory.internal.RowIterator;
 
 /**
  * Utils for factories
@@ -97,6 +98,11 @@ public class BlockFactoryUtils {
     public static boolean isReturnIterator(Method aDaoMethod) {
         Class returnType = aDaoMethod.getReturnType();
         return Iterator.class.isAssignableFrom(returnType);
+    }
+
+    public static boolean isReturnRowIterator(Method aDaoMethod) {
+        Class returnType = aDaoMethod.getReturnType();
+        return RowIterator.class.isAssignableFrom(returnType);
     }
 
     /**
