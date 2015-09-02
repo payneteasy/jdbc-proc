@@ -10,7 +10,7 @@ public interface CompanyDao {
 }
 ```
 
-[Read more about this example](ExampleCreateCompany.md)
+[Read more about this example](https://github.com/payneteasy/jdbc-proc/wiki/ExampleCreateCompany)
 
 ### Main features ###
   * uses mapping specification of JPA with annotations: Entity, Column, OneToOne, ManyToOne, OneToMany, JoinColumn
@@ -28,7 +28,9 @@ For step-by-step instructions, see [Getting Started](GettingStarted.md) guide
 Many thanks to [JProfiler](http://www.ej-technologies.com/products/jprofiler/overview.html)
 
 ### News ###
-**2013 May 13** Added patched mysql jdbc driver with improved performance https://jdbc-proc.googlecode.com/files/mysql-connector-java-5.1.22-3-bin.jar
+**2015 Sep 02** Migrated to github
+
+**2013 May 13** Added patched mysql jdbc driver with improved performance https://github.com/payneteasy/jdbc-proc/blob/master/mysql-driver/mysql-connector-java-5.1.22-3-bin.jar?raw=true
 
 **2011 Nov 02** new version 1.1.1 released. Main feature: added postgresql support
 
