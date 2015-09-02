@@ -15,9 +15,9 @@ public interface CompanyDao {
 ### Main features ###
   * uses mapping specification of JPA with annotations: Entity, Column, OneToOne, ManyToOne, OneToMany, JoinColumn
   * creates stored procedures mapping code on the fly
-  * integrated with [spring framework](http://www.springsource.org) and [Google Guice](http://google-guice.googlecode.com)
+  * integrated with [spring framework](http://www.springsource.org) and [Google Guice](https://github.com/google/guice)
 
-For step-by-step instructions, see [Getting Started](GettingStarted.md) guide
+For step-by-step instructions, see [Getting Started](https://github.com/payneteasy/jdbc-proc/wiki/GettingStarted) guide
 
 ### Supported databases ###
   * [MySQL](http://mysql.com) 5.0.x, 5.1.x, 5.5.x, 5.6.x
@@ -30,7 +30,7 @@ Many thanks to [JProfiler](http://www.ej-technologies.com/products/jprofiler/ove
 ### News ###
 **2015 Sep 02** Migrated to github
 
-**2013 May 13** Added patched mysql jdbc driver with improved performance https://github.com/payneteasy/jdbc-proc/blob/master/mysql-driver/mysql-connector-java-5.1.22-3-bin.jar?raw=true
+**2013 May 13** Added patched mysql jdbc driver with improved performance [mysql-connector-java-5.1.22-3-bin.jar](https://github.com/payneteasy/jdbc-proc/blob/master/mysql-driver/mysql-connector-java-5.1.22-3-bin.jar?raw=true)
 
 **2011 Nov 02** new version 1.1.1 released. Main feature: added postgresql support
 
