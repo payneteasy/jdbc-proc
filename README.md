@@ -1,6 +1,7 @@
 jdbc-proc provides mappings from POJOs to stored procedures.
 
-Create stored procedure and map it to DAO interface method.
+### 10 seconds introduction ###
+Mapping a stored procedure to Java DAO:
 ```
 public interface CompanyDao {
 
