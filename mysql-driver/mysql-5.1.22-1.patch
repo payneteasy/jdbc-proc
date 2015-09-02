@@ -1,0 +1,263 @@
+Index: src/com/mysql/jdbc/CallableStatement.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/com/mysql/jdbc/CallableStatement.java	(date 1351660661000)
++++ src/com/mysql/jdbc/CallableStatement.java	(date 1351669453000)
+@@ -22,6 +22,9 @@
+  */
+ package com.mysql.jdbc;
+ 
++import com.mysql.jdbc.cache.CallableStatementInfo;
++import com.mysql.jdbc.cache.CallableStatementKey;
++
+ import java.io.InputStream;
+ import java.io.Reader;
+ import java.io.UnsupportedEncodingException;
+@@ -45,6 +48,7 @@
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Map;
++import java.util.concurrent.ConcurrentHashMap;
+ 
+ /**
+  * Representation of stored procedures for JDBC
+@@ -135,7 +139,7 @@
+ 		}
+ 	}
+ 
+-	protected class CallableStatementParamInfo {
++	public static class CallableStatementParamInfo {
+ 		String catalogInUse;
+ 
+ 		boolean isFunctionCall;
+@@ -166,7 +170,7 @@
+ 		 * @param fullParamInfo the metadata for all parameters for this stored 
+ 		 * procedure or function.
+ 		 */
+-		CallableStatementParamInfo(CallableStatementParamInfo fullParamInfo) {
++		CallableStatementParamInfo(CallableStatementParamInfo fullParamInfo, String originalSql, String currentCatalog, int[] placeholderToParameterIndexMap) {
+ 			this.nativeSql = originalSql;
+ 			this.catalogInUse = currentCatalog;
+ 			isFunctionCall = fullParamInfo.isFunctionCall;
+@@ -199,7 +203,7 @@
+ 		}
+ 		
+ 		@SuppressWarnings("synthetic-access")
+-		CallableStatementParamInfo(java.sql.ResultSet paramTypesRs)
++		CallableStatementParamInfo(java.sql.ResultSet paramTypesRs, String originalSql, String currentCatalog, boolean callingStoredFunction)
+ 				throws SQLException {
+ 			boolean hadRows = paramTypesRs.last();
+ 
+@@ -273,7 +277,7 @@
+ 				throw SQLError.createSQLException(
+ 						Messages.getString("CallableStatement.11") + paramIndex //$NON-NLS-1$
+ 								+ Messages.getString("CallableStatement.12") + numParameters //$NON-NLS-1$
+-								+ Messages.getString("CallableStatement.13"), SQLError.SQL_STATE_ILLEGAL_ARGUMENT, getExceptionInterceptor()); //$NON-NLS-1$
++								+ Messages.getString("CallableStatement.13"), SQLError.SQL_STATE_ILLEGAL_ARGUMENT, null /*getExceptionInterceptor() */); //$NON-NLS-1$
+ 			}
+ 		}
+ 
+@@ -382,11 +386,11 @@
+ 
+ 		CallableStatementParamInfoJDBC3(java.sql.ResultSet paramTypesRs)
+ 				throws SQLException {
+-			super(paramTypesRs);
++			super(paramTypesRs, originalSql, currentCatalog, callingStoredFunction);
+ 		}
+ 
+ 		public CallableStatementParamInfoJDBC3(CallableStatementParamInfo paramInfo) {
+-			super(paramInfo);
++			super(paramInfo, originalSql, currentCatalog, placeholderToParameterIndexMap);
+ 		}
+ 		
+ 		/**
+@@ -398,7 +402,7 @@
+ 	     * callers can use this method to avoid expensive <code>unwrap</code> calls that may fail. If this method
+ 	     * returns true then calling <code>unwrap</code> with the same argument should succeed.
+ 	     *
+-	     * @param interfaces a Class defining an interface.
++	     * @param iface a Class defining an interface.
+ 	     * @return true if this implements the interface or directly or indirectly wraps an object that does.
+ 	     * @throws java.sql.SQLException  if an error occurs while determining whether this is a wrapper
+ 	     * for an object with the given interface.
+@@ -621,25 +625,38 @@
+ 
+ 		this.callingStoredFunction = isFunctionCall;
+ 
++        CallableStatementKey key = new CallableStatementKey(sql, catalog, isFunctionCall);
++        CallableStatementInfo info = CACHE.get(key);
++        if (info != null) {
++            // gets from cache
++            parameterCount = info.parameterCount;
++            paramInfo = info.paramInfo;
++            placeholderToParameterIndexMap = parameterIndexToRsIndex;
++
++        } else {
+-		if (!this.callingStoredFunction) {
+-			if (!StringUtils.startsWithIgnoreCaseAndWs(sql, "CALL")) {
+-				// not really a stored procedure call
+-				fakeParameterTypes(false);
+-			} else {
+-				determineParameterTypes();
+-			}
+-			
+-			generateParameterMap();
+-		} else {
+-			determineParameterTypes();
+-			generateParameterMap();
+-			
+-			this.parameterCount += 1;
+-		}
+-		
++            if (!this.callingStoredFunction) {
++                if (!StringUtils.startsWithIgnoreCaseAndWs(sql, "CALL")) {
++                    // not really a stored procedure call
++                    fakeParameterTypes(false);
++                } else {
++                    determineParameterTypes();
++                }
++
++                generateParameterMap();
++            } else {
++                determineParameterTypes();
++                generateParameterMap();
++
++                this.parameterCount += 1;
++            }
++
++            CACHE.put(key, new CallableStatementInfo(parameterCount, paramInfo, placeholderToParameterIndexMap));
++        }
+ 		this.retrieveGeneratedKeys = true; // not provided for in the JDBC spec
+ 	}
+ 
++    private static final ConcurrentHashMap<CallableStatementKey, CallableStatementInfo> CACHE = new ConcurrentHashMap<CallableStatementKey, CallableStatementInfo>(1000);
++
+ 	/*
+ 	 * (non-Javadoc)
+ 	 * 
+@@ -898,7 +915,7 @@
+ 				this.paramInfo = new CallableStatementParamInfoJDBC3(
+ 						paramTypesRs);
+ 			} else {
+-				this.paramInfo = new CallableStatementParamInfo(paramTypesRs);
++				this.paramInfo = new CallableStatementParamInfo(paramTypesRs, originalSql, currentCatalog, callingStoredFunction);
+ 			}
+ 		}
+ 	}
+Index: src/com/mysql/jdbc/DatabaseMetaDataUsingInfoSchema.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/com/mysql/jdbc/DatabaseMetaDataUsingInfoSchema.java	(date 1351660661000)
++++ src/com/mysql/jdbc/DatabaseMetaDataUsingInfoSchema.java	(date 1351669453000)
+@@ -45,18 +45,20 @@
+ 		
+ 		this.hasReferentialConstraintsView = 
+ 			this.conn.versionMeetsMinimum(5, 1, 10);
+-		
++
+-		ResultSet rs = null;
++       hasParametersView = true;
+-		
++
+-		try {
+-			rs = super.getTables("INFORMATION_SCHEMA", null, "PARAMETERS", new String[0]);
+-			
+-			this.hasParametersView = rs.next();
+-		} finally {
+-			if (rs != null) {
+-				rs.close();
+-			}
+-		}
++//		ResultSet rs = null;
++//
++//		try {
++//			rs = super.getTables("INFORMATION_SCHEMA", null, "PARAMETERS", new String[0]);
++//
++//			this.hasParametersView = rs.next();
++//		} finally {
++//			if (rs != null) {
++//				rs.close();
++//			}
++//		}
+ 	}
+ 
+ 	private ResultSet executeMetadataQuery(java.sql.PreparedStatement pStmt)
+Index: src/com/mysql/jdbc/cache/CallableStatementInfo.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/com/mysql/jdbc/cache/CallableStatementInfo.java	(date 1351669453000)
++++ src/com/mysql/jdbc/cache/CallableStatementInfo.java	(date 1351669453000)
+@@ -0,0 +1,20 @@
++package com.mysql.jdbc.cache;
++
++import com.mysql.jdbc.CallableStatement;
++
++/**
++ *
++ */
++public class CallableStatementInfo {
++
++    public CallableStatementInfo(int parameterCount, CallableStatement.CallableStatementParamInfo paramInfo, int[] placeholderToParameterIndexMap) {
++        this.parameterCount = parameterCount;
++        this.paramInfo = paramInfo;
++        this.placeholderToParameterIndexMap = placeholderToParameterIndexMap;
++    }
++
++    public final int parameterCount;
++    public final CallableStatement.CallableStatementParamInfo paramInfo;
++    public final int[] placeholderToParameterIndexMap;
++
++}
+Index: src/com/mysql/jdbc/cache/CallableStatementKey.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/com/mysql/jdbc/cache/CallableStatementKey.java	(date 1351669453000)
++++ src/com/mysql/jdbc/cache/CallableStatementKey.java	(date 1351669453000)
+@@ -0,0 +1,39 @@
++package com.mysql.jdbc.cache;
++
++/**
++ *
++ */
++public class CallableStatementKey {
++
++    public CallableStatementKey(String aSql, String aCatalog, boolean aFunctionCall) {
++        theSql = aSql;
++        theCatalog = aCatalog;
++        theIsFunctionCall = aFunctionCall;
++    }
++
++    @Override
++    public boolean equals(Object o) {
++        if (this == o) return true;
++        if (o == null || getClass() != o.getClass()) return false;
++
++        CallableStatementKey that = (CallableStatementKey) o;
++
++        if (theIsFunctionCall != that.theIsFunctionCall) return false;
++        if (theCatalog != null ? !theCatalog.equals(that.theCatalog) : that.theCatalog != null) return false;
++        if (theSql != null ? !theSql.equals(that.theSql) : that.theSql != null) return false;
++
++        return true;
++    }
++
++    @Override
++    public int hashCode() {
++        int result = theSql != null ? theSql.hashCode() : 0;
++        result = 31 * result + (theCatalog != null ? theCatalog.hashCode() : 0);
++        result = 31 * result + (theIsFunctionCall ? 1 : 0);
++        return result;
++    }
++
++    private final String theSql;
++    private final String theCatalog;
++    private final boolean theIsFunctionCall;
++}

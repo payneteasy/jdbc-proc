@@ -1,0 +1,53 @@
+diff --git a/build.properties b/build.properties
+index 546baea..88b86a7 100644
+--- a/build.properties
++++ b/build.properties
+@@ -3,3 +3,5 @@ com.mysql.jdbc.java6.rtjar=/opt/jdk1.6.0_35/jre/lib/rt.jar
+ com.mysql.jdbc.java6.java=/opt/jdk1.6.0_35/bin/java
+ 
+ includeantruntime=true
++
++snapshot.version=-3
+diff --git a/build.xml b/build.xml
+index 601dc34..9f38e8d 100644
+--- a/build.xml
++++ b/build.xml
+@@ -35,7 +35,7 @@
+ 
+ 	<property name="version" value="${major_version}.${minor_version}.${subminor_version}${version_status}"/>
+ 	<property name="prodName" value="mysql-connector-java"/>
+-	<property name="snapshot.version" value="-SNAPSHOT" />
++	<property name="snapshot.version" value="-1" />
+ 	<property name="extra.version" value=""/>
+ 	<property name="full.version" value="${version}${extra.version}${snapshot.version}"/>
+ 	<property name="fullProdName" value="${prodName}-${full.version}"/>
+diff --git a/src/com/mysql/jdbc/ConnectionImpl.java b/src/com/mysql/jdbc/ConnectionImpl.java
+index 707251b..6f18b1c 100644
+--- a/src/com/mysql/jdbc/ConnectionImpl.java
++++ b/src/com/mysql/jdbc/ConnectionImpl.java
+@@ -83,6 +83,8 @@ public class ConnectionImpl extends ConnectionPropertiesImpl implements
+ 
+ 	private static final long serialVersionUID = 2877471301981509474L;
+ 
++    private static final boolean ENABLE_AUTOCOMMIT = false;
++
+ 	private static final SQLPermission SET_NETWORK_TIMEOUT_PERM = new SQLPermission("setNetworkTimeout");
+ 	
+ 	private static final SQLPermission ABORT_PERM = new SQLPermission("abort");
+@@ -5027,7 +5029,6 @@ public class ConnectionImpl extends ConnectionPropertiesImpl implements
+ 	 */
+ 	public synchronized void setAutoCommit(final boolean autoCommitFlag) throws SQLException {
+ 		checkClosed();
+-		
+ 		if (this.connectionLifecycleInterceptors != null) {
+ 			IterateBlock<Extension> iter = new IterateBlock<Extension>(this.connectionLifecycleInterceptors.iterator()) {
+ 
+@@ -5071,7 +5072,7 @@ public class ConnectionImpl extends ConnectionPropertiesImpl implements
+ 				// so the value holds across connections
+ 				this.autoCommit = autoCommitFlag;
+ 
+-				if (needsSetOnServer) {
++				if (needsSetOnServer && ENABLE_AUTOCOMMIT) {
+ 					execSQL(null, autoCommitFlag ? "SET autocommit=1"
+ 							: "SET autocommit=0", -1, null,
+ 							DEFAULT_RESULT_SET_TYPE,
