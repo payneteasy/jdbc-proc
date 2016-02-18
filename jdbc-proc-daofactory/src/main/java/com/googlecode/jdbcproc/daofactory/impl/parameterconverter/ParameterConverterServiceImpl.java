@@ -73,6 +73,8 @@ public class ParameterConverterServiceImpl implements ParameterConverterService 
     putSetters(settersMap, new ParameterConverter_LONGVARCHAR_String());
 
     // byte[]
+    putSetters(settersMap, new ParameterConverter_BINARY_byteArray());
+    putSetters(settersMap, new ParameterConverter_VARBINARY_byteArray());
     putSetters(settersMap, new ParameterConverter_LONGVARBINARY_byteArray());
 
     // REAL
