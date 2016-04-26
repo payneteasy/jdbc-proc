@@ -4,7 +4,7 @@
 
     <artifactId>jdbc-proc</artifactId>
     <groupId>com.googlecode.jdbc-proc</groupId>
-    <version>1.1-14-SNAPSHOT</version>
+    <version>1.1-14</version>
 
     <name>jdbc-proc                              ${version}</name>
 
@@ -21,7 +21,7 @@
         <connection>scm:git:git@github.com:payneteasy/jdbc-proc.git</connection>
         <developerConnection>scm:git:git@github.com:payneteasy/jdbc-proc.git</developerConnection>
         <url>https://github.com/payneteasy/jdbc-proc</url>
-      <tag>HEAD</tag>
+      <tag>jdbc-proc-1.1-14</tag>
   </scm>
 
     <developers>
@@ -74,7 +74,7 @@
             <dependency>
                 <groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
                 <artifactId>jdbc-proc-daofactory</artifactId>
-                <version>1.1-14-SNAPSHOT</version>
+                <version>1.1-14</version>
             </dependency>
 
             <!-- SPRING -->
