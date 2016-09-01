@@ -50,6 +50,7 @@ public class ParameterConverterServiceImpl implements ParameterConverterService 
     // BIGINT
     putSetters(settersMap, new ParameterConverter_BIGINT_long());
     putSetters(settersMap, new ParameterConverter_BIGINT_langLong());
+    putSetters(settersMap, new ParameterConverter_BIGINT_BigInteger());
 
     // CHAR/VARCHAR to boolean 
     putSetters(settersMap, new ParameterConverter_CHAR_boolean());
