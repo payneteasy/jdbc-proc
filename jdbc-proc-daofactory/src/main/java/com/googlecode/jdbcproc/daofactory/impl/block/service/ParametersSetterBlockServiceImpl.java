@@ -14,7 +14,9 @@
 
 package com.googlecode.jdbcproc.daofactory.impl.block.service;
 
+import com.googlecode.jdbcproc.daofactory.IMetaLoginInfoService;
 import com.googlecode.jdbcproc.daofactory.annotation.AConsumerKey;
+import com.googlecode.jdbcproc.daofactory.annotation.AMetaLoginInfo;
 import com.googlecode.jdbcproc.daofactory.impl.block.BlockFactoryUtils;
 import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ArgumentGetter;
@@ -34,9 +36,19 @@ import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConv
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureArgumentInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
-import com.googlecode.jdbcproc.daofactory.annotation.AMetaLoginInfo;
-import com.googlecode.jdbcproc.daofactory.IMetaLoginInfoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.StatementCallback;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -50,21 +62,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-
-import jdk.nashorn.internal.runtime.arrays.ArrayLikeIterator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.StatementCallback;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * @author esinev
@@ -620,6 +617,12 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             Method method, int listParameterIndex, StoredProcedureInfo aStoredProcedureInfo) {
         Class entityClass = getListEntityClass(method.getGenericParameterTypes()[listParameterIndex]);
         String tableName = getListTableName(entityClass);
+
+        if (!tableName.matches("^[a-zA-Z0-9_]+$")) {
+            // protecting ourselves from injection
+            throw new IllegalStateException("Wrong temp table name: '" + tableName + "'");
+        }
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting metadata for table {}...", tableName);
         }
@@ -629,8 +632,8 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         if (LOG.isDebugEnabled()) {
             LOG.debug("insert query: {}", insertQuery);
         }
-        String truncateTableQuery = "truncate table " + tableName;
-        return new ParametersSetterBlockList(insertQuery, getters, truncateTableQuery, listParameterIndex);
+        String clearTableQuery = "delete from " + tableName;
+        return new ParametersSetterBlockList(insertQuery, getters, clearTableQuery, listParameterIndex);
     }
 
     private Map<String, Integer> createTypes(JdbcTemplate jdbcTemplate, final String tableName) {

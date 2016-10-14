@@ -25,7 +25,7 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
             String aTruncateTableQuery, int aListParameterIndex) {
         theInsertQuery = aInsertQuery;
         theArgumentsGetters = Collections.unmodifiableList(aArgumentsGetters);
-        theTruncateTableQuery = aTruncateTableQuery;
+        theClearTableQuery = aTruncateTableQuery;
         theListParameterIndex = aListParameterIndex;
     }
 
@@ -39,7 +39,7 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
         try {
             Connection con = aStmt.getConnection();
             // delete previous data from table
-            truncateTable( con );
+            clearTable( con );
 
             // inserts current data to table
             Collection collection = (Collection) aMethodParameters[theListParameterIndex];
@@ -71,16 +71,16 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
     }
     
     public void cleanup(CallableStatement aStmt) throws DataAccessException, SQLException {
-         truncateTable(aStmt.getConnection());
+         clearTable(aStmt.getConnection());
     }
 
-    private void truncateTable(Connection aConnection) throws SQLException {
+    private void clearTable(Connection aConnection) throws SQLException {
         if(LOG.isDebugEnabled()) {
-            LOG.debug("Executing truncate: {}", theTruncateTableQuery);
+            LOG.debug("Executing clear: {}", theClearTableQuery);
         }
         Statement stmt = aConnection.createStatement();
         try {
-            stmt.executeUpdate(theTruncateTableQuery);
+            stmt.executeUpdate(theClearTableQuery);
         } finally {
             stmt.close();
         }
@@ -96,6 +96,6 @@ public class ParametersSetterBlockList implements IParametersSetterBlock {
 
     private final int theListParameterIndex;
     private final String theInsertQuery;
-    private final String theTruncateTableQuery;
+    private final String theClearTableQuery;
     private final List<IEntityArgumentGetter> theArgumentsGetters ;
 }

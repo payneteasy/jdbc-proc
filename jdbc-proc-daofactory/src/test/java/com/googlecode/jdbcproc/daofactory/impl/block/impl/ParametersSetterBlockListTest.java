@@ -28,7 +28,7 @@ public class ParametersSetterBlockListTest {
     @Test
     public void testSingleInsert() throws SQLException {
         String insertQuery = "insert into temp_table values (?, ?, ?)";
-        String truncateTableQuery = "truncate temp_table";
+        String clearTableQuery = "delete from temp_table";
 
         final AtomicInteger insertQueryCount = new AtomicInteger();
         final AtomicInteger prepareInsertCount = new AtomicInteger();
@@ -37,7 +37,7 @@ public class ParametersSetterBlockListTest {
         Connection con = mock(Connection.class);
         final PreparedStatement insertSt = mock(PreparedStatement.class);
         when(callbacleSt.getConnection()).thenReturn(con);
-        when(con.createStatement()).thenReturn(new MockStatement()); // truncate statement
+        when(con.createStatement()).thenReturn(new MockStatement()); // clear statement
         Answer<PreparedStatement> preparedStatementAnswer = new Answer<PreparedStatement>() {
             public PreparedStatement answer(InvocationOnMock invocation) throws Throwable {
                 prepareInsertCount.incrementAndGet();
@@ -66,7 +66,7 @@ public class ParametersSetterBlockListTest {
             }
         };
         ParametersSetterBlockList setter = new ParametersSetterBlockList(insertQuery,
-                Collections.singletonList(argumentGetter), truncateTableQuery, 0);
+                Collections.singletonList(argumentGetter), clearTableQuery, 0);
 
         setter.setParameters(setStrategy, new Object[]{Arrays.asList("abc", "def")});
 
