@@ -28,6 +28,11 @@ public class ListsDaoTest extends DatabaseAwareTest {
         elem.setValue("value");
         listsDao.createEntityWithList(entity, Arrays.asList(elem, elem));
 
+        // Invoking for the second time to make sure that temporary table
+        // is cleared between calls. If not, the table will contain 4 records
+        // and procedure will fail (as it checks that there are exactly 2 records).
+        listsDao.createEntityWithList(entity, Arrays.asList(elem, elem));
+
         Assert.assertNotNull(entity.getId());
         Assert.assertEquals(999, (long) entity.getId());
     }
