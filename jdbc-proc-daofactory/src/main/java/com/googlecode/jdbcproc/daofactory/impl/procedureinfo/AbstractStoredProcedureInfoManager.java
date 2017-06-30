@@ -108,6 +108,7 @@ public abstract class AbstractStoredProcedureInfoManager implements IStoredProce
         map.put("date"       , Types.DATE);
         map.put("time"       , Types.TIME);
         map.put("decimal"    , Types.DECIMAL);
+        map.put("tinyblob"   , Types.BINARY);
         map.put("blob"       , Types.LONGVARBINARY);
         map.put("mediumblob" , Types.LONGVARBINARY);
         map.put("longblob"   , Types.LONGVARBINARY);
