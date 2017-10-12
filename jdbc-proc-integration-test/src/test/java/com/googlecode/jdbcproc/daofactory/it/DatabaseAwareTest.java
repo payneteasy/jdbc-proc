@@ -76,6 +76,11 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         executeSql("jdbcprocdb", "verticality/create_chalk_bag.prc");
         executeSql("jdbcprocdb", "verticality/get_chalk_bags.prc");
 
+        executeSql("jdbcprocdb", "save_single_property_entity.sql");
+        executeSql("jdbcprocdb", "save_single_property_entity_with_security.sql");
+        executeSql("jdbcprocdb", "save_single_property_entity_with_list.sql");
+        executeSql("jdbcprocdb", "save_single_property_entity_with_list_with_security.sql");
+
         // tx manager
         executeSql("jdbcprocdb", "tx_table.sql");
         executeSql("jdbcprocdb", "tx_table_test.sql");

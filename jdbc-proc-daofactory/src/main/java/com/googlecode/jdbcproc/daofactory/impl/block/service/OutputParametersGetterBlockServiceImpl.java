@@ -84,7 +84,7 @@ public class OutputParametersGetterBlockServiceImpl implements OutputParametersG
 
   private boolean isCreateEntityMethod(Method daoMethod, StoredProcedureInfo procedureInfo) {
     boolean ok = false;
-    if (procedureInfo.getArgumentsCounts() > 1) {
+    if (procedureInfo.getArgumentsCounts() >= 1) {
       if (daoMethod.getParameterTypes().length == 1 && !BlockFactoryUtils.isSimpleOrListType(daoMethod.getParameterTypes()[0])) {
         ok = true;
       } else {
@@ -108,7 +108,7 @@ public class OutputParametersGetterBlockServiceImpl implements OutputParametersG
       }
       return ok;
     }
-    return procedureInfo.getArgumentsCounts() > 1 
+    return procedureInfo.getArgumentsCounts() >= 1
         && daoMethod.getParameterTypes().length == 1
         && !BlockFactoryUtils.isSimpleType(daoMethod.getParameterTypes()[0]);
   }

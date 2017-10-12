@@ -11,6 +11,14 @@ public class ListElement {
     private String name;
     private String value;
 
+    public ListElement() {
+    }
+
+    public ListElement(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
     @Column(name = "name")
     public String getName() {
         return name;

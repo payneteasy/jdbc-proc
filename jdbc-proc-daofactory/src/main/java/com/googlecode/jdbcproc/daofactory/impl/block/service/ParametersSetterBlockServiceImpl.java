@@ -149,7 +149,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             return createGetAll(procedureInfo);
 
             // is entity, e.g. void saveProcessor(TransactionProcessor) (meta login not supported)
-          } else if (procedureInfo.getArgumentsCounts() > method.getParameterTypes().length
+          } else if (procedureInfo.getArgumentsCounts() >= method.getParameterTypes().length
               && method.getParameterTypes().length == 1
               && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])
               && !BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[0])) {
@@ -186,7 +186,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
     private boolean isEntityWithListsAndMetaLogin(Method method, StoredProcedureInfo procedureInfo) {
         // method parameter 0: entity
         // method parameters [1..N]: lists
-        boolean ok = procedureInfo.getArgumentsCounts() - 2 > method.getParameterTypes().length - 1
+        boolean ok = procedureInfo.getArgumentsCounts() - 2 >= method.getParameterTypes().length - 1
                 && method.getParameterTypes().length > 1
                 && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])
                 && !BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[0]);
@@ -199,7 +199,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
     private boolean isEntityWithLists(Method method, StoredProcedureInfo procedureInfo) {
         // method parameter 0: entity
         // method parameters [1..N]: lists
-        boolean ok = procedureInfo.getArgumentsCounts() > method.getParameterTypes().length - 1
+        boolean ok = procedureInfo.getArgumentsCounts() >= method.getParameterTypes().length - 1
                 && method.getParameterTypes().length > 1
                 && !BlockFactoryUtils.isSimpleType(method.getParameterTypes()[0])
                 && !BlockFactoryUtils.isCollectionAssignableFrom(method.getParameterTypes()[0]);
