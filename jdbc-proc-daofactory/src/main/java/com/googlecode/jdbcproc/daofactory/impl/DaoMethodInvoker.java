@@ -139,13 +139,19 @@ public class DaoMethodInvoker {
                     } finally {
                         // cleaning up
                         if (theParametersSetterBlocks != null) {
-                            for (IParametersSetterBlock block : theParametersSetterBlocks)
+                            for (IParametersSetterBlock block : theParametersSetterBlocks) {
                                 try {
                                     block.cleanup(aStmt);
                                 } catch (Exception e) {
-                                    // ignore
-                                    LOG.error("Exception while cleaning up", e);
+                                    // just log
+                                    if (cleanUpFailedBecauseStreamingIsActive(e)) {
+                                        LOG.debug("Exception while cleaning up because streaming is active and we cannot clean up", e);
+                                    } else {
+                                        LOG.error("Exception while cleaning up", e);
+                                    }
+                                    // TODO: run the cleaning task in CloseableIterator.close()?
                                 }
+                            }
                         }
                     }
                 } finally {
@@ -186,6 +192,15 @@ public class DaoMethodInvoker {
                 }
             }
         };
+    }
+
+    private boolean cleanUpFailedBecauseStreamingIsActive(Exception e) {
+        return theIsReturnIterator && cannotMakeUpdatesWhileStreamingIsActive(e);
+    }
+
+    private boolean cannotMakeUpdatesWhileStreamingIsActive(Exception e) {
+        return e.getMessage() != null && e.getMessage().contains(
+                "No statements may be issued when any streaming result sets are open");
     }
 
 

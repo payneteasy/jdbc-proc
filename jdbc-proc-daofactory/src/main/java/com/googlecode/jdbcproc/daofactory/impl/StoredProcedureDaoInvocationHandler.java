@@ -10,6 +10,7 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.CallableStatement;
@@ -136,9 +137,12 @@ public class StoredProcedureDaoInvocationHandler implements InvocationHandler {
         // and will be closed by transaction manager
         Connection connection = DataSourceUtils.getConnection(theJdbcTemplate.getDataSource());
 
-        CallableStatement stmt = connection.prepareCall(methodInvoker.getCallString());
-        // todo fetch size must be configured 
-        stmt.setFetchSize(10);
+        // Configuring statement to enable streaming; this is to make driver
+        // avoid buffering all the result set in memory. At least Mysql requires this.
+        // https://stackoverflow.com/questions/2447324/streaming-large-result-sets-with-mysql
+        CallableStatement stmt = connection.prepareCall(methodInvoker.getCallString(),
+                ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        stmt.setFetchSize(Integer.MIN_VALUE);
 
         CallableStatementCallback callableStatementCallback = methodInvoker.createCallableStatementCallback(aArgs);
         return callableStatementCallback.doInCallableStatement(stmt);

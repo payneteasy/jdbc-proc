@@ -367,14 +367,13 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         } else {
             // many arguments
             Class<?>[] parameters = method.getParameterTypes();
-            List<IParametersSetterBlock> list = new LinkedList<IParametersSetterBlock>();
+            List<IParametersSetterBlock> list = new ArrayList<>();
             for (int i = 0; i < parameters.length; i++) {
                 ParametersSetterBlockList block
                         = createParametersSetterBlockList(jdbcTemplate, converterService, method, i, aProcedureInfo);
                 list.add(block);
             }
-            return Collections
-                    .singletonList((IParametersSetterBlock) new ParametersSetterBlockListAggregator(list));
+            return Collections.singletonList(new ParametersSetterBlockListAggregator(list));
         }
     }
 
