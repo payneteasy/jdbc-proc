@@ -111,6 +111,8 @@ public class StoredProcedureDaoInvocationHandler implements InvocationHandler {
             }
         } else if(aMethod.getName().equals("toString")) {
            return theInterface.getName() + " proxy";
+        } else if(aMethod.getName().equals("hashCode")) {
+            return aProxy.hashCode();
         } else {
             throw new IllegalStateException("Method "+aMethod.getName()+" was not proxied");
         }
