@@ -27,9 +27,7 @@ import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterB
 import com.googlecode.jdbcproc.daofactory.impl.block.service.ResultSetConverterBlockServiceImpl;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategyFactory;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategyFactory;
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementGetStrategyFactoryIndexImpl;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementGetStrategyFactoryNameImpl;
-import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementSetStrategyFactoryIndexImpl;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.impl.CallableStatementSetStrategyFactoryNameImpl;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterServiceImpl;
@@ -44,7 +42,6 @@ public class InitJdbcProcModule extends AbstractModule {
   
   @Override protected void configure() {
     bindDaoMethodInfo                         ( bind( DAOMethodInfo.class                           ));
-    bindParameterConverterService             ( bind( ParameterConverterService.class               ));
     bindCallableStatementExecutorBlockService ( bind( CallableStatementExecutorBlockService.class   ));
     bindOutputParametersGetterBlockService    ( bind( OutputParametersGetterBlockService.class      ));
     bindParametersSetterBlockService          ( bind( ParametersSetterBlockService.class            ));

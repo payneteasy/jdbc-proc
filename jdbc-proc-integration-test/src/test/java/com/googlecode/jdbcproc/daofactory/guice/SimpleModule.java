@@ -18,6 +18,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.googlecode.jdbcproc.daofactory.DAOMethodInfo;
+import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterService;
+import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterServiceImpl;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeeDao;
 
@@ -31,6 +33,12 @@ class SimpleModule extends AbstractModule {
   @Override
   protected void configure() {
     install(new InitJdbcProcModule());
+  }
+
+  @Provides
+  @Singleton
+  ParameterConverterService getParameterConverterService() {
+    return new ParameterConverterServiceImpl(true);
   }
   
   @Provides

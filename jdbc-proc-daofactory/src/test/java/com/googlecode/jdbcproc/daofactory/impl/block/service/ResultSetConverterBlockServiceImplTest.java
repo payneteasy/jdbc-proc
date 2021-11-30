@@ -21,7 +21,7 @@ public class ResultSetConverterBlockServiceImplTest extends TestCase {
         StoredProcedureInfo procedureInfo = new StoredProcedureInfo("get_blob");
         procedureInfo.addResultSetColumn(new ResultSetColumnInfo("content", Types.LONGVARBINARY));
         IResultSetConverterBlock converterBlock = service.create(IMappingTestDao.class.getMethod("returnsByteArray", new Class<?>[]{}),
-                procedureInfo, new ParameterConverterServiceImpl());
+                procedureInfo, new ParameterConverterServiceImpl(true));
         
         byte[] initial = new byte[]{1, 2, 3};
         Object result = converterBlock.convertResultSet(new MockSingleRowResultSet(new String[]{"content"}, new Object[]{initial}), null);
