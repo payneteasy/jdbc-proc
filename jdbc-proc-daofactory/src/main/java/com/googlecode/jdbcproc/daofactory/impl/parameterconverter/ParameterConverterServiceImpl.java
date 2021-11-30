@@ -24,7 +24,7 @@ public class ParameterConverterServiceImpl implements ParameterConverterService 
 
   private final Map<IParameterConverter.Type, IParameterConverter> parameterSetters;
 
-  public ParameterConverterServiceImpl() {
+  public ParameterConverterServiceImpl(boolean isFilter3ByteChars) {
     Map<IParameterConverter.Type, IParameterConverter> settersMap 
         = new HashMap<IParameterConverter.Type, IParameterConverter>();
 
@@ -70,7 +70,7 @@ public class ParameterConverterServiceImpl implements ParameterConverterService 
 
     // VARCHAR, CHAR and LONGVARCHAR
     putSetters(settersMap, new ParameterConverter_CHAR_String());
-    putSetters(settersMap, new ParameterConverter_VARCHAR_String());
+    putSetters(settersMap, new ParameterConverter_VARCHAR_String(isFilter3ByteChars));
     putSetters(settersMap, new ParameterConverter_LONGVARCHAR_String());
 
     // byte[]

@@ -111,7 +111,7 @@ public class DaoMethodInfoFactory implements InitializingBean, DAOMethodInfo {
    */
   public void afterPropertiesSet() throws Exception {
     if (parameterConverterService == null) {
-      setParameterConverterService(new ParameterConverterServiceImpl());
+      setParameterConverterService(new ParameterConverterServiceImpl(false));
     }
     if (callableStatementExecutorBlockService == null) {
       setCallableStatementExecutorBlockService(new CallableStatementExecutorBlockServiceImpl());
