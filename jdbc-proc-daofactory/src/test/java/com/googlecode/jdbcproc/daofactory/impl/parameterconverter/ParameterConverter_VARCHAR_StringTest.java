@@ -10,7 +10,7 @@ public class ParameterConverter_VARCHAR_StringTest extends TestCase {
         String s3Bytes = "abc‱" + new String(new byte[] {(byte) 0xff, (byte) 0xff, (byte) 0xff}, StandardCharsets.UTF_8) + "def";
         String s4Bytes = "abc\uD83D\uDD8C\uD83D\uDC31def‱";
 
-        assertEquals(s3Bytes, ParameterConverter_VARCHAR_String.filter3BytesUTF(s3Bytes));
-        assertEquals("abcdef‱", ParameterConverter_VARCHAR_String.filter3BytesUTF(s4Bytes));
+        assertEquals(s3Bytes, ParameterConverterUtils.filter3BytesUTF(s3Bytes));
+        assertEquals("abcdef‱", ParameterConverterUtils.filter3BytesUTF(s4Bytes));
     }
 }

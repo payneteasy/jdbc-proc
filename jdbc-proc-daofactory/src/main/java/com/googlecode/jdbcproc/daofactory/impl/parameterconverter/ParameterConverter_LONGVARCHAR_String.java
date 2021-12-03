@@ -15,8 +15,19 @@ public class ParameterConverter_LONGVARCHAR_String
   public static final Type<ParameterConverter_LONGVARCHAR_String> TYPE 
       = new Type<ParameterConverter_LONGVARCHAR_String>(Types.LONGVARCHAR, String.class);
 
+  private final boolean isFilter3ByteChars;
+
+    public ParameterConverter_LONGVARCHAR_String(boolean isFilter3ByteChars) {
+        this.isFilter3ByteChars = isFilter3ByteChars;
+    }
+
     public void setValue(String aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
-        aStmt.setString(aArgument, aValue);
+        if (isFilter3ByteChars) {
+            String fixedString = ParameterConverterUtils.filter3BytesUTF(aValue);
+            aStmt.setString(aArgument, fixedString);
+        } else {
+            aStmt.setString(aArgument, aValue);
+        }
     }
 
     public String getOutputParameter(ICallableStatementGetStrategy aStmt, StatementArgument aParameterName) throws SQLException {

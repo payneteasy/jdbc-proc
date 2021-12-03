@@ -15,9 +15,20 @@ public class ParameterConverter_CHAR_String
   public static final Type<ParameterConverter_CHAR_String> TYPE
       = new Type<ParameterConverter_CHAR_String>(Types.CHAR, String.class);
 
+  private final boolean isFilter3ByteChars;
+
+  public ParameterConverter_CHAR_String(boolean isFilter3ByteChars) {
+    this.isFilter3ByteChars = isFilter3ByteChars;
+  }
+
   public void setValue(String value, ICallableStatementSetStrategy stmt, StatementArgument parameterName)
       throws SQLException {
-    stmt.setString(parameterName, value);
+    if (isFilter3ByteChars) {
+      String fixedString = ParameterConverterUtils.filter3BytesUTF(value);
+      stmt.setString(parameterName, fixedString);
+    } else {
+      stmt.setString(parameterName, value);
+    }
   }
 
   public String getOutputParameter(ICallableStatementGetStrategy aStmt, StatementArgument aParameterName)
