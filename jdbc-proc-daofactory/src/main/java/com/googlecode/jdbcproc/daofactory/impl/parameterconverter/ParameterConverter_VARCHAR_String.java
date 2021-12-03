@@ -4,8 +4,9 @@ import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetS
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.StatementArgument;
 
-import java.sql.*;
-import java.util.stream.Collectors;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  *  VARCHAR - String
@@ -24,7 +25,7 @@ public class ParameterConverter_VARCHAR_String
 
     public void setValue(String aValue, ICallableStatementSetStrategy aStmt, StatementArgument aArgument) throws SQLException {
         if (isFilter3ByteChars) {
-            String fixedString = filter3BytesUTF(aValue);
+            String fixedString = ParameterConverterUtils.filter3BytesUTF(aValue);
             aStmt.setString(aArgument, fixedString);
         } else {
             aStmt.setString(aArgument, aValue);
@@ -45,15 +46,5 @@ public class ParameterConverter_VARCHAR_String
 
     public String toString() {
         return "ParameterConverter_VARCHAR_String{}";
-    }
-
-    static String filter3BytesUTF(String aValue) {
-        if (aValue == null) {
-            return null;
-        }
-        return aValue.codePoints()
-                .filter(c -> c <= 0xFFFF)
-                .mapToObj(e -> new String(new int[]{e}, 0, 1))
-                .collect(Collectors.joining());
     }
 }

@@ -69,9 +69,9 @@ public class ParameterConverterServiceImpl implements ParameterConverterService 
     putSetters(settersMap, new ParameterConverter_NUMERIC_BigDecimal());
 
     // VARCHAR, CHAR and LONGVARCHAR
-    putSetters(settersMap, new ParameterConverter_CHAR_String());
+    putSetters(settersMap, new ParameterConverter_CHAR_String(isFilter3ByteChars));
     putSetters(settersMap, new ParameterConverter_VARCHAR_String(isFilter3ByteChars));
-    putSetters(settersMap, new ParameterConverter_LONGVARCHAR_String());
+    putSetters(settersMap, new ParameterConverter_LONGVARCHAR_String(isFilter3ByteChars));
 
     // byte[]
     putSetters(settersMap, new ParameterConverter_BINARY_byteArray());
