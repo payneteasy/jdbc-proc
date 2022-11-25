@@ -22,6 +22,8 @@ import com.googlecode.jdbcproc.daofactory.it.testdao.domain.lists.ListElement2;
 
 import java.util.Arrays;
 
+import javax.persistence.Column;
+
 import org.junit.Assert;
 
 /**
@@ -33,6 +35,33 @@ public class JsonDaoTest extends DatabaseAwareTest {
 
     public void setJsonDao(IJsonDao jsonDao) {
         this.jsonDao = jsonDao;
+    }
+
+    public static class Param {
+        private String name;
+
+        @Column(name = "name")
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+    
+    public void testCreateWithList() {
+        ListElement elem = new ListElement();
+        elem.setName("name");
+        elem.setValue("value");
+        jsonDao.createWithList("name", "param1", Arrays.asList(elem, elem));
+    }
+
+    public void testCreateWithListAndMetaLoginInfo() {
+        ListElement elem = new ListElement();
+        elem.setName("name");
+        elem.setValue("value");
+        jsonDao.createWithListMetaLogin("name", "param1", Arrays.asList(elem, elem));
     }
 
     public void testCreateEntityWithListAndMetaLoginInfoAndOutputParam() {

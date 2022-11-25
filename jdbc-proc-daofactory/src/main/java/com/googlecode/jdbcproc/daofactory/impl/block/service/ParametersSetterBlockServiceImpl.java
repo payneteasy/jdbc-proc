@@ -618,8 +618,9 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
             Method method, int listParameterIndex, StoredProcedureInfo aStoredProcedureInfo) {
         Parameter parameter = method.getParameters()[listParameterIndex];
         if (parameter.isAnnotationPresent(ASerializeListToJson.class)) {
-            IParameterConverter paramConverter = converterService.getConverter(Types.VARCHAR, String.class);
-            StoredProcedureArgumentInfo argumentInfo = aStoredProcedureInfo.getArgumentInfo(parameter.getAnnotation(ASerializeListToJson.class).value());
+            String listName = parameter.getAnnotation(ASerializeListToJson.class).value();
+            StoredProcedureArgumentInfo argumentInfo = aStoredProcedureInfo.getArgumentInfo(listName);
+            IParameterConverter paramConverter = converterService.getConverter(argumentInfo.getDataType(), String.class);
             return new ParametersSetterBlockJson(new ArgumentGetter(paramConverter, argumentInfo.getStatementArgument()), listParameterIndex);
         }
 

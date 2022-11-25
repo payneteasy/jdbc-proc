@@ -29,6 +29,13 @@ public interface IJsonDao {
     @AStoredProcedure(name = "json_create_entity_with_list")
     void createEntityWithList(EntityWithList entity, @ASerializeListToJson("list") List<ListElement> list);
 
+    @AStoredProcedure(name = "json_create_with_list")
+    void createWithList(String name, String param1, @ASerializeListToJson("list") List<ListElement> list);
+
+    @AMetaLoginInfo
+    @AStoredProcedure(name = "json_create_with_list_metalogin")
+    void createWithListMetaLogin(String name, String param1, @ASerializeListToJson("list") List<ListElement> list);
+
     @AMetaLoginInfo
     @AStoredProcedure(name = "json_create_entity_with_null_list")
     void createEntityWithNullList(EntityWithList entity, @ASerializeListToJson("list") List<ListElement> list);

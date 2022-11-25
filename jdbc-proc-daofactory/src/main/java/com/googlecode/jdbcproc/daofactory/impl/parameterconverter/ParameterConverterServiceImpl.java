@@ -72,6 +72,7 @@ public class ParameterConverterServiceImpl implements ParameterConverterService 
     putSetters(settersMap, new ParameterConverter_CHAR_String(isFilter3ByteChars));
     putSetters(settersMap, new ParameterConverter_VARCHAR_String(isFilter3ByteChars));
     putSetters(settersMap, new ParameterConverter_LONGVARCHAR_String(isFilter3ByteChars));
+    putSetters(settersMap, new ParameterConverter_LONGVARCHAR_List(isFilter3ByteChars));
 
     // byte[]
     putSetters(settersMap, new ParameterConverter_BINARY_byteArray());

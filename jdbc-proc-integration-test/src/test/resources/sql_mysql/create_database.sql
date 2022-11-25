@@ -4,5 +4,5 @@ create database if not exists jdbcprocdb character set utf8 collate utf8_general
 
 use jdbcprocdb;
 
-GRANT ALL PRIVILEGES ON jdbcprocdb.* TO 'jdbcproc'@'localhost' IDENTIFIED BY 'jdbcproc' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON jdbcprocdb.* TO 'jdbcproc'@'%' IDENTIFIED BY 'jdbcproc' WITH GRANT OPTION;
 

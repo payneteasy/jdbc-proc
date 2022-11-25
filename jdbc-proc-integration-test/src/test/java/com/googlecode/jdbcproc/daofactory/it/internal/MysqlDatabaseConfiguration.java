@@ -24,6 +24,7 @@ public class MysqlDatabaseConfiguration implements IDatabaseConfiguration {
                 , "jdbcproc"
                 , "-pjdbcproc"
                 , aDatabaseName
+                , "-h", "127.0.0.1"
                 , "-e"
                 , "source " + aFilePath
         };

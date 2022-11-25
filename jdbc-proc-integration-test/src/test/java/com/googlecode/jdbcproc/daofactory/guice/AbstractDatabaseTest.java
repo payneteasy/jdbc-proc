@@ -86,6 +86,7 @@ public abstract class AbstractDatabaseTest extends TestCase {
             , "jdbcproc"
             , "-pjdbcproc"
             , aDatabase
+            , "-h", "127.0.0.1"
             , "-e"
             , "source " + aSqlFile
         }
