@@ -11,9 +11,10 @@ public enum ParametersSetterBlockOrder {
     PSB_CONSUMER_KEY(ParametersSetterBlockArgument.class, 0),
     PSB_LIST_AGGREGATOR(ParametersSetterBlockListAggregator.class, 1),
     PSB_LIST(ParametersSetterBlockList.class, 2),
-    PSB_ENTITY(ParametersSetterBlockEntity.class, 3),
-    PSB_ARGUMENTS(ParametersSetterBlockArguments.class, 4),
-    PSB_NULL(ParametersSetterBlockNull1.class, 5);
+    PSB_JSON(ParametersSetterBlockJson.class, 3),
+    PSB_ENTITY(ParametersSetterBlockEntity.class, 4),
+    PSB_ARGUMENTS(ParametersSetterBlockArguments.class, 5),
+    PSB_NULL(ParametersSetterBlockNull1.class, 6);
     
     private final Class<? extends IParametersSetterBlock> clazz;
     private final int index;

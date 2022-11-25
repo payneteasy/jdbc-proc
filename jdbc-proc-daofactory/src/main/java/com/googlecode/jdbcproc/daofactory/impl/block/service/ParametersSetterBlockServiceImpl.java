@@ -17,6 +17,7 @@ package com.googlecode.jdbcproc.daofactory.impl.block.service;
 import com.googlecode.jdbcproc.daofactory.IMetaLoginInfoService;
 import com.googlecode.jdbcproc.daofactory.annotation.AConsumerKey;
 import com.googlecode.jdbcproc.daofactory.annotation.AMetaLoginInfo;
+import com.googlecode.jdbcproc.daofactory.annotation.ASerializeListToJson;
 import com.googlecode.jdbcproc.daofactory.impl.block.BlockFactoryUtils;
 import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ArgumentGetter;
@@ -27,6 +28,7 @@ import com.googlecode.jdbcproc.daofactory.impl.block.impl.IEntityArgumentGetter;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockArgument;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockArguments;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockEntity;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockJson;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockList;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockListAggregator;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockMetaLoginInfo;
@@ -50,12 +52,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -257,7 +261,7 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         for (int i = 0; i < parameters.length; i++) {
             Class clazz = parameters[i];
             if (BlockFactoryUtils.isCollectionAssignableFrom(clazz)) {
-                ParametersSetterBlockList block
+                IParametersSetterBlock block
                         = createParametersSetterBlockList(jdbcTemplate, converterService, method, i, procedureInfo);
                 list.add(block);
                 tmpList[listArgumentsLength] = i;
@@ -361,15 +365,13 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
     protected List<IParametersSetterBlock> createAllList(JdbcTemplate jdbcTemplate, ParameterConverterService converterService, Method method, StoredProcedureInfo aProcedureInfo) {
         if (method.getParameterTypes().length == 1) {
             // only one argument
-            return Collections.singletonList(
-                    (IParametersSetterBlock) createParametersSetterBlockList(jdbcTemplate, converterService,
-                            method, 0, aProcedureInfo));
+            return Collections.singletonList(createParametersSetterBlockList(jdbcTemplate, converterService, method, 0, aProcedureInfo));
         } else {
             // many arguments
             Class<?>[] parameters = method.getParameterTypes();
             List<IParametersSetterBlock> list = new ArrayList<>();
             for (int i = 0; i < parameters.length; i++) {
-                ParametersSetterBlockList block
+                IParametersSetterBlock block
                         = createParametersSetterBlockList(jdbcTemplate, converterService, method, i, aProcedureInfo);
                 list.add(block);
             }
@@ -611,9 +613,16 @@ public class ParametersSetterBlockServiceImpl implements ParametersSetterBlockSe
         return new ParametersSetterBlockEntity(getters, nonListArgumentIndexes);
     }
 
-    private ParametersSetterBlockList createParametersSetterBlockList(
+    private IParametersSetterBlock createParametersSetterBlockList(
             JdbcTemplate jdbcTemplate, ParameterConverterService converterService,
             Method method, int listParameterIndex, StoredProcedureInfo aStoredProcedureInfo) {
+        Parameter parameter = method.getParameters()[listParameterIndex];
+        if (parameter.isAnnotationPresent(ASerializeListToJson.class)) {
+            IParameterConverter paramConverter = converterService.getConverter(Types.VARCHAR, String.class);
+            StoredProcedureArgumentInfo argumentInfo = aStoredProcedureInfo.getArgumentInfo(parameter.getAnnotation(ASerializeListToJson.class).value());
+            return new ParametersSetterBlockJson(new ArgumentGetter(paramConverter, argumentInfo.getStatementArgument()), listParameterIndex);
+        }
+
         Class entityClass = getListEntityClass(method.getGenericParameterTypes()[listParameterIndex]);
         String tableName = getListTableName(entityClass);
 

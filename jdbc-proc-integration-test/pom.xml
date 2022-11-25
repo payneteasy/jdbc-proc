@@ -56,6 +56,12 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- velocity -->
         <dependency>
             <groupId>velocity</groupId>
