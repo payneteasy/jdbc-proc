@@ -5,7 +5,7 @@
     <groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
     <artifactId>jdbc-proc-integration-test</artifactId>
 
-    <name>.jdbc-proc-integration-test            ${version}</name>
+    <name>.jdbc-proc-integration-test            ${project.version}</name>
 
     <parent>
         <groupId>com.googlecode.jdbc-proc</groupId>

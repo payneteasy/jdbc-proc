@@ -5,7 +5,7 @@
     <groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
     <artifactId>jdbc-proc-daofactory</artifactId>
     
-    <name>.jdbc-proc-daofactory                  ${version}</name>
+    <name>.jdbc-proc-daofactory                  ${project.version}</name>
     
     <parent>
         <groupId>com.googlecode.jdbc-proc</groupId>
