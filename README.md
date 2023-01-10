@@ -21,7 +21,8 @@ public interface CompanyDao {
 For step-by-step instructions, see [Getting Started](https://github.com/payneteasy/jdbc-proc/wiki/GettingStarted) guide
 
 ### Supported databases ###
-  * [MySQL](http://mysql.com) 5.0.x, 5.1.x, 5.5.x, 5.6.x
+  * [MySQL](http://mysql.com) ≥ 5.0
+  * [MariaDB](https://mariadb.org) ≥ 10.0 
   * [PostgreSQL](http://postgresql.org)
   * [Microsoft SQL Server](http://www.microsoft.com/sqlserver)
 
@@ -41,5 +42,4 @@ Many thanks to [JProfiler](http://www.ej-technologies.com/products/jprofiler/ove
 
 ### They already use jdbc-proc Framework in production environments: ###
 
-  * http://payneteasy.com
-  * http://sellbycell.ru
+  * https://payneteasy.com
