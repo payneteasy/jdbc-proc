@@ -29,7 +29,10 @@ For step-by-step instructions, see [Getting Started](https://github.com/paynetea
 ### Gratitudes ###
 Many thanks to [JProfiler](http://www.ej-technologies.com/products/jprofiler/overview.html)
 
-### News ###
+### Changelog ###
+
+**2022 Nov 25** Added possibility to serialize List input parameters as json string
+
 **2015 Sep 02** Migrated to github
 
 **2013 May 13** Added patched mysql jdbc driver with improved performance [mysql-connector-java-5.1.22-3-bin.jar](https://github.com/payneteasy/jdbc-proc/blob/master/mysql-driver/mysql-connector-java-5.1.22-3-bin.jar?raw=true)
@@ -42,4 +45,7 @@ Many thanks to [JProfiler](http://www.ej-technologies.com/products/jprofiler/ove
 
 ### They already use jdbc-proc Framework in production environments: ###
 
-  * https://payneteasy.com
+  * Payneteasy https://payneteasy.com
+  * Leads Protection System https://lp.systems
+  * Superfly SSO https://github.com/payneteasy/superfly
+  * Srvlog Logs Collector https://github.com/payneteasy/srvlog
