@@ -4,7 +4,7 @@
 
     <artifactId>jdbc-proc</artifactId>
     <groupId>com.googlecode.jdbc-proc</groupId>
-    <version>1.1-36-SNAPSHOT</version>
+    <version>2.0-1-SNAPSHOT</version>
 
     <name>jdbc-proc                              ${project.version}</name>
 
@@ -13,7 +13,9 @@
     <url>http://jdbc-proc.googlecode.com</url>
 
     <modules>
-        <module>jdbc-proc-daofactory</module>
+        <module>jdbc-proc-daofactory-core</module>
+        <module>jdbc-proc-daofactory-ee8</module>
+        <module>jdbc-proc-daofactory-ee10</module>
         <module>jdbc-proc-integration-test</module>
     </modules>
 
@@ -73,7 +75,12 @@
             <!-- JDBC PROC -->
             <dependency>
                 <groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
-                <artifactId>jdbc-proc-daofactory</artifactId>
+                <artifactId>jdbc-proc-daofactory-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
+                <artifactId>jdbc-proc-daofactory-ee8</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -157,6 +164,11 @@
                 <groupId>javax.persistence</groupId>
                 <artifactId>persistence-api</artifactId>
                 <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.persistence</groupId>
+                <artifactId>jakarta.persistence-api</artifactId>
+                <version>3.1.0</version>
             </dependency>
 
             <!-- DBCP -->
@@ -245,6 +257,16 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <argLine>--add-opens=java.base/java.lang=ALL-UNNAMED</argLine>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
