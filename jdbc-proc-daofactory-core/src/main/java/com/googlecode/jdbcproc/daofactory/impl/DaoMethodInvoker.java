@@ -5,7 +5,9 @@ import com.googlecode.jdbcproc.daofactory.impl.block.IOutputParametersGetterBloc
 import com.googlecode.jdbcproc.daofactory.impl.block.IParametersSetterBlock;
 import com.googlecode.jdbcproc.daofactory.impl.block.IRegisterOutParametersBlock;
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
+import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterContext;
 import com.googlecode.jdbcproc.daofactory.impl.block.impl.ParametersSetterBlockOrder;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterContextImpl;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategy;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementGetStrategyFactory;
 import com.googlecode.jdbcproc.daofactory.impl.dbstrategy.ICallableStatementSetStrategy;
@@ -18,6 +20,8 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,12 +90,12 @@ public class DaoMethodInvoker {
         return theIsReturnIterator;
     }
 
-    public CallableStatementCallback createCallableStatementCallback(final Object[] aMethodParameters) {
+    public CallableStatementCallback createCallableStatementCallback(final Object[] aMethodParameters, DataSource dataSource) {
         if(LOG.isDebugEnabled()) {
             LOG.debug("Invoking "+theProcedureName+"...");
         }
         // creates new callback with given arguments to execute dao method
-        return new CallableStatementCallback() {
+        return new CallableStatementCallbackWrapper(dataSource) {
 
             public Object doInCallableStatement(CallableStatement aStmt) throws SQLException, DataAccessException {
 
@@ -173,7 +177,12 @@ public class DaoMethodInvoker {
                     } else {
                         // converts result set to return value
                         if(theResultSetConverterBlock!=null) {
-                            return theResultSetConverterBlock.convertResultSet(resultSet, aStmt);
+                            IResultSetConverterContext context = ResultSetConverterContextImpl.builder()
+                                .setResultSet(resultSet)
+                                .setCallableStatement(aStmt)
+                                .setDataSource(dataSource)
+                                .build();
+                            return theResultSetConverterBlock.convertResultSet(context);
                         } else {
                             return null;
                         }

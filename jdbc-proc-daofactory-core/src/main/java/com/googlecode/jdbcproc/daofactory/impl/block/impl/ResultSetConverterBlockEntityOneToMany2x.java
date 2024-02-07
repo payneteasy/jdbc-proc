@@ -1,11 +1,11 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
-import org.springframework.util.Assert;
+import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterContext;
 
-import java.sql.CallableStatement;
-import java.util.List;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+
+import org.springframework.util.Assert;
 
 /**
  * OneToMany for one parent entity
@@ -16,8 +16,8 @@ public class ResultSetConverterBlockEntityOneToMany2x extends ResultSetConverter
         super(aOneToManyLinks);
     }
 
-    @Override public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
-        List<Object> list = (List<Object>) super.convertResultSet(aResultSet, aStmt);
+    @Override public Object convertResultSet(IResultSetConverterContext aContext) throws SQLException {
+        List<Object> list = (List<Object>) super.convertResultSet(aContext);
         if (list == null || list.isEmpty()) {
             return null;
         } else {
