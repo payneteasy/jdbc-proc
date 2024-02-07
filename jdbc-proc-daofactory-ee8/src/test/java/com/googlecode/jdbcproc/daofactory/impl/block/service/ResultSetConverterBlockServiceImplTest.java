@@ -5,6 +5,7 @@ import java.sql.Types;
 import junit.framework.TestCase;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
+import com.googlecode.jdbcproc.daofactory.impl.block.impl.ResultSetConverterContextImpl;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.ParameterConverterServiceImpl;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.ResultSetColumnInfo;
 import com.googlecode.jdbcproc.daofactory.impl.procedureinfo.StoredProcedureInfo;
@@ -24,7 +25,9 @@ public class ResultSetConverterBlockServiceImplTest extends TestCase {
                 procedureInfo, new ParameterConverterServiceImpl(true));
         
         byte[] initial = new byte[]{1, 2, 3};
-        Object result = converterBlock.convertResultSet(new MockSingleRowResultSet(new String[]{"content"}, new Object[]{initial}), null);
+        Object result = converterBlock.convertResultSet(
+            ResultSetConverterContextImpl.builder().setResultSet(new MockSingleRowResultSet(new String[]{"content"}, new Object[]{initial})).build()
+        );
         TestCase.assertEquals(initial, result);
     }
 }

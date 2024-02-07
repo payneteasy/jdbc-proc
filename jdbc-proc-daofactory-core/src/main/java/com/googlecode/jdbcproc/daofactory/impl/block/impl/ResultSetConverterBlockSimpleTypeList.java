@@ -1,9 +1,9 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
+import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterContext;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
 
-import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,8 +20,9 @@ public class ResultSetConverterBlockSimpleTypeList implements IResultSetConverte
         theColumnName = aColumnName;
     }
 
-    public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
+    public Object convertResultSet(IResultSetConverterContext aContext) throws SQLException {
         List list = new ArrayList<>();
+        final ResultSet aResultSet = aContext.getResultSet();
         while(aResultSet.next()) {
             Object value = theConverter.getFromResultSet(aResultSet, theColumnName);
             list.add(value);

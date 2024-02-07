@@ -4,8 +4,8 @@ import com.googlecode.jdbcproc.daofactory.DAOMethodInfo;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.CallableStatementCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 import java.lang.reflect.InvocationHandler;
@@ -99,7 +99,7 @@ public class StoredProcedureDaoInvocationHandler implements InvocationHandler {
                 } else {
                     return theJdbcTemplate.execute(
                               methodInvoker.getCallString()
-                            , methodInvoker.createCallableStatementCallback(aArgs)
+                            , methodInvoker.createCallableStatementCallback(aArgs, theJdbcTemplate.getDataSource())
                     );
                 }
             } catch(Exception e) {
@@ -146,7 +146,7 @@ public class StoredProcedureDaoInvocationHandler implements InvocationHandler {
                 ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         stmt.setFetchSize(Integer.MIN_VALUE);
 
-        CallableStatementCallback callableStatementCallback = methodInvoker.createCallableStatementCallback(aArgs);
+        CallableStatementCallback callableStatementCallback = methodInvoker.createCallableStatementCallback(aArgs, theJdbcTemplate.getDataSource());
         return callableStatementCallback.doInCallableStatement(stmt);
     }
 

@@ -5,11 +5,15 @@ import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.datasource.DataSourceUtils;
 
 final class RowIteratorImpl implements RowIterator {
 
     private final java.sql.ResultSet resultSet;
     private final CallableStatement statement;
+    private final DataSource dataSource;
 
     private Row next;
     private boolean ready = false;
@@ -18,9 +22,10 @@ final class RowIteratorImpl implements RowIterator {
     private String[] columns;
     private String[] columnTypes;
 
-    public RowIteratorImpl(java.sql.ResultSet resultSet, CallableStatement statement) {
+    public RowIteratorImpl(java.sql.ResultSet resultSet, CallableStatement statement, DataSource dataSource) {
         this.resultSet = resultSet;
         this.statement = statement;
+        this.dataSource = dataSource;
     }
 
     @Override public void close() throws IOException {
@@ -50,6 +55,7 @@ final class RowIteratorImpl implements RowIterator {
         try {
             resultSet.close();
         } finally {
+            DataSourceUtils.releaseConnection(statement.getConnection(), dataSource);
             statement.close();
         }
     }

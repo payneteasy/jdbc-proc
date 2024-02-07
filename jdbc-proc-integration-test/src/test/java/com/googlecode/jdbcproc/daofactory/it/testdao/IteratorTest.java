@@ -1,7 +1,6 @@
 package com.googlecode.jdbcproc.daofactory.it.testdao;
 
 import com.googlecode.jdbcproc.daofactory.it.DatabaseAwareTest;
-import com.googlecode.jdbcproc.daofactory.it.testdao.dao.ICompanyDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.Company;
 import com.googlecode.jdbcproc.daofactory.it.testdao.service.ICompanyService;
 
@@ -19,7 +18,10 @@ public class IteratorTest extends DatabaseAwareTest {
             theCompanyService.createCompany(company);
         }
 
-        theCompanyService.iterateCompanies();
+        // check that connections are released
+        for (int i =0; i < 5; i++) {
+            theCompanyService.iterateCompanies();
+        }
     }
 
 

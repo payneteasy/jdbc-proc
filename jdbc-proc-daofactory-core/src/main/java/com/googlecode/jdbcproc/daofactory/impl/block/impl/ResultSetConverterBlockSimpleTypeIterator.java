@@ -1,9 +1,9 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
+import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterContext;
 import com.googlecode.jdbcproc.daofactory.impl.parameterconverter.IParameterConverter;
 
-import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
@@ -18,13 +18,14 @@ public class ResultSetConverterBlockSimpleTypeIterator implements IResultSetConv
         theColumnName = aColumnName;
     }
 
-    public Object convertResultSet(final ResultSet aResultSet, final CallableStatement aStmt) throws SQLException {
+    public Object convertResultSet(IResultSetConverterContext aContext) throws SQLException {
+        ResultSet aResultSet = aContext.getResultSet();
         Objects.requireNonNull(aResultSet, "ResultSet is null");
 
         aResultSet.setFetchDirection(ResultSet.FETCH_FORWARD);
         aResultSet.setFetchSize(1);
 
-        return new CloseableIteratorImpl(aResultSet, aStmt) {
+        return new CloseableIteratorImpl(aResultSet, aContext.getCallableStatement(), aContext.getDataSource()) {
             @Override
             protected Object readCurrentRow(ResultSet resultSet) {
                 try {

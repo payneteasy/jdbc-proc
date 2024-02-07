@@ -7,21 +7,27 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.datasource.DataSourceUtils;
+
 /**
 * CloseableIterator framework.
 */
 abstract class CloseableIteratorImpl implements CloseableIterator {
     private final ResultSet resultSet;
     private final CallableStatement stmt;
+    private final DataSource dataSource;
 
     private boolean positionedToRow = false;
     private boolean reachedEnd = false;
     private boolean closed = false;
 
 
-    CloseableIteratorImpl(ResultSet resultSet, CallableStatement stmt) {
+    CloseableIteratorImpl(ResultSet resultSet, CallableStatement stmt, DataSource dataSource) {
         this.resultSet = resultSet;
         this.stmt = stmt;
+        this.dataSource = dataSource;
     }
 
     public final boolean hasNext() {
@@ -82,6 +88,7 @@ abstract class CloseableIteratorImpl implements CloseableIterator {
         try {
             resultSet.close();
         } finally {
+            DataSourceUtils.releaseConnection(stmt.getConnection(), dataSource);
             stmt.close();
         }
     }

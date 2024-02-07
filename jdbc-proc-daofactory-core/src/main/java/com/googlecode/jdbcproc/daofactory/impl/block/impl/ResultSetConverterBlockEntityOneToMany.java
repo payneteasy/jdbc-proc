@@ -1,10 +1,10 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
+import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -45,7 +45,8 @@ public class ResultSetConverterBlockEntityOneToMany implements IResultSetConvert
         theChildOneToOneLinks = aChileOneToOneLinks;
     }
 
-    public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
+    public Object convertResultSet(IResultSetConverterContext aContext) throws SQLException {
+        ResultSet aResultSet = aContext.getResultSet();
         Objects.requireNonNull(aResultSet, "ResultSet is null");
 
         Object entity = null;

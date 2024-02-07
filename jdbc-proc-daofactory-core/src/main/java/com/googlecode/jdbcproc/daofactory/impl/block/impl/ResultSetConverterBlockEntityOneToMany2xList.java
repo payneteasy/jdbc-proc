@@ -1,8 +1,8 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
+import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterContext;
 
-import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,7 +19,8 @@ public class ResultSetConverterBlockEntityOneToMany2xList implements IResultSetC
         theOneToManyLinks = aOneToManyLinks;
     }
 
-    public Object convertResultSet(ResultSet aResultSet, CallableStatement aStmt) throws SQLException {
+    public Object convertResultSet(IResultSetConverterContext aContext) throws SQLException {
+        ResultSet aResultSet = aContext.getResultSet();
         Objects.requireNonNull(aResultSet, "ResultSet is null");
 
         List<Object> ret = new ArrayList<Object>();

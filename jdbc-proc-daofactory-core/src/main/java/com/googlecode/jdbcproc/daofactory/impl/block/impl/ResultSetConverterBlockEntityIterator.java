@@ -1,8 +1,8 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterBlock;
+import com.googlecode.jdbcproc.daofactory.impl.block.IResultSetConverterContext;
 
-import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
@@ -16,13 +16,14 @@ public class ResultSetConverterBlockEntityIterator implements IResultSetConverte
         theBlock = aBlock;
     }
 
-    public Object convertResultSet(final ResultSet aResultSet, final CallableStatement aStmt) throws SQLException {
+    public Object convertResultSet(IResultSetConverterContext aContext) throws SQLException {
+        final ResultSet aResultSet = aContext.getResultSet();
         Objects.requireNonNull(aResultSet, "ResultSet is null");
 
         aResultSet.setFetchDirection(ResultSet.FETCH_FORWARD);
         aResultSet.setFetchSize(1);
         
-        return new CloseableIteratorImpl(aResultSet, aStmt) {
+        return new CloseableIteratorImpl(aResultSet, aContext.getCallableStatement(), aContext.getDataSource()) {
             @Override
             protected Object readCurrentRow(ResultSet resultSet) {
                 return theBlock.createEntity(aResultSet);
