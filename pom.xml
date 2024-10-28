@@ -220,8 +220,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <debug>true</debug>
                 </configuration>
             </plugin>
@@ -357,6 +357,8 @@
     </profiles>
 
     <properties>
+        <java.version>8</java.version>
+        
         <spring.version>3.0.0.RELEASE</spring.version>
         <slf4j.version>1.7.25</slf4j.version>
     </properties>
