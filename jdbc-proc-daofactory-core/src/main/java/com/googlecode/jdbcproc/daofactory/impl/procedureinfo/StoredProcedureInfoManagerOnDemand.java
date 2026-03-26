@@ -48,7 +48,7 @@ public class StoredProcedureInfoManagerOnDemand extends AbstractStoredProcedureI
                 DatabaseMetaData meta = con.getMetaData();
 
                 // if procedures with arguments
-                addArguments(procedureInfo, aProcedureName, con.getCatalog(), meta);
+                addArguments(procedureInfo, aProcedureName, con.getCatalog(), con.getSchema(), meta);
 
                 // add result set
                 if(theProceduresMap.containsKey(aProcedureName)) {
@@ -69,13 +69,16 @@ public class StoredProcedureInfoManagerOnDemand extends AbstractStoredProcedureI
     }
 
 
-    private void addArguments(StoredProcedureInfo aProcedureInfo, String aProcedureName, String aCatalog, DatabaseMetaData meta) throws SQLException {
+    private void addArguments(StoredProcedureInfo aProcedureInfo, String aProcedureName,
+                              String aCatalog,
+                              String aSchema,
+                              DatabaseMetaData meta) throws SQLException {
         // gets procedures with arguments
         ResultSet rs = meta.getProcedureColumns(
                   aCatalog        // catalog
-                , null            // schema
+                , aSchema         // schema
                 , aProcedureName  // procedure name
-                , "%"              // all columns
+                , "%"             // all columns
         );
         try {
             while (rs.next()) {
