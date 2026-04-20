@@ -10,26 +10,16 @@
     </bean>
 
 
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+        <property name="driverClassName" value="org.mariadb.jdbc.Driver"/>
 
-        <!-- optimized -->
-        <property name="url" value="jdbc:mysql://localhost/jdbcprocdb?autoReconnect=false&amp;characterEncoding=utf8&amp;useInformationSchema=true&amp;noAccessToProcedureBodies=true&amp;profileSQL=false" />
-
-        <!--debug-->
-        <!--<property name="url" value="jdbc:mysql://localhost/jdbcprocdb?autoReconnect=false&amp;characterEncoding=utf8&amp;useInformationSchema=true&amp;noAccessToProcedureBodies=true&amp;profileSQL=true&amp;"/>-->
-
-        <!-- old -->
-        <!--<property name="url" value="jdbc:mysql://localhost/jdbcprocdb?autoReconnect=false&amp;characterEncoding=utf8"/>-->
-
-        <!-- old debug -->
-        <!--<property name="url" value="jdbc:mysql://localhost/jdbcprocdb?autoReconnect=false&amp;characterEncoding=utf8&amp;profileSQL=true"/>-->
+        <property name="url" value="jdbc:mariadb://localhost/jdbcprocdb?autoReconnect=false&amp;useMysqlMetadata=true" />
 
         <property name="username" value="jdbcproc"/>
         <property name="password" value="jdbcproc"/>
-        <property name="maxActive" value="2"/>
+        <property name="maxTotal" value="2"/>
         <property name="maxIdle" value="2"/>
-        <property name="maxWait" value="5000"/>
+        <property name="maxWaitMillis" value="5000"/>
         <property name="validationQuery" value="call create_collections()"/>
     </bean>
 

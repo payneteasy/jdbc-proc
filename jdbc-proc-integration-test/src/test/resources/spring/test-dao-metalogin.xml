@@ -71,6 +71,10 @@
     <bean id="singlePropertyEntityDao" parent="abstractDao">
         <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.ISinglePropertyEntityDao"/>
     </bean>
+
+    <bean id="sleepDao" parent="abstractDao">
+        <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.ISleepDao"/>
+    </bean>
     
     <!-- Employee service -->
     <bean id="employeeService" class="com.googlecode.jdbcproc.daofactory.it.testdao.service.impl.EmployeeServiceImpl">

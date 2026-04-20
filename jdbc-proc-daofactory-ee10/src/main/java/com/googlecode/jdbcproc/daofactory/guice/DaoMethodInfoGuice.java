@@ -118,6 +118,7 @@ public class DaoMethodInfoGuice implements DAOMethodInfo {
         , isReturnIterator
         , callableStatementSetStrategy
         , preparedStatementStrategy
+        , procedureAnnotation.callTimeoutSeconds()
     );
   }
 

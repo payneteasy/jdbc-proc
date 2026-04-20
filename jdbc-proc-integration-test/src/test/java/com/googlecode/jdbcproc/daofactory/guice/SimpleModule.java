@@ -25,7 +25,7 @@ import com.googlecode.jdbcproc.daofactory.it.testdao.dao.IEmployeeDao;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 class SimpleModule extends AbstractModule {
@@ -45,8 +45,8 @@ class SimpleModule extends AbstractModule {
   @Singleton
   DataSource provideDataSource() {
     BasicDataSource dataSource = new BasicDataSource();
-    dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-    dataSource.setUrl("jdbc:mysql://localhost:3306/jdbcprocdb");
+    dataSource.setDriverClassName("org.mariadb.jdbc.Driver");
+    dataSource.setUrl("jdbc:mariadb://localhost:3306/jdbcprocdb?useMysqlMetadata=true");
     dataSource.setUsername("jdbcproc");
     dataSource.setPassword("jdbcproc");
     dataSource.setDefaultAutoCommit(true);
