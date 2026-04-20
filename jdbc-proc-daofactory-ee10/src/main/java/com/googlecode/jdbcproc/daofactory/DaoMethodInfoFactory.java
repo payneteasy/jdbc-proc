@@ -102,6 +102,7 @@ public class DaoMethodInfoFactory implements InitializingBean, DAOMethodInfo {
               , isReturnIterator
               , theSetStrategyFactory
               , theGetStrategyFactory
+              , procedureAnnotation.callTimeoutSeconds()
       );
   }
 

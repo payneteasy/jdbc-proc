@@ -98,6 +98,9 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         executeSql("jdbcprocdb", "report_table.sql");
         executeSql("jdbcprocdb", "report.sql");
 
+        // call timeout
+        executeSql("jdbcprocdb", "sleep_proc.sql");
+
         super.runBare();
     }
 
