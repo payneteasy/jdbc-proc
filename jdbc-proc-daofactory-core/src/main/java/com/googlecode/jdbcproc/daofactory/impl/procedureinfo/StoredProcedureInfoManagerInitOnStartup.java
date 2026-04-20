@@ -26,13 +26,14 @@ public class StoredProcedureInfoManagerInitOnStartup extends AbstractStoredProce
 
         try {
             DatabaseMetaData meta = con.getMetaData();
-            String catalog = con.getCatalog();
+            final String catalog = con.getCatalog();
+            final String schema = con.getSchema();
 
             // gets procedures with arguments
-            getProceduresWithArguments(map, catalog, meta);
+            getProceduresWithArguments(map, catalog, schema, meta);
 
             // gets procedures info without arguments
-            getProceduresWithoutArguments(map, catalog, meta);
+            getProceduresWithoutArguments(map, catalog, schema, meta);
 
             // gets result set info
             putResultSetColumnsInfo(map, con);
@@ -48,11 +49,13 @@ public class StoredProcedureInfoManagerInitOnStartup extends AbstractStoredProce
 
     }
 
-    private void getProceduresWithoutArguments(Map<String, StoredProcedureInfo> map, String aCatalog, DatabaseMetaData meta) throws SQLException {
+    private void getProceduresWithoutArguments(Map<String, StoredProcedureInfo> map, String aCatalog,
+                                               String aSchema,
+                                               DatabaseMetaData meta) throws SQLException {
         // gets procedures info without arguments
         ResultSet rs2 = meta.getProcedures(
                   aCatalog       // catalog
-                , null           // schema
+                , aSchema        // schema
                 , "%"            // all procedures
         );
         try {
@@ -65,11 +68,13 @@ public class StoredProcedureInfoManagerInitOnStartup extends AbstractStoredProce
         }
     }
 
-    private void getProceduresWithArguments(Map<String, StoredProcedureInfo> map, String aCatalog, DatabaseMetaData meta) throws SQLException {
+    private void getProceduresWithArguments(Map<String, StoredProcedureInfo> map, String aCatalog,
+                                            String aSchema,
+                                            DatabaseMetaData meta) throws SQLException {
         // gets procedures with arguments
         ResultSet rs = meta.getProcedureColumns(
                   aCatalog        // catalog
-                , null            // schema
+                , aSchema         // schema
                 , "%"             // all procedures
                 , "%"             // all columns
         );
