@@ -48,6 +48,7 @@ public class DaoMethodInvoker {
             , boolean aIsReturnIterator
             , ICallableStatementSetStrategyFactory aCallableStatementSetStrategy
             , ICallableStatementGetStrategyFactory aPreparedStatementStrategy
+            , int aCallTimeoutSeconds
     ) {
         Assert.notNull(aCallableStatementExecutorBlock, "aCallableStatementExecutorBlock must not be null");
 
@@ -61,6 +62,7 @@ public class DaoMethodInvoker {
         theIsReturnIterator             = aIsReturnIterator;
         theSetStrategyFactory           = aCallableStatementSetStrategy;
         theGetStrategyFactory           = aPreparedStatementStrategy;
+        theCallTimeoutSeconds           = aCallTimeoutSeconds;
         
         // We should sort parameters setter blocks for executing setters in proper order.
         // At first, 'List<?>' setters should be executed, second, other setters should be executed.
@@ -121,6 +123,10 @@ public class DaoMethodInvoker {
 
                 ResultSet resultSet;
                 try {
+                    if (theCallTimeoutSeconds > 0) {
+                        aStmt.setQueryTimeout(theCallTimeoutSeconds);
+                    }
+
                     // register output parameters
                     // eg. aStmt.registerOutParameter(1, Types.INTEGER);
                     if(theRegisterOutParametersBlock!=null) {
@@ -236,5 +242,6 @@ public class DaoMethodInvoker {
     private final boolean theIsReturnIterator;
     private final ICallableStatementSetStrategyFactory theSetStrategyFactory;
     private final ICallableStatementGetStrategyFactory theGetStrategyFactory;
+    private final int theCallTimeoutSeconds;
 
 }

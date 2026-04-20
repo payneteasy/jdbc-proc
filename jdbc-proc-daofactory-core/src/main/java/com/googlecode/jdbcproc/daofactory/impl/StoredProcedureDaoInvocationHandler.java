@@ -140,17 +140,36 @@ public class StoredProcedureDaoInvocationHandler implements InvocationHandler {
         Connection connection = DataSourceUtils.getConnection(theJdbcTemplate.getDataSource());
 
         // Configuring statement to enable streaming; this is to make driver
-        // avoid buffering all the result set in memory. At least Mysql requires this.
-        // https://stackoverflow.com/questions/2447324/streaming-large-result-sets-with-mysql
+        // avoid buffering all the result set in memory. MySQL and MariaDB
+        // drivers disagree on how streaming is enabled, so pick per driver:
+        //  - MySQL Connector/J: row-by-row streaming via fetchSize=Integer.MIN_VALUE.
+        //    A positive fetchSize is silently ignored unless useCursorFetch=true
+        //    is in the JDBC url.
+        //  - MariaDB Connector/J: rejects Integer.MIN_VALUE, enables server-side
+        //    cursor streaming (COM_STMT_FETCH) on any positive fetchSize.
         CallableStatement stmt = connection.prepareCall(methodInvoker.getCallString(),
                 ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        stmt.setFetchSize(Integer.MIN_VALUE);
+        stmt.setFetchSize(resolveStreamingFetchSize(connection));
 
         CallableStatementCallback callableStatementCallback = methodInvoker.createCallableStatementCallback(aArgs, theJdbcTemplate.getDataSource());
         return callableStatementCallback.doInCallableStatement(stmt);
     }
 
+    private int resolveStreamingFetchSize(Connection connection) throws SQLException {
+        String driverName = connection.getMetaData().getDriverName();
+        if (driverName != null && driverName.toLowerCase().contains("mysql")) {
+            return MYSQL_STREAMING_FETCH_SIZE;
+        }
+        return MARIADB_STREAMING_FETCH_SIZE;
+    }
+
     private final Class theInterface;
     private final JdbcTemplate theJdbcTemplate;
     private final Map<Method, DaoMethodInvoker> theDaoMethodInvokersMap;
+
+    /** MySQL Connector/J magic value for row-by-row streaming. */
+    private static final int MYSQL_STREAMING_FETCH_SIZE = Integer.MIN_VALUE;
+
+    /** Any positive value enables server-side cursor streaming on MariaDB. */
+    private static final int MARIADB_STREAMING_FETCH_SIZE = 1000;
 }
