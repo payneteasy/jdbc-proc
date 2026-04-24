@@ -135,24 +135,34 @@ public class StoredProcedureDaoInvocationHandler implements InvocationHandler {
      * @throws SQLException on sql exception
      */
     private Object callIterator(Object[] aArgs, DaoMethodInvoker methodInvoker) throws SQLException {
-        // gets connection from transaction manager
-        // and will be closed by transaction manager
         Connection connection = DataSourceUtils.getConnection(theJdbcTemplate.getDataSource());
+        CallableStatement stmt = null;
+        try {
+            // Configuring statement to enable streaming; this is to make driver
+            // avoid buffering all the result set in memory. MySQL and MariaDB
+            // drivers disagree on how streaming is enabled, so pick per driver:
+            //  - MySQL Connector/J: row-by-row streaming via fetchSize=Integer.MIN_VALUE.
+            //    A positive fetchSize is silently ignored unless useCursorFetch=true
+            //    is in the JDBC url.
+            //  - MariaDB Connector/J: rejects Integer.MIN_VALUE, enables server-side
+            //    cursor streaming (COM_STMT_FETCH) on any positive fetchSize.
+            stmt = connection.prepareCall(methodInvoker.getCallString(),
+                    ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            stmt.setFetchSize(resolveStreamingFetchSize(connection));
 
-        // Configuring statement to enable streaming; this is to make driver
-        // avoid buffering all the result set in memory. MySQL and MariaDB
-        // drivers disagree on how streaming is enabled, so pick per driver:
-        //  - MySQL Connector/J: row-by-row streaming via fetchSize=Integer.MIN_VALUE.
-        //    A positive fetchSize is silently ignored unless useCursorFetch=true
-        //    is in the JDBC url.
-        //  - MariaDB Connector/J: rejects Integer.MIN_VALUE, enables server-side
-        //    cursor streaming (COM_STMT_FETCH) on any positive fetchSize.
-        CallableStatement stmt = connection.prepareCall(methodInvoker.getCallString(),
-                ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        stmt.setFetchSize(resolveStreamingFetchSize(connection));
-
-        CallableStatementCallback callableStatementCallback = methodInvoker.createCallableStatementCallback(aArgs, theJdbcTemplate.getDataSource());
-        return callableStatementCallback.doInCallableStatement(stmt);
+            CallableStatementCallback callableStatementCallback = methodInvoker.createCallableStatementCallback(aArgs, theJdbcTemplate.getDataSource());
+            return callableStatementCallback.doInCallableStatement(stmt);
+        } catch (Exception e) {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ex) {
+                    LOG.debug("Error while closing CallableStatement", ex);
+                }
+            }
+            DataSourceUtils.releaseConnection(connection, theJdbcTemplate.getDataSource());
+            throw e;
+        }
     }
 
     private int resolveStreamingFetchSize(Connection connection) throws SQLException {
