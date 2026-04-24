@@ -2,6 +2,7 @@ package com.googlecode.jdbcproc.daofactory.internal;
 
 import java.io.IOException;
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -52,11 +53,19 @@ final class RowIteratorImpl implements RowIterator {
 
     private void doClose() throws SQLException {
         closed = true;
+        // Close the statement *before* returning the connection to the pool.
+        // Releasing first can cause the pool to close/recycle the underlying
+        // connection, after which statement.close() fails (MariaDB driver is
+        // strict about this).
+        Connection connection = statement.getConnection();
         try {
-            resultSet.close();
+            try {
+                resultSet.close();
+            } finally {
+                statement.close();
+            }
         } finally {
-            DataSourceUtils.releaseConnection(statement.getConnection(), dataSource);
-            statement.close();
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
     }
 

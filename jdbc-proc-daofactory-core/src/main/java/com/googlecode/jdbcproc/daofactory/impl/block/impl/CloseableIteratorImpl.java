@@ -3,6 +3,7 @@ package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 import com.googlecode.jdbcproc.daofactory.CloseableIterator;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
@@ -85,11 +86,21 @@ abstract class CloseableIteratorImpl implements CloseableIterator {
     private void doClose() throws SQLException {
         closed = true;
 
+        // Close the statement *before* releasing the connection to the pool.
+        // Releasing first may cause the pool to close/recycle the underlying
+        // connection, after which stmt.close() fails with "Connection is
+        // closed" (MariaDB driver is strict; old mysql-connector was not).
+        // Capture the connection reference up front because stmt.getConnection()
+        // is not reliable once the statement is closed.
+        Connection connection = stmt.getConnection();
         try {
-            resultSet.close();
+            try {
+                resultSet.close();
+            } finally {
+                stmt.close();
+            }
         } finally {
-            DataSourceUtils.releaseConnection(stmt.getConnection(), dataSource);
-            stmt.close();
+            DataSourceUtils.releaseConnection(connection, dataSource);
         }
     }
 
