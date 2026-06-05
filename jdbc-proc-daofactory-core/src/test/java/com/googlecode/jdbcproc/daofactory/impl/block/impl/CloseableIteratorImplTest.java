@@ -13,7 +13,7 @@ public class CloseableIteratorImplTest {
     @Test
     public void testHasNextDoesNotMoveResultSetPointer() {
         TestResultSet resultSet = new TestResultSet();
-        CloseableIterator iterator = new CloseableIteratorImpl(resultSet, new CallableStatementAdapter(), null) {
+        CloseableIterator iterator = new CloseableIteratorImpl(resultSet, new CallableStatementAdapter(), null, null) {
             @Override
             protected Object readCurrentRow(ResultSet resultSet) {
                 return "abc";

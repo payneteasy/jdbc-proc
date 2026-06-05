@@ -64,6 +64,10 @@
         <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.IListsDao"/>
     </bean>
 
+    <bean id="listIteratorDao" parent="abstractDao">
+        <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.IListIteratorDao"/>
+    </bean>
+
     <bean id="jsonDao" parent="abstractDao">
         <property name="interface" value="com.googlecode.jdbcproc.daofactory.it.testdao.dao.IJsonDao"/>
     </bean>

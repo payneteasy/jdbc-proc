@@ -63,6 +63,7 @@ public abstract class DatabaseAwareTest extends AbstractDependencyInjectionSprin
         executeSql("jdbcprocdb", "create_entity_with_two_lists.sql");
         executeSql("jdbcprocdb", "create_entity_with_two_lists_and_metalogin_info.sql");
         executeSql("jdbcprocdb", "update_entity_with_list.sql");
+        executeSql("jdbcprocdb", "get_list_elements.sql");
 
         executeSql("jdbcprocdb", "json_create_with_list.sql");
         executeSql("jdbcprocdb", "json_create_with_list_metalogin.sql");

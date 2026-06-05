@@ -25,7 +25,8 @@ public class ResultSetConverterBlockSimpleTypeIterator implements IResultSetConv
         aResultSet.setFetchDirection(ResultSet.FETCH_FORWARD);
         aResultSet.setFetchSize(1);
 
-        return new CloseableIteratorImpl(aResultSet, aContext.getCallableStatement(), aContext.getDataSource()) {
+        return new CloseableIteratorImpl(aResultSet, aContext.getCallableStatement(),
+                aContext.getDataSource(), aContext.getOnCloseCleanup()) {
             @Override
             protected Object readCurrentRow(ResultSet resultSet) {
                 try {

@@ -19,16 +19,19 @@ abstract class CloseableIteratorImpl implements CloseableIterator {
     private final ResultSet resultSet;
     private final CallableStatement stmt;
     private final DataSource dataSource;
+    private final Runnable onCloseCleanup;
 
     private boolean positionedToRow = false;
     private boolean reachedEnd = false;
     private boolean closed = false;
 
 
-    CloseableIteratorImpl(ResultSet resultSet, CallableStatement stmt, DataSource dataSource) {
+    CloseableIteratorImpl(ResultSet resultSet, CallableStatement stmt, DataSource dataSource,
+                          Runnable onCloseCleanup) {
         this.resultSet = resultSet;
         this.stmt = stmt;
         this.dataSource = dataSource;
+        this.onCloseCleanup = onCloseCleanup;
     }
 
     public final boolean hasNext() {
@@ -96,6 +99,15 @@ abstract class CloseableIteratorImpl implements CloseableIterator {
         try {
             try {
                 resultSet.close();
+                // The streaming cursor is now closed, so deferred cleanup (e.g.
+                // clearing the List-parameter temp table) can safely run an
+                // executeUpdate on this connection without forcing the driver
+                // to buffer the remaining rows into memory. The cleanup never
+                // throws (it logs internally) so it cannot turn end-of-iteration
+                // into an error after all rows have been delivered.
+                if (onCloseCleanup != null) {
+                    onCloseCleanup.run();
+                }
             } finally {
                 stmt.close();
             }
