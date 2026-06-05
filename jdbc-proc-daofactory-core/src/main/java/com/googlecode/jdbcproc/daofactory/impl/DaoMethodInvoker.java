@@ -147,19 +147,20 @@ public class DaoMethodInvoker {
                         // or  ResultSet rs = aStmt.executeQuery();
                         resultSet = theCallableStatementExecutor.execute(aStmt);
                     } finally {
-                        // cleaning up
-                        if (theParametersSetterBlocks != null) {
+                        // cleaning up.
+                        // For iterator-returning methods the parameter-setter
+                        // cleanup (e.g. clearing the List-parameter temp table)
+                        // must NOT run here: the streaming ResultSet is still
+                        // open and the cleanup's executeUpdate would force the
+                        // MariaDB driver to fetch/buffer the entire result set
+                        // into memory (OOM on large reports). It is deferred to
+                        // CloseableIterator.close() — see onCloseCleanup below.
+                        if (theParametersSetterBlocks != null && !theIsReturnIterator) {
                             for (IParametersSetterBlock block : theParametersSetterBlocks) {
                                 try {
                                     block.cleanup(aStmt);
                                 } catch (Exception e) {
-                                    // just log
-                                    if (cleanUpFailedBecauseStreamingIsActive(e)) {
-                                        LOG.debug("Exception while cleaning up because streaming is active and we cannot clean up", e);
-                                    } else {
-                                        LOG.error("Exception while cleaning up", e);
-                                    }
-                                    // TODO: run the cleaning task in CloseableIterator.close()?
+                                    LOG.error("Exception while cleaning up", e);
                                 }
                             }
                         }
@@ -183,10 +184,31 @@ public class DaoMethodInvoker {
                     } else {
                         // converts result set to return value
                         if(theResultSetConverterBlock!=null) {
+                            // Deferred cleanup for iterator results: run the
+                            // parameter-setter cleanup once the iterator is
+                            // closed (cursor drained), not while it is still
+                            // open. The block list re-clears the temp table at
+                            // the start of the next invocation, so a failure
+                            // here is non-fatal — swallow and log.
+                            final CallableStatement statementForCleanup = aStmt;
+                            Runnable onCloseCleanup = null;
+                            if (theIsReturnIterator && theParametersSetterBlocks != null) {
+                                onCloseCleanup = () -> {
+                                    for (IParametersSetterBlock block : theParametersSetterBlocks) {
+                                        try {
+                                            block.cleanup(statementForCleanup);
+                                        } catch (Exception e) {
+                                            LOG.error("Exception while cleaning up on iterator close", e);
+                                        }
+                                    }
+                                };
+                            }
+
                             IResultSetConverterContext context = ResultSetConverterContextImpl.builder()
                                 .setResultSet(resultSet)
                                 .setCallableStatement(aStmt)
                                 .setDataSource(dataSource)
+                                .setOnCloseCleanup(onCloseCleanup)
                                 .build();
                             return theResultSetConverterBlock.convertResultSet(context);
                         } else {
@@ -208,16 +230,6 @@ public class DaoMethodInvoker {
             }
         };
     }
-
-    private boolean cleanUpFailedBecauseStreamingIsActive(Exception e) {
-        return theIsReturnIterator && cannotMakeUpdatesWhileStreamingIsActive(e);
-    }
-
-    private boolean cannotMakeUpdatesWhileStreamingIsActive(Exception e) {
-        return e.getMessage() != null && e.getMessage().contains(
-                "No statements may be issued when any streaming result sets are open");
-    }
-
 
     public String toString() {
         return "DaoMethodInvoker{" +
