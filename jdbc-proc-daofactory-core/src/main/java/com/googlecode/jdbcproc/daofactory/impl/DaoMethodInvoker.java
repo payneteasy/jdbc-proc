@@ -148,7 +148,13 @@ public class DaoMethodInvoker {
                         resultSet = theCallableStatementExecutor.execute(aStmt);
                     } finally {
                         // cleaning up
-                        if (theParametersSetterBlocks != null) {
+                        // Skip cleanup for iterator (streaming) methods: the result set is
+                        // still open here, and issuing the clear-table UPDATE on the same
+                        // connection makes the driver drain the whole streaming result set
+                        // into memory first (MariaDB: StreamingResult.fetchRemaining() -> OOM
+                        // on large reports). The staging table is cleared again at the start
+                        // of the next setParameters() call, so skipping here is safe.
+                        if (theParametersSetterBlocks != null && !theIsReturnIterator) {
                             for (IParametersSetterBlock block : theParametersSetterBlocks) {
                                 try {
                                     block.cleanup(aStmt);
