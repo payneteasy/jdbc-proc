@@ -48,7 +48,7 @@ public class ResultSetConverterBlockEntityOneToMany2xList implements IResultSetC
                 if(holder.isNotEmpty() && holder.isNew()) {
                     holder.clearChildren();
                     parentHolder.addToList(holder.getLoadedEntity());
-                    forceHoldersNew(holders, i + i);
+                    forceHoldersNew(holders, i + 1);
                 }
             }
 
