@@ -1,6 +1,8 @@
 package com.googlecode.jdbcproc.daofactory.it.testdao;
 
 import com.googlecode.jdbcproc.daofactory.CloseableIterator;
+import com.googlecode.jdbcproc.daofactory.internal.Row;
+import com.googlecode.jdbcproc.daofactory.internal.RowIterator;
 import com.googlecode.jdbcproc.daofactory.it.DatabaseAwareTest;
 import com.googlecode.jdbcproc.daofactory.it.internal.CountingDataSource;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.IListIteratorDao;
@@ -105,7 +107,126 @@ public class ListIteratorCleanupDeferredTest extends DatabaseAwareTest {
         Assert.assertEquals("iterator must stream exactly the rows passed in the List", list.size(), rows);
     }
 
+    /**
+     * The procedure fails (SIGNAL) before any iterator exists, so there is no
+     * {@code close()} that could run the deferred cleanup. The temp table must
+     * still be cleared before the connection goes back to the pool.
+     */
+    public void testTempTableIsClearedWhenIteratorCallFails() {
+        CountingDataSource counting = (CountingDataSource) theDataSource;
+
+        List<ListElement> list = Arrays.asList(
+                new ListElement("a", "1"),
+                new ListElement("b", "2"));
+
+        // Warm up (see above). The procedure always fails, so just swallow it.
+        try {
+            listIteratorDao.getListElementsFailing(list);
+        } catch (RuntimeException ignored) {
+            // expected
+        }
+
+        counting.resetExecuteUpdateCount();
+        try {
+            listIteratorDao.getListElementsFailing(list);
+            Assert.fail("get_list_elements_failing must fail");
+        } catch (RuntimeException expected) {
+            // the procedure SIGNALs; no iterator was ever created
+        }
+
+        Assert.assertEquals(
+                "leading clear + cleanup after the failed call: the list rows must not stay "
+                        + "in the temp table of the connection returned to the pool",
+                2, counting.getExecuteUpdateCount());
+
+        // The connection went back to the pool (maxTotal=2, maxWaitMillis=5000):
+        // further calls must not hang waiting for a leaked connection.
+        for (int i = 0; i < 3; i++) {
+            drainAndClose(listIteratorDao.getListElements(list));
+        }
+    }
+
+    /**
+     * Same as {@link #testTempTableCleanupIsDeferredToIteratorClose()}, but for the
+     * dynamic-columns {@link RowIterator} (used by report procedures).
+     */
+    public void testRowIteratorTempTableCleanupIsDeferredToClose() throws Exception {
+        CountingDataSource counting = (CountingDataSource) theDataSource;
+
+        List<ListElement> list = Arrays.asList(
+                new ListElement("a", "1"),
+                new ListElement("b", "2"),
+                new ListElement("c", "3"));
+
+        drainAndClose(listIteratorDao.getListElementsReport(list));
+
+        counting.resetExecuteUpdateCount();
+
+        RowIterator it = listIteratorDao.getListElementsReport(list);
+        try {
+            Assert.assertEquals(
+                    "only the leading temp-table clear must have run; trailing cleanup must be deferred",
+                    1, counting.getExecuteUpdateCount());
+
+            // Read one row of three: the streaming cursor stays open (not exhausted),
+            // so the iterator does not auto-close here.
+            Assert.assertTrue(it.hasNext());
+            Row first = it.next();
+            Assert.assertNotNull(first.getString("name"));
+            Assert.assertNotNull(first.getString("value"));
+
+            Assert.assertEquals(
+                    "cleanup must not run while the streaming cursor is open",
+                    1, counting.getExecuteUpdateCount());
+        } finally {
+            it.close();
+        }
+
+        Assert.assertEquals(
+                "deferred cleanup must run exactly once on RowIterator close",
+                2, counting.getExecuteUpdateCount());
+    }
+
+    public void testRowIteratorStreamsExactlyTheListRowsAndCleansUpOnExhaustion() throws Exception {
+        CountingDataSource counting = (CountingDataSource) theDataSource;
+
+        List<ListElement> list = Arrays.asList(
+                new ListElement("x", "10"),
+                new ListElement("y", "20"));
+
+        drainAndClose(listIteratorDao.getListElementsReport(list));
+
+        counting.resetExecuteUpdateCount();
+
+        int rows = 0;
+        try (RowIterator it = listIteratorDao.getListElementsReport(list)) {
+            while (it.hasNext()) {
+                Row row = it.next();
+                Assert.assertEquals(2, row.columns().length);
+                Assert.assertNotNull(row.getString("name"));
+                Assert.assertNotNull(row.getString("value"));
+                rows++;
+            }
+            Assert.assertEquals(
+                    "reaching the end auto-closes the iterator and runs the deferred cleanup",
+                    2, counting.getExecuteUpdateCount());
+        }
+        Assert.assertEquals("RowIterator must stream exactly the rows passed in the List", list.size(), rows);
+        Assert.assertEquals("close() after exhaustion must not run the cleanup again",
+                2, counting.getExecuteUpdateCount());
+    }
+
     private static void drainAndClose(CloseableIterator<ListElement> it) {
+        try {
+            while (it.hasNext()) {
+                it.next();
+            }
+        } finally {
+            it.close();
+        }
+    }
+
+    private static void drainAndClose(RowIterator it) throws Exception {
         try {
             while (it.hasNext()) {
                 it.next();

@@ -92,7 +92,7 @@ public class DaoMethodInvoker {
         return theIsReturnIterator;
     }
 
-    public CallableStatementCallback createCallableStatementCallback(final Object[] aMethodParameters, DataSource dataSource) {
+    public CallableStatementCallback createCallableStatementCallback(final Object[] aMethodParameters, final DataSource dataSource) {
         if(LOG.isDebugEnabled()) {
             LOG.debug("Invoking "+theProcedureName+"...");
         }
@@ -106,7 +106,7 @@ public class DaoMethodInvoker {
                     startTime = System.currentTimeMillis();
                 }
 
-                final StringBuilder logger = new StringBuilder();                
+                final StringBuilder logger = new StringBuilder();
                 if(LOG.isDebugEnabled()) {
                     logger.append("Procedure [").append(theProcedureName).append(']');
                     // debugs all methods in CallableStatement
@@ -121,7 +121,6 @@ public class DaoMethodInvoker {
                     );
                 }
 
-                ResultSet resultSet;
                 try {
                     if (theCallTimeoutSeconds > 0) {
                         aStmt.setQueryTimeout(theCallTimeoutSeconds);
@@ -133,95 +132,14 @@ public class DaoMethodInvoker {
                         theRegisterOutParametersBlock.registerOutParameters(aStmt);
                     }
 
-                    try {
-                        // set parameters value
-                        // eg. aStmt.setString(1, "hello");
-                        if(theParametersSetterBlocks !=null) {
-                            ICallableStatementSetStrategy callableStatementSetStrategy = theSetStrategyFactory.create(aStmt);
-                            for (IParametersSetterBlock block : theParametersSetterBlocks)
-                                block.setParameters(callableStatementSetStrategy, aMethodParameters);
-                        }
-    
-                        // callable statement executor
-                        // eg. int result = aStmt.executeUpdate();
-                        // or  ResultSet rs = aStmt.executeQuery();
-                        resultSet = theCallableStatementExecutor.execute(aStmt);
-                    } finally {
-                        // cleaning up.
-                        // For iterator-returning methods the parameter-setter
-                        // cleanup (e.g. clearing the List-parameter temp table)
-                        // must NOT run here: the streaming ResultSet is still
-                        // open and the cleanup's executeUpdate would force the
-                        // MariaDB driver to fetch/buffer the entire result set
-                        // into memory (OOM on large reports). It is deferred to
-                        // CloseableIterator.close() — see onCloseCleanup below.
-                        if (theParametersSetterBlocks != null && !theIsReturnIterator) {
-                            for (IParametersSetterBlock block : theParametersSetterBlocks) {
-                                try {
-                                    block.cleanup(aStmt);
-                                } catch (Exception e) {
-                                    LOG.error("Exception while cleaning up", e);
-                                }
-                            }
-                        }
+                    if (theIsReturnIterator) {
+                        return callForIterator(aStmt, aMethodParameters, dataSource);
+                    } else {
+                        return call(aStmt, aMethodParameters, dataSource);
                     }
                 } finally {
                     if (LOG.isDebugEnabled()) {
                         LOG_CALLABLE_STATEMENT.debug(logger.toString());
-                    }
-                }
-
-                ICallableStatementGetStrategy callableStatementGetStrategy = theGetStrategyFactory.create(aStmt);
-                try {
-                    // gets output parameters and sets it to arguments
-                    if(theOutputParametersGetterBlock !=null) {
-                        theOutputParametersGetterBlock.fillOutputParameters(callableStatementGetStrategy, aMethodParameters);
-                    }
-
-                    if(theOutputParametersGetterBlock!=null && theOutputParametersGetterBlock.hasReturn()) {
-                        return theOutputParametersGetterBlock.getReturnValue(callableStatementGetStrategy);
-
-                    } else {
-                        // converts result set to return value
-                        if(theResultSetConverterBlock!=null) {
-                            // Deferred cleanup for iterator results: run the
-                            // parameter-setter cleanup once the iterator is
-                            // closed (cursor drained), not while it is still
-                            // open. The block list re-clears the temp table at
-                            // the start of the next invocation, so a failure
-                            // here is non-fatal — swallow and log.
-                            final CallableStatement statementForCleanup = aStmt;
-                            Runnable onCloseCleanup = null;
-                            if (theIsReturnIterator && theParametersSetterBlocks != null) {
-                                onCloseCleanup = () -> {
-                                    for (IParametersSetterBlock block : theParametersSetterBlocks) {
-                                        try {
-                                            block.cleanup(statementForCleanup);
-                                        } catch (Exception e) {
-                                            LOG.error("Exception while cleaning up on iterator close", e);
-                                        }
-                                    }
-                                };
-                            }
-
-                            IResultSetConverterContext context = ResultSetConverterContextImpl.builder()
-                                .setResultSet(resultSet)
-                                .setCallableStatement(aStmt)
-                                .setDataSource(dataSource)
-                                .setOnCloseCleanup(onCloseCleanup)
-                                .build();
-                            return theResultSetConverterBlock.convertResultSet(context);
-                        } else {
-                            return null;
-                        }
-                    }
-                } finally {
-                    if (theIsReturnIterator) {
-                        // result set will be closed in future
-                    } else {
-                        if (resultSet != null) {
-                            resultSet.close();
-                        }
                     }
                     if(LOG_TIME.isDebugEnabled()) {
                         LOG_TIME.debug("Called time {}(): {}ms", theProcedureName, System.currentTimeMillis() - startTime);
@@ -229,6 +147,132 @@ public class DaoMethodInvoker {
                 }
             }
         };
+    }
+
+    /**
+     * Calls the procedure for a method that returns a plain value: the
+     * parameter-setter cleanup (e.g. clearing the List-parameter temp table)
+     * runs right after the call, the result set is read and closed here.
+     */
+    private Object call(CallableStatement aStmt, Object[] aMethodParameters, DataSource aDataSource) throws SQLException {
+        ResultSet resultSet;
+        try {
+            setParameters(aStmt, aMethodParameters);
+            resultSet = theCallableStatementExecutor.execute(aStmt);
+        } finally {
+            cleanupParameterSetters(aStmt, "");
+        }
+
+        try {
+            return readResult(aStmt, resultSet, aMethodParameters, aDataSource, null);
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        }
+    }
+
+    /**
+     * Calls the procedure for a method that returns an iterator. The result set
+     * stays open and is handed over to the iterator together with the
+     * parameter-setter cleanup, which the iterator runs from its close() once
+     * the cursor is closed. The cleanup must NOT run here: its executeUpdate on
+     * a connection with an open streaming cursor forces the MariaDB driver to
+     * buffer the whole result set into memory (OOM on large reports).
+     * <p>
+     * If anything fails before the iterator exists, nobody would ever run that
+     * deferred cleanup and the temp table data would go back to the pool with
+     * the connection, so it is cleaned up here before the exception propagates.
+     */
+    private Object callForIterator(CallableStatement aStmt, Object[] aMethodParameters, DataSource aDataSource) throws SQLException {
+        ResultSet resultSet = null;
+        try {
+            setParameters(aStmt, aMethodParameters);
+            resultSet = theCallableStatementExecutor.execute(aStmt);
+            return readResult(aStmt, resultSet, aMethodParameters, aDataSource
+                    , () -> cleanupParameterSetters(aStmt, " on iterator close"));
+        } catch (Throwable t) {
+            closeQuietly(resultSet);
+            cleanupParameterSetters(aStmt, " after failed iterator call");
+            throw t;
+        }
+    }
+
+    /**
+     * Sets parameters value, eg. aStmt.setString(1, "hello").
+     */
+    private void setParameters(CallableStatement aStmt, Object[] aMethodParameters) throws SQLException {
+        if (theParametersSetterBlocks != null) {
+            ICallableStatementSetStrategy setStrategy = theSetStrategyFactory.create(aStmt);
+            for (IParametersSetterBlock block : theParametersSetterBlocks) {
+                block.setParameters(setStrategy, aMethodParameters);
+            }
+        }
+    }
+
+    /**
+     * Fills the output parameters into the arguments and returns the method
+     * result: the return output parameter, or the converted result set.
+     *
+     * @param aOnCloseCleanup cleanup an iterator result runs on close, null for plain results
+     */
+    private Object readResult(CallableStatement aStmt, ResultSet aResultSet, Object[] aMethodParameters
+            , DataSource aDataSource, Runnable aOnCloseCleanup) throws SQLException {
+        ICallableStatementGetStrategy getStrategy = theGetStrategyFactory.create(aStmt);
+
+        // gets output parameters and sets it to arguments
+        if (theOutputParametersGetterBlock != null) {
+            theOutputParametersGetterBlock.fillOutputParameters(getStrategy, aMethodParameters);
+        }
+
+        if (theOutputParametersGetterBlock != null && theOutputParametersGetterBlock.hasReturn()) {
+            return theOutputParametersGetterBlock.getReturnValue(getStrategy);
+        }
+
+        if (theResultSetConverterBlock == null) {
+            return null;
+        }
+
+        // converts result set to return value
+        IResultSetConverterContext context = ResultSetConverterContextImpl.builder()
+                .setResultSet(aResultSet)
+                .setCallableStatement(aStmt)
+                .setDataSource(aDataSource)
+                .setOnCloseCleanup(aOnCloseCleanup)
+                .build();
+        return theResultSetConverterBlock.convertResultSet(context);
+    }
+
+    /**
+     * Runs the parameter-setter cleanup (e.g. clearing the List-parameter temp
+     * table) on the connection of the given statement. Never throws: a failed
+     * cleanup is only logged, the block list re-clears the temp table at the
+     * start of the next invocation anyway.
+     *
+     * @param aStmt    statement whose connection holds the data to clean up
+     * @param aContext suffix for the log message telling when the cleanup ran
+     */
+    private void cleanupParameterSetters(CallableStatement aStmt, String aContext) {
+        if (theParametersSetterBlocks == null) {
+            return;
+        }
+        for (IParametersSetterBlock block : theParametersSetterBlocks) {
+            try {
+                block.cleanup(aStmt);
+            } catch (Exception e) {
+                LOG.error("Exception while cleaning up" + aContext, e);
+            }
+        }
+    }
+
+    private void closeQuietly(ResultSet aResultSet) {
+        if (aResultSet != null) {
+            try {
+                aResultSet.close();
+            } catch (Exception e) {
+                LOG.debug("Error while closing ResultSet", e);
+            }
+        }
     }
 
     public String toString() {
