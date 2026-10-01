@@ -16,6 +16,7 @@ public class ResultSetConverterRowIterator implements IResultSetConverterBlock {
         resultSet.setFetchDirection(ResultSet.FETCH_FORWARD);
         resultSet.setFetchSize(1);
 
-        return new RowIteratorImpl(resultSet, aContext.getCallableStatement(), aContext.getDataSource());
+        return new RowIteratorImpl(resultSet, aContext.getCallableStatement(), aContext.getDataSource(),
+                aContext.getOnCloseCleanup());
     }
 }

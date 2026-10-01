@@ -15,6 +15,7 @@ final class RowIteratorImpl implements RowIterator {
     private final java.sql.ResultSet resultSet;
     private final CallableStatement statement;
     private final DataSource dataSource;
+    private final Runnable onCloseCleanup;
 
     private Row next;
     private boolean ready = false;
@@ -23,10 +24,19 @@ final class RowIteratorImpl implements RowIterator {
     private String[] columns;
     private String[] columnTypes;
 
-    public RowIteratorImpl(java.sql.ResultSet resultSet, CallableStatement statement, DataSource dataSource) {
+    /**
+     * @param onCloseCleanup deferred parameter-setter cleanup (e.g. clearing the
+     *                       List-parameter temp table) to run when the iterator is
+     *                       closed: after the result set is closed and before the
+     *                       statement is closed and the connection is released;
+     *                       may be {@code null}
+     */
+    public RowIteratorImpl(java.sql.ResultSet resultSet, CallableStatement statement, DataSource dataSource,
+                           Runnable onCloseCleanup) {
         this.resultSet = resultSet;
         this.statement = statement;
         this.dataSource = dataSource;
+        this.onCloseCleanup = onCloseCleanup;
     }
 
     @Override public void close() throws IOException {
@@ -61,6 +71,15 @@ final class RowIteratorImpl implements RowIterator {
         try {
             try {
                 resultSet.close();
+                // The streaming cursor is now closed, so the deferred cleanup
+                // (e.g. clearing the List-parameter temp table) can safely run
+                // an executeUpdate on this connection without forcing the driver
+                // to buffer the remaining rows into memory. The cleanup never
+                // throws (it logs internally), so it cannot turn end-of-iteration
+                // into an error after all rows have been delivered.
+                if (onCloseCleanup != null) {
+                    onCloseCleanup.run();
+                }
             } finally {
                 statement.close();
             }
