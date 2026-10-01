@@ -2,13 +2,10 @@ package com.googlecode.jdbcproc.daofactory.internal;
 
 import java.io.IOException;
 import java.sql.CallableStatement;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import javax.sql.DataSource;
-
-import org.springframework.jdbc.datasource.DataSourceUtils;
 
 final class RowIteratorImpl implements RowIterator {
 
@@ -63,29 +60,7 @@ final class RowIteratorImpl implements RowIterator {
 
     private void doClose() throws SQLException {
         closed = true;
-        // Close the statement *before* returning the connection to the pool.
-        // Releasing first can cause the pool to close/recycle the underlying
-        // connection, after which statement.close() fails (MariaDB driver is
-        // strict about this).
-        Connection connection = statement.getConnection();
-        try {
-            try {
-                resultSet.close();
-                // The streaming cursor is now closed, so the deferred cleanup
-                // (e.g. clearing the List-parameter temp table) can safely run
-                // an executeUpdate on this connection without forcing the driver
-                // to buffer the remaining rows into memory. The cleanup never
-                // throws (it logs internally), so it cannot turn end-of-iteration
-                // into an error after all rows have been delivered.
-                if (onCloseCleanup != null) {
-                    onCloseCleanup.run();
-                }
-            } finally {
-                statement.close();
-            }
-        } finally {
-            DataSourceUtils.releaseConnection(connection, dataSource);
-        }
+        IteratorResources.close(resultSet, statement, dataSource, onCloseCleanup);
     }
 
     private Row one() throws SQLException {
