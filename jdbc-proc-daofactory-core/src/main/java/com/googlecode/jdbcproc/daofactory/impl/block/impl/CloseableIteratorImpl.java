@@ -1,16 +1,14 @@
 package com.googlecode.jdbcproc.daofactory.impl.block.impl;
 
 import com.googlecode.jdbcproc.daofactory.CloseableIterator;
+import com.googlecode.jdbcproc.daofactory.internal.IteratorResources;
 
 import java.sql.CallableStatement;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
 import javax.sql.DataSource;
-
-import org.springframework.jdbc.datasource.DataSourceUtils;
 
 /**
 * CloseableIterator framework.
@@ -88,32 +86,7 @@ abstract class CloseableIteratorImpl implements CloseableIterator {
 
     private void doClose() throws SQLException {
         closed = true;
-
-        // Close the statement *before* releasing the connection to the pool.
-        // Releasing first may cause the pool to close/recycle the underlying
-        // connection, after which stmt.close() fails with "Connection is
-        // closed" (MariaDB driver is strict; old mysql-connector was not).
-        // Capture the connection reference up front because stmt.getConnection()
-        // is not reliable once the statement is closed.
-        Connection connection = stmt.getConnection();
-        try {
-            try {
-                resultSet.close();
-                // The streaming cursor is now closed, so deferred cleanup (e.g.
-                // clearing the List-parameter temp table) can safely run an
-                // executeUpdate on this connection without forcing the driver
-                // to buffer the remaining rows into memory. The cleanup never
-                // throws (it logs internally) so it cannot turn end-of-iteration
-                // into an error after all rows have been delivered.
-                if (onCloseCleanup != null) {
-                    onCloseCleanup.run();
-                }
-            } finally {
-                stmt.close();
-            }
-        } finally {
-            DataSourceUtils.releaseConnection(connection, dataSource);
-        }
+        IteratorResources.close(resultSet, stmt, dataSource, onCloseCleanup);
     }
 
     protected abstract Object readCurrentRow(ResultSet resultSet);
