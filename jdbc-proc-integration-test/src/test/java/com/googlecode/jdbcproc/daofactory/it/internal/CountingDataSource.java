@@ -17,7 +17,8 @@ import java.util.logging.Logger;
 
 /**
  * Test-only {@link DataSource} wrapper that counts {@code Statement.executeUpdate(String)}
- * calls made on borrowed connections.
+ * calls made on borrowed connections: the ones that returned normally and, separately,
+ * the ones that threw.
  *
  * <p>In the iterator + {@code List}-parameter path the ONLY such call is the
  * temp-table clear in {@code ParametersSetterBlockList.clearTable()}
@@ -37,18 +38,25 @@ public class CountingDataSource implements DataSource {
 
     private final DataSource delegate;
     private final AtomicInteger executeUpdateCount = new AtomicInteger(0);
+    private final AtomicInteger failedExecuteUpdateCount = new AtomicInteger(0);
 
     public CountingDataSource(DataSource delegate) {
         this.delegate = delegate;
     }
 
-    /** Number of {@code Statement.executeUpdate(String)} calls since the last reset. */
+    /** Number of {@code Statement.executeUpdate(String)} calls that returned normally since the last reset. */
     public int getExecuteUpdateCount() {
         return executeUpdateCount.get();
     }
 
+    /** Number of {@code Statement.executeUpdate(String)} calls that threw since the last reset. */
+    public int getFailedExecuteUpdateCount() {
+        return failedExecuteUpdateCount.get();
+    }
+
     public void resetExecuteUpdateCount() {
         executeUpdateCount.set(0);
+        failedExecuteUpdateCount.set(0);
     }
 
     @Override
@@ -114,7 +122,16 @@ public class CountingDataSource implements DataSource {
                 return proxyConnection;
             }
             if ("executeUpdate".equals(name) && args != null && args.length > 0 && args[0] instanceof String) {
-                executeUpdateCount.incrementAndGet();
+                // Count after the call, so the count means "the delete ran and
+                // did not throw", not just "the delete was attempted".
+                try {
+                    Object result = invokeReal(real, method, args);
+                    executeUpdateCount.incrementAndGet();
+                    return result;
+                } catch (Throwable t) {
+                    failedExecuteUpdateCount.incrementAndGet();
+                    throw t;
+                }
             }
             return invokeReal(real, method, args);
         }
