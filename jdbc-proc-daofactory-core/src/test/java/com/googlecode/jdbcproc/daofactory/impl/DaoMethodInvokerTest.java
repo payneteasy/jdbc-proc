@@ -115,6 +115,24 @@ public class DaoMethodInvokerTest {
                 setterBlock.resultSetClosedOnCleanup);
     }
 
+    @Test
+    public void testIteratorMethodSkipsCleanupWhenTheCursorCannotBeClosed() throws Exception {
+        resultSet.failOnClose = true;
+        DaoMethodInvoker invoker = newInvoker(true, stmt -> resultSet,
+                context -> { throw new NullPointerException("ResultSet is null"); });
+
+        try {
+            invoke(invoker);
+            Assert.fail("NullPointerException expected");
+        } catch (NullPointerException expected) {
+            // thrown by the converter
+        }
+
+        Assert.assertEquals("the streaming cursor may still be open, so a delete on this connection "
+                + "could make the driver buffer the whole result set: cleanup must be skipped",
+                0, setterBlock.cleanupCount);
+    }
+
     private Object invoke(DaoMethodInvoker invoker) throws SQLException {
         return invoker.createCallableStatementCallback(NO_ARGS, null)
                 .doInCallableStatement(new CallableStatementAdapter());
@@ -157,9 +175,13 @@ public class DaoMethodInvokerTest {
 
     private static final class TestResultSet extends ResultSetAdapter {
         private boolean closed;
+        private boolean failOnClose;
 
         @Override
-        public void close() {
+        public void close() throws SQLException {
+            if (failOnClose) {
+                throw new SQLException("cannot close the cursor");
+            }
             closed = true;
         }
     }

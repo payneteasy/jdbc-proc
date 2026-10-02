@@ -192,8 +192,14 @@ public class DaoMethodInvoker {
             return readResult(aStmt, resultSet, aMethodParameters, aDataSource
                     , () -> cleanupParameterSetters(aStmt, " on iterator close"));
         } catch (Throwable t) {
-            closeQuietly(resultSet);
-            cleanupParameterSetters(aStmt, " after failed iterator call");
+            // Clean up only when no streaming cursor can still be open on this
+            // connection: there was no result set, or it closed fine. After a
+            // failed close() a delete here could make the MariaDB driver buffer
+            // the whole result set; the block list re-clears the temp table at
+            // the start of the next call anyway.
+            if (closeQuietly(resultSet)) {
+                cleanupParameterSetters(aStmt, " after failed iterator call");
+            }
             throw t;
         }
     }
@@ -265,13 +271,20 @@ public class DaoMethodInvoker {
         }
     }
 
-    private void closeQuietly(ResultSet aResultSet) {
-        if (aResultSet != null) {
-            try {
-                aResultSet.close();
-            } catch (Exception e) {
-                LOG.debug("Error while closing ResultSet", e);
-            }
+    /**
+     * @return true if no result set is open any more: there was none, or it
+     *         closed fine; false if close() failed
+     */
+    private boolean closeQuietly(ResultSet aResultSet) {
+        if (aResultSet == null) {
+            return true;
+        }
+        try {
+            aResultSet.close();
+            return true;
+        } catch (Exception e) {
+            LOG.warn("Error while closing ResultSet, skipping the parameter-setter cleanup on this connection", e);
+            return false;
         }
     }
 

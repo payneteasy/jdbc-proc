@@ -7,6 +7,7 @@ import com.googlecode.jdbcproc.daofactory.it.DatabaseAwareTest;
 import com.googlecode.jdbcproc.daofactory.it.internal.CountingDataSource;
 import com.googlecode.jdbcproc.daofactory.it.testdao.dao.IListIteratorDao;
 import com.googlecode.jdbcproc.daofactory.it.testdao.domain.lists.ListElement;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Assert;
 
 import java.util.Arrays;
@@ -112,7 +113,7 @@ public class ListIteratorCleanupDeferredTest extends DatabaseAwareTest {
      * {@code close()} that could run the deferred cleanup. The temp table must
      * still be cleared before the connection goes back to the pool.
      */
-    public void testTempTableIsClearedWhenIteratorCallFails() {
+    public void testTempTableIsClearedWhenIteratorCallFails() throws Exception {
         CountingDataSource counting = (CountingDataSource) theDataSource;
 
         List<ListElement> list = Arrays.asList(
@@ -138,12 +139,11 @@ public class ListIteratorCleanupDeferredTest extends DatabaseAwareTest {
                 "leading clear + cleanup after the failed call: the list rows must not stay "
                         + "in the temp table of the connection returned to the pool",
                 2, counting.getExecuteUpdateCount());
+        Assert.assertEquals("both deletes must have succeeded", 0, counting.getFailedExecuteUpdateCount());
 
-        // The connection went back to the pool (maxTotal=2, maxWaitMillis=5000):
-        // further calls must not hang waiting for a leaked connection.
-        for (int i = 0; i < 3; i++) {
-            drainAndClose(listIteratorDao.getListElements(list));
-        }
+        // The failed call must have returned its connection to the pool right away.
+        BasicDataSource pool = counting.unwrap(BasicDataSource.class);
+        Assert.assertEquals("connection leaked by the failed call", 0, pool.getNumActive());
     }
 
     /**
@@ -185,6 +185,7 @@ public class ListIteratorCleanupDeferredTest extends DatabaseAwareTest {
         Assert.assertEquals(
                 "deferred cleanup must run exactly once on RowIterator close",
                 2, counting.getExecuteUpdateCount());
+        Assert.assertEquals(0, counting.getFailedExecuteUpdateCount());
     }
 
     public void testRowIteratorStreamsExactlyTheListRowsAndCleansUpOnExhaustion() throws Exception {
@@ -214,6 +215,7 @@ public class ListIteratorCleanupDeferredTest extends DatabaseAwareTest {
         Assert.assertEquals("RowIterator must stream exactly the rows passed in the List", list.size(), rows);
         Assert.assertEquals("close() after exhaustion must not run the cleanup again",
                 2, counting.getExecuteUpdateCount());
+        Assert.assertEquals(0, counting.getFailedExecuteUpdateCount());
     }
 
     private static void drainAndClose(CloseableIterator<ListElement> it) {
